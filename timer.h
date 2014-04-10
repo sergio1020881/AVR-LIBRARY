@@ -1,7 +1,7 @@
 /*
  * timer.h
  *
- * Created: 31-12-2013 20:58:25
+ * Created: 09-04-2014 14:30:00
  *  Author: SERGIO
  */
 #ifndef TIMER_H_
@@ -26,11 +26,14 @@ struct TIMER0{
 	unsigned int prescaler;
 	unsigned char compare;
 	unsigned char interrupt;
+	unsigned char state;
 	
 	// prototype pointers
 	
 	void (*start)(struct TIMER0* timer0, unsigned int prescaler);
-	void (*stop)(void);
+	uint8_t (*cmpm)(struct TIMER0* timer0, unsigned int multiplier);
+	uint8_t (*ovfm)(struct TIMER0* timer0, unsigned int multiplier);
+	void (*stop)(struct TIMER0* timer0);
 	
 };
 typedef struct TIMER0 TIMER0;
