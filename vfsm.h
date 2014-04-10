@@ -3,7 +3,7 @@
 /************************************************************************
 Title:    VFSM
 Author:   Sergio Salazar Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: vfsm.h,v 0.1 2014/03/29 17:00:00 sergio Exp $
+File:     $Id: vfsm.h,v 0.1 2014/04/09 14:30:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR ATmega128 at 16 Mhz
 License:  GNU General Public License 
@@ -40,7 +40,6 @@ struct VFSM{
 	unsigned int sizeeeprom;
 	unsigned int sizeblock;
 	uint8_t input;
-	uint8_t output;
 	
 	/***PROTOTYPES VTABLE***/
 	uint8_t (*read)(struct VFSM *r, uint8_t input, uint8_t output);
@@ -48,10 +47,23 @@ struct VFSM{
 };
 typedef struct VFSM VFSM;
 
+struct VLOGIC{
+	uint8_t *eeprom;
+	unsigned int sizeeeprom;
+	unsigned int sizeblock;
+	uint8_t input;
+	
+	/***PROTOTYPES VTABLE***/
+	uint8_t (*read)(struct VLOGIC *l, uint8_t input, uint8_t output);
+	uint8_t (*diff)(uint8_t xi, uint8_t xf);
+};
+typedef struct VLOGIC VLOGIC;
+
 /*
 ** global object function header
 */
 VFSM VFSMenable(uint8_t *veeprom, unsigned int sizeeeprom );
+VLOGIC VLOGICenable(uint8_t *veeprom, unsigned int sizeeeprom );
 
 /*
 ** global function header
