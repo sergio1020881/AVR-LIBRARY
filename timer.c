@@ -1,7 +1,7 @@
 /*
  * timer.c
  *
- * Created: 31-12-2013 20:57:51
+ * Created: 09-04-2014 14:30:00
  *  Author: SERGIO
  */ 
 // atmega 128 at 16MHZ
@@ -105,7 +105,9 @@ ISR(TIMER0_OVERFLOW_INTERRUPT);
 TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsigned char compare, unsigned char interrupt)
 {
 	void TIMER0_start(struct TIMER0* timer0, unsigned int prescaler);
-	void TIMER0_stop(void);
+	uint8_t TIMER0_cmpm(struct TIMER0* timer0, unsigned int multiplier);
+	uint8_t TIMER0_ovfm(struct TIMER0* timer0, unsigned int multiplier);
+	void TIMER0_stop(struct TIMER0* timer0);
 	//
 	TIMER0_COMPARE_MATCH=0;
 	TIMER0_OVERFLOW=0;
@@ -115,6 +117,7 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	timer0.compoutmode=compoutmode;
 	timer0.compare=compare;
 	timer0.interrupt=interrupt;
+	timer0.state=0;
 	//
 	switch(timer0.wavegenmode){
 		case 0: // Normal
@@ -137,7 +140,6 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	}
 	switch(timer0.compoutmode){
 		case 0: // Normal port operation, OC0 disconnected.
-				// Normal port operation, OC0 disconnected.
 			TIMER0_CONTROL&=~(1<<(COM00) | (1<<COM01));
 			break;
 		case 1: // Reserved
@@ -190,54 +192,80 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	//
 	timer0.start=TIMER0_start;
 	timer0.stop=TIMER0_stop;
+	timer0.cmpm=TIMER0_cmpm;
+	timer0.ovfm=TIMER0_ovfm;
 	//
 	return timer0;
 }
 void TIMER0_start(struct TIMER0* timer0, unsigned int prescaler)
 {
-	timer0->prescaler=prescaler;
-	switch(timer0->prescaler){
-		case 1: // clk T0S /(No prescaling)
-			TIMER0_CONTROL|=(1<<(CS00));
-			TIMER0_CONTROL&=~(3<<(CS01));
-			break;
-		case 8: // clk T0S /8 (From prescaler)
-			TIMER0_CONTROL|=(1<<CS01);
-			TIMER0_CONTROL&=~(5<<CS00);
-			break;
-		case 32: // clk T0S /32 (From prescaler)
-			TIMER0_CONTROL&=~(1<<CS02);
-			TIMER0_CONTROL|=(3<<CS00);
-			break;
-		case 64: // clk T0S /64 (From prescaler)
-			TIMER0_CONTROL|=(4<<CS00);
-			TIMER0_CONTROL&=~(3<<CS00);
-			break;
-		case 128: // clk T0S /128 (From prescaler)
-			TIMER0_CONTROL|=(5<<CS00);
-			TIMER0_CONTROL&=~(1<<CS01);
-			break;
-		case 256: // clk T 0 S /256 (From prescaler)
-			TIMER0_CONTROL|=(6<<CS00);
-			TIMER0_CONTROL&=~(1<<CS00);
-			break;
-		case 1024: // clk T 0 S /1024 (From prescaler)
-			TIMER0_CONTROL|=(7<<CS00);
-			break;
-		default:
-			TIMER0_CONTROL|=(7<<CS00);
-			break;
-	}
-	TIMER0_COMPARE_MATCH=0;
-	TIMER0_OVERFLOW=0;
-	TIMER0_COUNTER=0X00;
+	if(timer0->state==0){ // oneshot
+		timer0->prescaler=prescaler;
+		switch(timer0->prescaler){
+			case 1: // clk T0S /(No prescaling)
+				TIMER0_CONTROL|=(1<<(CS00));
+				TIMER0_CONTROL&=~(3<<(CS01));
+				break;
+			case 8: // clk T0S /8 (From prescaler)
+				TIMER0_CONTROL|=(1<<CS01);
+				TIMER0_CONTROL&=~(5<<CS00);
+				break;
+			case 32: // clk T0S /32 (From prescaler)
+				TIMER0_CONTROL&=~(1<<CS02);
+				TIMER0_CONTROL|=(3<<CS00);
+				break;
+			case 64: // clk T0S /64 (From prescaler)
+				TIMER0_CONTROL|=(4<<CS00);
+				TIMER0_CONTROL&=~(3<<CS00);
+				break;
+			case 128: // clk T0S /128 (From prescaler)
+				TIMER0_CONTROL|=(5<<CS00);
+				TIMER0_CONTROL&=~(1<<CS01);
+				break;
+			case 256: // clk T 0 S /256 (From prescaler)
+				TIMER0_CONTROL|=(6<<CS00);
+				TIMER0_CONTROL&=~(1<<CS00);
+				break;
+			case 1024: // clk T 0 S /1024 (From prescaler)
+				TIMER0_CONTROL|=(7<<CS00);
+				break;
+			default:
+				TIMER0_CONTROL|=(7<<CS00);
+				break;
+		}
+		TIMER0_COMPARE_MATCH=0;
+		TIMER0_OVERFLOW=0;
+		TIMER0_COUNTER=0X00;
+		timer0->state=1;
+	}	
 }
-void TIMER0_stop(void)
+void TIMER0_stop(struct TIMER0* timer0)
 {
 	TIMER0_CONTROL&=~(7<<CS0);
 	TIMER0_COMPARE_MATCH=0;
 	TIMER0_OVERFLOW=0;
 	TIMER0_COUNTER=0X00;
+	timer0->state=0;
+}
+uint8_t TIMER0_cmpm(struct TIMER0* timer0, unsigned int multiplier)
+{
+	uint8_t ret;
+	if(TIMER0_COMPARE_MATCH > multiplier){
+		ret=1;
+		timer0->stop(timer0);
+	}else
+		ret=0;
+	return ret;
+}
+uint8_t TIMER0_ovfm(struct TIMER0* timer0, unsigned int multiplier)
+{
+	uint8_t ret;
+	if(TIMER0_OVERFLOW > multiplier){
+		ret=1;
+		timer0->stop(timer0);
+	}else
+		ret=0;
+	return ret;
 }
 /*
 ** module interrupts
