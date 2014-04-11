@@ -32,14 +32,13 @@ LICENSE:
 /*
 ** constants and macros
 */
-#define TOTAL_CHANNELS 31
 #define MAX_CHANNELS 8
 
 /*
 ** global variables
 */
-static volatile int ADC_VALUE[TOTAL_CHANNELS];
-static volatile int ADC_CHANNEL_GAIN_SELECTOR[MAX_CHANNELS];
+static volatile int ADC_VALUE[MAX_CHANNELS];
+static volatile int ADC_CHANNEL_GAIN[MAX_CHANNELS];
 static volatile int ADC_SELECTOR;
 static volatile int ADC_N_CHANNELS;
 
@@ -48,7 +47,7 @@ struct ANALOG{
 	uint8_t DIVISION_FACTOR;
 	
 	//prototype pointers
-	int (*read)(int channel);
+	int (*read)(int selection);
 };
 typedef struct ANALOG ANALOG;
 
