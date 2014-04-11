@@ -153,12 +153,12 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 		/******/
 		va_start(list, n_channels);
 		for(i=0;i<n_channels;i++){
-			ADC_CHANNEL_GAIN_SELECTOR[i] = va_arg(list, int);
+			ADC_CHANNEL_GAIN[i] = va_arg(list, int);
 		}
 		va_end(list);
 		
 		ADC_SELECT&=~MUX_MASK;
-		ADC_SELECT|=(MUX_MASK & ADC_CHANNEL_GAIN_SELECTOR[0]);
+		ADC_SELECT|=(MUX_MASK & ADC_CHANNEL_GAIN[ADC_SELECTOR]);
 		
 		/*
 		* maybe should read all channels in circulor buffer
@@ -240,12 +240,12 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 		/******/
 		va_start(list, n_channels);
 		for(i=0;i<n_channels;i++){
-			ADC_CHANNEL_GAIN_SELECTOR[i] = va_arg(list, uint8_t);
+			ADC_CHANNEL_GAIN[i] = va_arg(list, uint8_t);
 		}
 		va_end(list);
 		
 		ADC_SELECT&=~MUX_MASK;
-		ADC_SELECT|=(MUX_MASK & ADC_CHANNEL_GAIN_SELECTOR[0]);
+		ADC_SELECT|=(MUX_MASK & ADC_CHANNEL_GAIN[ADC_SELECTOR]);
 		
 		/*
 		* maybe should read all channels in circulor buffer
@@ -309,7 +309,7 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 /*
 ** module object 1 procedure and function definitions
 */
-int ANALOG_read(int channel)
+int ANALOG_read(int selection)
 /*
 * Reads all analog inputs one after the other
 * Returns selected Channel ADC_VALUE
@@ -324,7 +324,7 @@ int ANALOG_read(int channel)
 		ADC_CONTROL|=(1<<ADSC);
 	}
 		
-	return ADC_VALUE[channel];
+	return ADC_VALUE[selection];
 }
 
 /*
@@ -337,15 +337,15 @@ Purpose:  Read Analog Input
 **************************************************************************/
 {
 	/******/
-	ADC_VALUE[ADC_SELECT & MUX_MASK]=ADCL;
-	ADC_VALUE[ADC_SELECT & MUX_MASK]|=(ADCH<<8);
+	ADC_VALUE[ADC_SELECTOR]=ADCL;
+	ADC_VALUE[ADC_SELECTOR]|=(ADCH<<8);
 	/******/
-	if(ADC_SELECTOR > ADC_N_CHANNELS)
+	if(ADC_SELECTOR >= ADC_N_CHANNELS)
 		ADC_SELECTOR=0;
 	else
 		ADC_SELECTOR++;
 	ADC_SELECT &= ~MUX_MASK;
-	ADC_SELECT |= (ADC_CHANNEL_GAIN_SELECTOR[ADC_SELECTOR] & MUX_MASK);
+	ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
 }
 
 /*
