@@ -1,8 +1,8 @@
 /*
  * LMACHINE.c
  *
- * Created: 09-04-2014 14:30:00
- * Author: SERGIO SALAZAR SANTOS
+ * Created: 13-04-2014
+ * Author: SERGIO MANUEL SANTOS
  */ 
 
 /*
@@ -112,9 +112,9 @@ int main(void)
 	VFSM button_7 = VFSMenable(memoria_7,9);
 	//I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	
 	TIMER0 timer0 = TIMER0enable(0,0,255,3);
 	
+	uart.puts("OLA SERGIO !!");
 	/******/
 	char tmp[16];
 	int entrada;
@@ -154,7 +154,7 @@ int main(void)
 			timer0.stop(&timer0);
 		}
 		lcd.gotoxy(&lcd,0,1);
-		lcd.string(&lcd,function.resizestr(uart.read(&uart),16));
+		lcd.string(&lcd,function.resizestr(uart.read(),16));
 	} 
 }
 
