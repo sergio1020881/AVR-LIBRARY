@@ -88,7 +88,7 @@ Changelog for modifications made by Sergio Salazar Santos, starting with the cur
 
 Date        Description
 =========================================================================
-30/12/2013  Object oriented aproach
+03/12/2013  Object oriented aproach
 			Option for FDbits, Stopbits and Parity
 			char* uart_read(struct UART* uart)
 			char* uart1_read(struct UART1* uart)
@@ -106,6 +106,7 @@ Date        Description
 			More procedures could be added
 			Also Synchronous option not available
 			More contribuitores
+			tested on atmega 128 16Mhz, very stable.
 			
 			
 ************************************************************************/
@@ -133,6 +134,7 @@ Date        Description
  */
 #define UART_BAUD_SELECT_DOUBLE_SPEED(baudRate,xtalCpu) (((xtalCpu)/((baudRate)*8l)-1)|0x8000)
 
+
 /** Size of the circular receive buffer, must be power of 2 */
 #ifndef UART_RX_BUFFER_SIZE
 	#define UART_RX_BUFFER_SIZE 32
@@ -151,10 +153,10 @@ Date        Description
 /* 
 ** high byte error return code of uart_getc()
 */
-#define UART_FRAME_ERROR		0x0800              /* Framing Error by UART       */
-#define UART_OVERRUN_ERROR		0x0400              /* Overrun condition by UART   */
-#define UART_BUFFER_OVERFLOW	0x0200              /* receive ringbuffer overflow */
-#define UART_NO_DATA			0x0100              /* no receive data available   */
+#define UART_FRAME_ERROR      0x0800              /* Framing Error by UART       */
+#define UART_OVERRUN_ERROR    0x0400              /* Overrun condition by UART   */
+#define UART_BUFFER_OVERFLOW  0x0200              /* receive ringbuffer overflow */
+#define UART_NO_DATA          0x0100              /* no receive data available   */
 
 /***Parity choices***/
 #define NONE 0
@@ -166,17 +168,12 @@ Date        Description
 ** global variables
 */
 
-
-/*
-** global prototypes
-*/
-
 struct UART{
 	unsigned int ubrr;
 	unsigned int FDbits;
 	unsigned int Stopbits;
 	unsigned int Parity;
-	int index;
+	int i;
 	char msg[UART_RX_BUFFER_SIZE];
 	
 	// prototype pointers
@@ -186,10 +183,8 @@ struct UART{
 	void (*puts)(const char *s );
 	int (*available)(void);
 	void (*flush)(void);
-	uint8_t (*rxtail)(void);
-	uint8_t (*rxhead)(void);
-	uint8_t (*txtail)(void);
-	uint8_t (*txhead)(void);
+	uint8_t (*tail)(void);
+	uint8_t (*head)(void);
 };
 typedef struct UART UART;
 
@@ -199,7 +194,7 @@ struct UART1{
 	unsigned int FDbits;
 	unsigned int Stopbits;
 	unsigned int Parity;
-	int index;
+	int i;
 	char msg[UART_RX_BUFFER_SIZE];
 	
 	//prototype pointers
@@ -216,7 +211,7 @@ typedef struct UART1 UART1;
 
 
 /*
-** global object function header
+** global object function prototypes
 */
 
 UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
@@ -224,7 +219,7 @@ UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopb
 
 
 /*
-** global function header
+** global function prototypes
 */
 
 /**
