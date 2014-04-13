@@ -2,7 +2,7 @@
 #define FUNCTION_H_
 /************************************************************************
 Title:    FUNCTION
-Author:   Sergio Salazar Santos <sergio1020881@gmail.com>
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: function.h,v 0.1 2013/12/30 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
@@ -21,24 +21,23 @@ LICENSE:
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+COMMENT:
+	Very Stable
     
 ************************************************************************/
-
 
 /*
 ** constants and macros
 */
 
-
 /*
 ** global variables
 */
-
+char FUNCstr[16];
 
 /*
 ** global prototypes
 */
-
 struct FUNC{
 	
 	/***PROTOTYPES VTABLE***/
@@ -67,22 +66,17 @@ struct FUNC{
 	int (*twocomptointnbit)(int twoscomp, uint8_t nbits);
 	char (*dec2bcd)(char num);
 	char (*bcd2dec)(char num);
+	char* (*resizestr)(char *string, int size);
 };
 typedef struct FUNC FUNC;
-
 
 /*
 ** global object function header
 */
-
 FUNC FUNCenable( void );
-
 
 /*
 ** global function header
 */
-
-
 #endif // FUNCTION_H_
-
 /***EOF***/
