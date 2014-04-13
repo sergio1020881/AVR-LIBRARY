@@ -8,6 +8,9 @@
 * Software: AVR-GCC 3.4.3 / avr-libc 1.2.3
 * Target:   any AVR device
 * Usage:    see Doxygen manual
+* 
+* COMMENT:
+	Not Working properly, do not use until otherwise
 **************************************************************************/
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
