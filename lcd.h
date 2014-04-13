@@ -2,15 +2,15 @@
   #define _LCD_H_
 /************************************************************************
 Title:    LCD
-Author:   Sergio Salazar Santos <sergio1020881@gmail.com>
-File:     $Id: lcd.h,v 0.1 2013/12/30 15:00:00 sergio Exp $
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: lcd.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License 
-Usage:    
+Usage:	
 
 LICENSE:
-    Copyright (C) 2013
+    Copyright (C) 2014
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,13 +21,14 @@ LICENSE:
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
+	
+COMMENT:
+	  tested atemga 128 16Mhz, Very Stable
 ************************************************************************/
 
 /*
 ** constants and macros
 */
-
 //ASIGN PORT PINS TO LCD (can be setup in any way)
 #define RS 0
 #define RW 1
@@ -41,26 +42,19 @@ LICENSE:
 #define INST 0
 #define DATA 1
 
-
 /*
 ** global variables
 */
 
-
 /*
 ** global prototypes
 */
-
 struct display{
 	/******/
 	volatile uint8_t *DDR;
 	volatile uint8_t *PIN;
 	volatile uint8_t *PORT;
-	uint8_t det;
-	uint8_t counter;
-	uint8_t refreshcycle;
-	char str[16];
-	
+	uint8_t detect;
 	/******/
 	unsigned int (*ticks)(unsigned int num);
 	void (*strobe)(struct display* lcd, unsigned int num);
@@ -73,24 +67,18 @@ struct display{
 	void (*string)(struct display* lcd, const char *s);
 	void (*clear)(struct display* lcd);
 	void (*gotoxy)(struct display* lcd, unsigned int x, unsigned int y);
-	char* (*resizestr)(struct display *lcd, char *string, int size);
-	void (*detect)(struct display *lcd);
-	void (*refresh)(struct display *lcd);
+	void (*reboot)(struct display *lcd);
 };
 typedef struct display LCD;
 
 /*
 ** global object function header
 */
-
 LCD LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
-
 
 /*
 ** global function header
 */
 
-
 #endif // LCD_H_
-
 /***EOF***/
