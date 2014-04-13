@@ -88,7 +88,8 @@ Changelog for modifications made by Sergio Salazar Santos, starting with the cur
 
 Date        Description
 =========================================================================
-03/12/2013  Object oriented aproach
+File:     $Id: uart.c,v 1.6.2.1 2014/04/13 16:30:00 sergio Exp $
+13/04/2014  Object oriented aproach
 			Option for FDbits, Stopbits and Parity
 			char* uart_read(struct UART* uart)
 			char* uart1_read(struct UART1* uart)
@@ -107,21 +108,19 @@ Date        Description
 			Also Synchronous option not available
 			More contribuitores
 			tested on atmega 128 16Mhz, very stable.
-			
+COMMENT:
+	stable
 			
 ************************************************************************/
 
 /**@{*/
-
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
 
-
 /*
 ** constants and macros
 */
-
 /** @brief  UART Baudrate Expression
  *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz          
  *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
@@ -133,7 +132,6 @@ Date        Description
  *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
  */
 #define UART_BAUD_SELECT_DOUBLE_SPEED(baudRate,xtalCpu) (((xtalCpu)/((baudRate)*8l)-1)|0x8000)
-
 
 /** Size of the circular receive buffer, must be power of 2 */
 #ifndef UART_RX_BUFFER_SIZE
@@ -163,21 +161,17 @@ Date        Description
 #define EVEN 2
 #define ODD 3
 
-
 /*
 ** global variables
 */
-
 struct UART{
 	unsigned int ubrr;
 	unsigned int FDbits;
 	unsigned int Stopbits;
 	unsigned int Parity;
-	int i;
-	char msg[UART_RX_BUFFER_SIZE];
 	
 	// prototype pointers
-	char* (*read)(struct UART* uart);
+	char* (*read)(void);
 	unsigned int (*getc)(void);
 	void (*putc)(unsigned char data);
 	void (*puts)(const char *s );
@@ -188,17 +182,14 @@ struct UART{
 };
 typedef struct UART UART;
 
-
 struct UART1{
 	unsigned int ubrr;
 	unsigned int FDbits;
 	unsigned int Stopbits;
 	unsigned int Parity;
-	int i;
-	char msg[UART_RX_BUFFER_SIZE];
 	
 	//prototype pointers
-	char* (*read)(struct UART1* uart1);
+	char* (*read)(void);
 	unsigned int (*getc)(void);
 	void (*putc)(unsigned char data);
 	void (*puts)(const char *s );
@@ -209,26 +200,26 @@ struct UART1{
 };
 typedef struct UART1 UART1;
 
+int uart_index;
+char uart_msg[UART_RX_BUFFER_SIZE];
+int uart1_index;
+char uart1_msg[UART_RX_BUFFER_SIZE];
 
 /*
 ** global object function prototypes
 */
-
 UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
 UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
-
 
 /*
 ** global function prototypes
 */
-
 /**
    @brief   Initialize UART and set baudrate 
    @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
    @return  none
 */
 //extern void uart_init(unsigned int baudrate);
-
 
 /**
  *  @brief   Get received byte from ringbuffer
@@ -257,14 +248,12 @@ UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopb
  */
 //extern unsigned int uart_getc(void);
 
-
 /**
  *  @brief   Put byte to ringbuffer for transmitting via UART
  *  @param   data byte to be transmitted
  *  @return  none
  */
 //extern void uart_putc(unsigned char data);
-
 
 /**
  *  @brief   Put string to ringbuffer for transmitting via UART
@@ -277,7 +266,6 @@ UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopb
  *  @return  none
  */
 //extern void uart_puts(const char *s );
-
 
 /**
  * @brief    Put string from program memory to ringbuffer for transmitting via UART.
@@ -311,7 +299,6 @@ extern void uart_puts_p(const char *s );
  */
 //extern void uart_flush(void);
 
-
 /** @brief  Initialize USART1 (only available on selected ATmegas) @see uart_init */
 //extern void uart1_init(unsigned int baudrate);
 /** @brief  Get received byte of USART1 from ringbuffer. (only available on selected ATmega) @see uart_getc */
@@ -330,8 +317,6 @@ extern void uart1_puts_p(const char *s );
 /** @brief   Flush bytes waiting in receive buffer */
 //extern void uart1_flush(void);
 
-
 #endif // UART_H
-
 /***EOF***/
 
