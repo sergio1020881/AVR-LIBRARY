@@ -9,6 +9,10 @@
 //  Programmer   : Ponyprog
 //               : AVR Visual Studio 6.1
 //  Last Updated : 30 December 2013
+
+COMMENT:
+	Not Working properly, do not use until otherwise
+
 *****************************************************************************/
 /*
 ** atmega 128 at 16MHZ
@@ -1236,128 +1240,4 @@ SIGNAL(SIG_2WIRE_SERIAL)
 				i2cSendStop();
 				//outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWSTO)|BV(TWEA));
 				// set state
-				I2cState = I2C_IDLE;
-			}
-			break;
-		case TW_MR_DATA_NACK: // 0x58: Data received, NACK reply issued
-			// store final received data byte
-			I2cReceiveData[I2cReceiveDataIndex++] = inb(TWDR);
-		// continue to transmit STOP condition
-		case TW_MR_SLA_NACK: // 0x48: Slave address not acknowledged
-		case TW_MT_SLA_NACK: // 0x20: Slave address not acknowledged
-		case TW_MT_DATA_NACK: // 0x30: Data not acknowledged
-			// transmit stop condition, enable SLA ACK
-			i2cSendStop();
-			//outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWSTO)|BV(TWEA));
-			// set state
-			I2cState = I2C_IDLE;
-			break;
-		case TW_MT_ARB_LOST: // 0x38: Bus arbitration lost
-			//case TW_MR_ARB_LOST: // 0x38: Bus arbitration lost
-			// release bus
-			outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT));
-			// set state
-			I2cState = I2C_IDLE;
-			// release bus and transmit start when bus is free
-			//outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWSTA));
-			break;
-		case TW_MR_DATA_ACK: // 0x50: Data acknowledged
-			// store received data byte
-			I2cReceiveData[I2cReceiveDataIndex++] = inb(TWDR);
-			// fall-through to see if more bytes will be received
-		case TW_MR_SLA_ACK: // 0x40: Slave address acknowledged
-			if(I2cReceiveDataIndex < (I2cReceiveDataLength-1))
-				// data byte will be received, reply with ACK (more bytes in transfer)
-				i2cReceiveByte(TRUE);
-				//outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWEA));
-			else
-				// data byte will be received, reply with NACK (final byte in transfer)
-				i2cReceiveByte(FALSE);
-				//outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT));
-			break;
-
-		// Slave Receiver status codes
-		case TW_SR_SLA_ACK: // 0x60: own SLA+W has been received, ACK has been returned
-		case TW_SR_ARB_LOST_SLA_ACK: // 0x68: own SLA+W has been received, ACK has been returned
-		case TW_SR_GCALL_ACK: // 0x70: GCA+W has been received, ACK has been returned
-		case TW_SR_ARB_LOST_GCALL_ACK: // 0x78: GCA+W has been received, ACK has been returned
-			// we are being addressed as slave for writing (data will be received from master)
-			// set state
-			I2cState = I2C_SLAVE_RX;
-			// prepare buffer
-			I2cReceiveDataIndex = 0;
-			// receive data byte and return ACK
-			outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWEA));
-			break;
-		case TW_SR_DATA_ACK: // 0x80: data byte has been received, ACK has been returned
-		case TW_SR_GCALL_DATA_ACK: // 0x90: data byte has been received, ACK has been returned
-			// get previously received data byte
-			I2cReceiveData[I2cReceiveDataIndex++] = inb(TWDR);
-			// check receive buffer status
-			if(I2cReceiveDataIndex < I2C_RECEIVE_DATA_BUFFER_SIZE){
-				// receive data byte and return ACK
-				outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWEA));
-			}else{
-				// receive data byte and return NACK
-				outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT));
-			}
-			break;
-		case TW_SR_DATA_NACK: // 0x88: data byte has been received, NACK has been returned
-		case TW_SR_GCALL_DATA_NACK: // 0x98: data byte has been received, NACK has been returned
-			// receive data byte and return NACK
-			outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT));
-			break;
-		case TW_SR_STOP: // 0xA0: STOP or REPEATED START has been received while addressed as slave
-			// switch to SR mode with SLA ACK
-			outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWEA));
-			// i2c receive is complete, call i2cSlaveReceive
-			if(i2cSlaveReceive) i2cSlaveReceive(I2cReceiveDataIndex, I2cReceiveData);
-				// set state
-				I2cState = I2C_IDLE;
-			break;
-
-		// Slave Transmitter
-		case TW_ST_SLA_ACK: // 0xA8: own SLA+R has been received, ACK has been returned
-		case TW_ST_ARB_LOST_SLA_ACK: // 0xB0: GCA+R has been received, ACK has been returned
-			// we are being addressed as slave for reading (data must be transmitted back to master)
-			// set state
-			I2cState = I2C_SLAVE_TX;
-			// request data from application
-			if(i2cSlaveTransmit) I2cSendDataLength = i2cSlaveTransmit(I2C_SEND_DATA_BUFFER_SIZE, I2cSendData);
-				// reset data index
-				I2cSendDataIndex = 0;
-				// fall-through to transmit first data byte
-		case TW_ST_DATA_ACK: // 0xB8: data byte has been transmitted, ACK has been received
-			// transmit data byte
-			outb(TWDR, I2cSendData[I2cSendDataIndex++]);
-			if(I2cSendDataIndex < I2cSendDataLength)
-				// expect ACK to data byte
-				outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWEA));
-			else
-				// expect NACK to data byte
-				outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT));
-			break;
-		case TW_ST_DATA_NACK: // 0xC0: data byte has been transmitted, NACK has been received
-		case TW_ST_LAST_DATA: // 0xC8:
-			// all done
-			// switch to open slave
-			outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWEA));
-			// set state
-			I2cState = I2C_IDLE;
-		break;
-
-		// Misc
-		case TW_NO_INFO: // 0xF8: No relevant state information
-			// do nothing
-			break;
-		case TW_BUS_ERROR: // 0x00: Bus error due to illegal start or stop condition
-			// reset internal hardware and release bus
-			outb(TWCR, (inb(TWCR)&TWCR_CMD_MASK)|BV(TWINT)|BV(TWSTO)|BV(TWEA));
-			// set state
-			I2cState = I2C_IDLE;
-			break;
-	}
-	//outb(PORTB, ~I2cState);
-	*/
-}
-/***EOF***/
+				I2cState = I2C_I
