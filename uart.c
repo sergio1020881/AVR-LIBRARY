@@ -94,7 +94,8 @@ Changelog for modifications made by Sergio Salazar Santos, starting with the cur
 
 Date        Description
 =========================================================================
-03/12/2013  Object oriented aproach
+File:     $Id: uart.c,v 1.6.2.1 2014/04/13 16:30:00 sergio Exp $
+13/04/2014  Object oriented aproach
 			Option for FDbits, Stopbits and Parity
 			char* uart_read(struct UART* uart)
 			char* uart1_read(struct UART1* uart)
@@ -113,31 +114,27 @@ Date        Description
 			Also Synchronous option not available
 			More contribuitores
 			tested on atmega 128 16Mhz, very stable.
-			
-			
+
+COMMENT:
+	stable
+				
 ************************************************************************/
 
 /*
 ** Library
 */
-
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 
-
 /*
 ** Private Library
 */
-
 #include "uart.h"
-
 
 /*
 **  module constants and macros
 */
-
-
 /* size of RX/TX buffers */
 #define UART_RX_BUFFER_MASK ( UART_RX_BUFFER_SIZE - 1)
 #define UART_TX_BUFFER_MASK ( UART_TX_BUFFER_SIZE - 1)
@@ -384,11 +381,9 @@ Date        Description
 
 #endif
 
-
 /*
 **  module variables
 */
-
 static volatile unsigned char UART_TxBuf[UART_TX_BUFFER_SIZE];
 static volatile unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];
 static volatile unsigned char UART_TxHead;
@@ -407,11 +402,9 @@ static volatile unsigned char UART1_RxTail;
 static volatile unsigned char UART1_LastRxError;
 #endif
 
-
 /*
 ** module object 1 constructor
 */
-
 /*************************************************************************
 Function: UARTenable() 1
 Purpose:  initialize UART and set baudrate
@@ -430,9 +423,11 @@ struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int 
     UART_TxTail = 0;
     UART_RxHead = 0;
     UART_RxTail = 0;
+	uart_index=0;
+	uart_msg[0]='\0';
 	
 	/***PROTOTYPES***/
-	char* uart_read(struct UART* uart);
+	char* uart_read(void);
 	unsigned int uart_getc(void);
 	void uart_putc(unsigned char data);
 	void uart_puts(const char *s );
@@ -446,8 +441,6 @@ struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int 
 	struct UART uart;
 	
 	//local variables
-	uart.i=0;
-	uart.msg[0]='\0';
 	uart.ubrr=baudrate;
 	
 	/***FUNCTION POINTER***/
@@ -690,11 +683,9 @@ struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int 
 
 }// UARTenable
 
-
 /*
 ** module object 1 procedure and function definitions
 */
-
 /*************************************************************************
 Function: uart_getc()
 Purpose:  return byte from ringbuffer  
@@ -722,7 +713,6 @@ unsigned int uart_getc(void)
 
 }/* uart_getc */
 
-
 /*************************************************************************
 Function: uart_putc()
 Purpose:  write byte to ringbuffer for transmitting via UART
@@ -748,7 +738,6 @@ void uart_putc(unsigned char data)
 
 }/* uart_putc */
 
-
 /*************************************************************************
 Function: uart_puts()
 Purpose:  transmit string to UART
@@ -761,7 +750,6 @@ void uart_puts(const char *s )
       uart_putc(*s++);
 
 }/* uart_puts */
-
 
 /*************************************************************************
 Function: uart_puts_p()
@@ -778,7 +766,6 @@ void uart_puts_p(const char *progmem_s )
 
 }/* uart_puts_p */
 
-
 /*************************************************************************
 Function: uart_available()
 Purpose:  Determine the number of bytes waiting in the receive buffer
@@ -789,7 +776,6 @@ int uart_available(void)
 {
         return (UART_RX_BUFFER_MASK + UART_RxHead - UART_RxTail) % UART_RX_BUFFER_MASK;
 }/* uart_available */
-
 
 /*************************************************************************
 Function: uart_flush()
@@ -802,14 +788,13 @@ void uart_flush(void)
         UART_RxHead = UART_RxTail;
 }/* uart_flush */
 
-
 /*************************************************************************
 Function: uart_read(&uart)
 Purpose:  Get Data from Circular Buffer
 Input:    Address of struct UART
 Returns:  Buffer Data
 **************************************************************************/
-char* uart_read(struct UART* uart)
+char* uart_read(void)
 {
 	unsigned char tmptail;
     unsigned char data;
@@ -819,42 +804,38 @@ char* uart_read(struct UART* uart)
 	/* calculate /store buffer index */
 	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
 		
-	if((UART_RxTail != UART_RxHead) && (uart->i < UART_RX_BUFFER_MASK)){
+	if((UART_RxTail != UART_RxHead) && (uart_index < UART_RX_BUFFER_MASK)){
 		
 		UART_RxTail = tmptail;
 		
 		/* get data from receive buffer */
 		data = UART_RxBuf[tmptail];
-		uart->msg[uart->i]=data;
-		uart->i++;
-		uart->msg[uart->i]='\0';
+		uart_msg[uart_index]=data;
+		uart_index++;
+		uart_msg[uart_index]='\0';
 //max index = UART_RX_BUFFER_MASK therefore UART_RX_BUFFER_MASK-1 max caracters more implies overflow.
 	}else{	
 		
-		uart->i=0;
-		ret=uart->msg;
+		uart_index=0;
+		ret=uart_msg;
 		
 	}
 	return ret;
 }
 
-
 uint8_t uart_tail(void)
 {
 	return UART_RxTail;
 }
-
 	
 uint8_t uart_head(void)
 {
 	return UART_RxHead;
 }
 
-
 /*
 ** module object 1 interrupts
 */
-
 ISR(UART0_RECEIVE_INTERRUPT)
 /*************************************************************************
 Function: UART Receive Complete interrupt
@@ -909,7 +890,6 @@ Purpose:  called when the UART has received a character
 	
 }
 
-
 ISR(UART0_TRANSMIT_INTERRUPT)
 /*************************************************************************
 Function: UART Data Register Empty interrupt
@@ -934,24 +914,14 @@ Purpose:  called when the UART is ready to transmit the next byte
     }
 }
 
-
-
-
-
-
-
-
 /*
 ** these functions are only for ATmegas with two USART
 */
-
 #if defined( ATMEGA_USART1 )
-
 
 /*
 ** module object 2 constructor
 */
-
 /*************************************************************************
 Function: UART1enable() 2
 Purpose:  initialize UART1 and set baudrate
@@ -970,9 +940,11 @@ struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned in
     UART1_TxTail = 0;
     UART1_RxHead = 0;
     UART1_RxTail = 0;
+	uart1_index=0;
+	uart1_msg[0]='\0';
     
 	/***PROTOTYPES***/
-	char* uart1_read(struct UART1* uart);
+	char* uart1_read(void);
 	unsigned int uart1_getc(void);
 	void uart1_putc(unsigned char data);
 	void uart1_puts(const char *s );
@@ -985,8 +957,6 @@ struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned in
 	struct UART1 uart;
 	
 	//local variables
-	uart.i=0;
-	uart.msg[0]='\0';
 	uart.ubrr=baudrate;
 	
 	/***FUNCTION POINTER***/
@@ -1100,11 +1070,9 @@ struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned in
 	
 }// UART1enable
 
-
 /*
 ** module object 2 procedure and function definitions
 */
-
 /*************************************************************************
 Function: uart1_getc()
 Purpose:  return byte from ringbuffer  
@@ -1132,7 +1100,6 @@ unsigned int uart1_getc(void)
 
 }/* uart1_getc */
 
-
 /*************************************************************************
 Function: uart1_putc()
 Purpose:  write byte to ringbuffer for transmitting via UART
@@ -1158,7 +1125,6 @@ void uart1_putc(unsigned char data)
 
 }/* uart1_putc */
 
-
 /*************************************************************************
 Function: uart1_puts()
 Purpose:  transmit string to UART1
@@ -1171,7 +1137,6 @@ void uart1_puts(const char *s )
       uart1_putc(*s++);
 
 }/* uart1_puts */
-
 
 /*************************************************************************
 Function: uart1_puts_p()
@@ -1188,7 +1153,6 @@ void uart1_puts_p(const char *progmem_s )
 
 }/* uart1_puts_p */
 
-
 /*************************************************************************
 Function: uart1_available()
 Purpose:  Determine the number of bytes waiting in the receive buffer
@@ -1199,7 +1163,6 @@ int uart1_available(void)
 {
         return (UART_RX_BUFFER_MASK + UART1_RxHead - UART1_RxTail) % UART_RX_BUFFER_MASK;
 }/* uart1_available */
-
 
 /*************************************************************************
 Function: uart1_flush()
@@ -1212,14 +1175,13 @@ void uart1_flush(void)
         UART1_RxHead = UART1_RxTail;
 }/* uart1_flush */
 
-
 /*************************************************************************
 Function: uart1_read(&uart1)
 Purpose:  Get Data from Circular Buffer
 Input:    Address of struct UART1
 Returns:  Buffer Data
 **************************************************************************/
-char* uart1_read(struct UART1* uart)
+char* uart1_read(void)
 {
 	
 	unsigned char tmptail;
@@ -1230,42 +1192,38 @@ char* uart1_read(struct UART1* uart)
 	/* calculate /store buffer index */
 	tmptail = (UART1_RxTail + 1) & UART_RX_BUFFER_MASK;
 	
-	if((UART1_RxTail != UART1_RxHead) && (uart->i < UART_RX_BUFFER_MASK)){
+	if((UART1_RxTail != UART1_RxHead) && (uart1_index < UART_RX_BUFFER_MASK)){
 		
 		UART1_RxTail = tmptail;
 		
 		/* get data from receive buffer */
 		data = UART1_RxBuf[tmptail];
-		uart->msg[uart->i]=data;
-		uart->i++;
-		uart->msg[uart->i]='\0';
+		uart1_msg[uart1_index]=data;
+		uart1_index++;
+		uart1_msg[uart1_index]='\0';
 		
 	}else{
 		
-		uart->i=0;
-		ret=uart->msg;
+		uart1_index=0;
+		ret=uart1_msg;
 		
 	}
 	return ret;
 }
-
 
 uint8_t uart1_tail(void)
 {
 	return UART1_RxTail;
 }
 
-
 uint8_t uart1_head(void)
 {
 	return UART1_RxHead;
 }
 
-
 /*
 ** module object 2 interrupts
 */
-
 SIGNAL(UART1_RECEIVE_INTERRUPT)
 /*************************************************************************
 Function: UART1 Receive Complete interrupt
@@ -1312,7 +1270,6 @@ Purpose:  called when the UART1 has received a character
     UART1_LastRxError = lastRxError;   
 }
 
-
 SIGNAL(UART1_TRANSMIT_INTERRUPT)
 /*************************************************************************
 Function: UART1 Data Register Empty interrupt
@@ -1336,18 +1293,13 @@ Purpose:  called when the UART1 is ready to transmit the next byte
     }
 }
 
-
 #endif
-
 
 /*
 ** module procedure and function definitions
 */
 
-
 /*
 ** module interrupts
 */
-
-
 /***EOF***/
