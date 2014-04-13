@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    LCD
-Author:   Sergio Salazar Santos <sergio1020881@gmail.com>
-File:     $Id: lcd.c,v 0.1 2013/12/30 15:00:00 sergio Exp $
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: lcd.c,v 0.2 2014/4/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License 
@@ -16,7 +16,7 @@ NOTES:
     Based on Atmel Application Note AVR306
                     
 LICENSE:
-    Copyright (C) 2013
+    Copyright (C) 2014
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,63 +27,51 @@ LICENSE:
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-                        
+	
+COMMENT:
+	  tested atemga 128 16Mhz, Very Stable                    
 *************************************************************************/
-
 //atmega 128 at 16MHZ
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
 
-
 /*
 ** Library
 */
-
 #include <avr/io.h>
 #include <util/delay.h>
-
 
 /*
 ** Private Library
 */
-
 #include "lcd.h"
-
 
 /*
 ** module constants and macros
 */
-
 #ifndef GLOBAL_INTERRUPT_ENABLE
- #define GLOBAL_INTERRUPT_ENABLE 7
+	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
-#define LCD_REFRESH 128
-
 
 /*
 ** module variables
 */
 //ticks depends on CPU frequency this case 16Mhz
 
-
 /*
 ** module function header
 */
-
 unsigned int LCD_ticks(unsigned int num);
-
 
 /*
 ** module interrupt header
 */
 
-
 /*
 ** module object 1 constructor
 */
-
-struct display LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile
+LCD LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile
 uint8_t *port)
 {
 	//LOCAL VARIABLES
@@ -102,13 +90,11 @@ uint8_t *port)
 	void LCD_clear(struct display* lcd);
 	void LCD_gotoxy(struct display* lcd, unsigned int x, unsigned int y);
 	void LCD_strobe(struct display* lcd, unsigned int num);
-	char* LCD_resizestr(struct display *lcd, char *string, int size);
-	void LCD_detect(struct display *lcd);
-	void LCD_refresh(struct display *lcd);
+	void LCD_reboot(struct display *lcd);
 	
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
 	struct display lcd;
-
+	
 	//import parametros
 	lcd.DDR=ddr;
 	lcd.PIN=pin;
@@ -117,9 +103,7 @@ uint8_t *port)
 	*lcd.DDR=0x00;
 	*lcd.PORT=0xFF;
 	//inic variables
-	lcd.det=*lcd.PIN & (1<<NC);
-	lcd.counter=0;
-	lcd.refreshcycle=LCD_REFRESH;
+	lcd.detect=*lcd.PIN & (1<<NC);
 	
 	//Direccionar apontadores para PROTOTIPOS
 	lcd.inic=LCD_inic;
@@ -133,9 +117,7 @@ uint8_t *port)
 	lcd.gotoxy=LCD_gotoxy;
 	lcd.ticks=LCD_ticks;
 	lcd.strobe=LCD_strobe;
-	lcd.resizestr=LCD_resizestr;
-	lcd.detect=LCD_detect;
-	lcd.refresh=LCD_refresh;
+	lcd.reboot=LCD_reboot;
 	
 	//LCD INIC
 	lcd.inic(&lcd);
@@ -146,11 +128,9 @@ uint8_t *port)
 	return lcd;
 }
 
-
 /*
 **  module object 1 procedure and function difinitions
 */
-
 void LCD_inic(struct display* lcd)
 {
 	//LCD INIC
@@ -183,7 +163,6 @@ void LCD_inic(struct display* lcd)
 	lcd->BF(lcd);
 }
 
-
 void LCD_write(struct display* lcd, char c, unsigned short D_I)
 {
 	*lcd->PORT&=~(1<<RW);//lcd as input WRITE INSTRUCTION
@@ -204,7 +183,6 @@ void LCD_write(struct display* lcd, char c, unsigned short D_I)
 	*lcd->PORT&=~(1<<EN);
 	lcd->ticks(1);
 }
-
 
 char LCD_read(struct display* lcd, unsigned short D_I)
 {
@@ -230,7 +208,6 @@ char LCD_read(struct display* lcd, unsigned short D_I)
 	return c;
 }
 
-
 void LCD_BF(struct display* lcd)
 {
 	unsigned int i;
@@ -243,13 +220,11 @@ void LCD_BF(struct display* lcd)
 	}
 }
 
-
 void LCD_putch(struct display* lcd, char c)
 {
 	lcd->write(lcd,c,DATA);
 	lcd->BF(lcd);
 }
-
 
 char LCD_getch(struct display* lcd)
 {
@@ -258,7 +233,6 @@ char LCD_getch(struct display* lcd)
 	lcd->BF(lcd);
 	return c;
 }
-
 
 void LCD_string(struct display* lcd, const char* s)
 {
@@ -270,13 +244,11 @@ void LCD_string(struct display* lcd, const char* s)
 	}
 }
 
-
 void LCD_clear(struct display* lcd)
 {
 	lcd->write(lcd,0x01,INST);
 	lcd->BF(lcd);
 }
-
 
 void LCD_gotoxy(struct display* lcd, unsigned int x, unsigned int y)
 {
@@ -294,7 +266,6 @@ void LCD_gotoxy(struct display* lcd, unsigned int x, unsigned int y)
 	}
 }
 
-
 unsigned int LCD_ticks(unsigned int num)
 {
 	unsigned int count;
@@ -303,7 +274,6 @@ unsigned int LCD_ticks(unsigned int num)
 	return count;
 }
 
-
 void LCD_strobe(struct display *lcd, unsigned int num)
 {
 	*lcd->PORT|=(1<<EN);
@@ -311,65 +281,28 @@ void LCD_strobe(struct display *lcd, unsigned int num)
 	*lcd->PORT&=~(1<<EN);
 }
 
-
-char* LCD_resizestr(struct display *lcd, char *string, int size)
-{
-	int i;
-	lcd->str[size]='\0';
-	for(i=0;i<size;i++){
-		if(*(string+i)=='\0'){
-			for(;i<size;i++){
-				lcd->str[i]=' ';
-			}
-			break;
-		}
-		lcd->str[i]=*(string+i);
-	}
-	return lcd->str;
-}
-
-
-void LCD_detect(struct display *lcd)
+void LCD_reboot(struct display *lcd)
 {
 	//low high detect pin NC
 	uint8_t i;
 	uint8_t tmp;
 	tmp=*lcd->PIN & (1<<NC);
-	i=tmp^lcd->det;
+	i=tmp^lcd->detect;
 	i&=tmp;
 	if(i)
 		lcd->inic(lcd);
-	lcd->det=tmp;
-}
-
-
-void LCD_refresh(struct display *lcd)
-{
-	lcd->counter++;
-	if(lcd->counter==lcd->refreshcycle){
-		lcd->refreshcycle--;
-		lcd->counter=0;
-	}
-
-	if(!lcd->refreshcycle){
-		lcd->refreshcycle=LCD_REFRESH;
-		lcd->inic(lcd);
-	}
+	lcd->detect=tmp;
 }
 
 /*
 ** module object 1 interrupts
 */
 
-
 /*
 **  module procedure and function difinitions
 */
 
-
 /*
 ** module interrupts
 */
-
-
 /***EOF***/
