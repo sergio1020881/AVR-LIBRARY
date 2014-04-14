@@ -29,23 +29,18 @@ LICENSE:
     GNU General Public License for more details.
                         
 *************************************************************************/
-
 //MADE TO WORK IN ANY MCU FROM ATMEL AVR
-
 /*
 ** Library
 */
-
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <avr/eeprom.h>
-
-
 /*
 ** Private Library
 */
-
 #include "fsm.h"
-
-
 /*
 **  module constants and macros
 */
@@ -56,7 +51,6 @@ LICENSE:
 #define INLH 2
 #define FEEDBACK 3
 #define PRESENT 4
-
 /*
 ** module variables
 */
@@ -204,7 +198,6 @@ struct EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog)
 	/******/
 	return fsm;
 }
-
 /*
 ** module object 1 procedures and function definitions
 */
