@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    Interrupt ANALOG INPUT
-Author:   Sergio Salazar Santos <sergio1020881@gmail.com>
-File:     $Id: analog.c,v 0.1 2014/04/10 20:45:00 sergio Exp $
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: analog.c,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License 
@@ -27,9 +27,11 @@ LICENSE:
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+	
+COMMENT:
+	Very Stable
                         
 *************************************************************************/
-
 /*
 ** Library
 */
@@ -37,21 +39,18 @@ LICENSE:
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
-
 /*
 ** Private Library
 */
 #include "analog.h"
-
 /*
 **  module constants and macros
 */
 // if using differential channels this value has to be greater than one
 #define ADC_NUMBER_INTERRUPT 2
-
+#define MAX_CHANNELS 8
 /***TYPE 1***/
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
-	
+#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
 	/******/
 	#define ADC_SELECT ADMUX
 	#define ADC_CONTROL ADCSRA
@@ -59,12 +58,10 @@ LICENSE:
 	#define GLOBAL_INTERRUPT_ENABLE 7
 	#define ATMEGA_ANALOG
 	#define ANALOG_INTERRUPT ADC_vect
-
 /***TYPE 2***/
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
       defined(__AVR_ATmega328P__) 
-	
 	/******/
 	#define ADC_SELECT ADMUX
 	#define ADC_CONTROL ADCSRA
@@ -74,59 +71,50 @@ LICENSE:
 	#define GLOBAL_INTERRUPT_ENABLE 7
 	#define MEGA_ANALOG
 	#define ANALOG_INTERRUPT ADC_vect
-
 /***TYPE 3***/
 #elif defined(__AVR_ATmega161__)
-
 	/* ATmega with UART */
  	#error "AVR ATmega161 currently not supported by this libaray !"
-
 #else
-
 	/***TYPE 4***/
  	#error "no ANALOG definition for MCU available"
-
 #endif
-
 /*
-**  module variables
+** module variables
 */
-
+static volatile int ADC_VALUE[MAX_CHANNELS];
+static volatile int ADC_CHANNEL_GAIN[MAX_CHANNELS];
+static volatile int ADC_N_CHANNELS;
+static volatile int ADC_SELECTOR;
 /*
 ** module object 1 constructor
 */
 struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 /*
 * Interrupt running mode setup
+* setup and list of channels to be probed
 */
 {
 	/***LOCAL VARIABLES***/
 	uint8_t tSREG;
 	va_list list;
 	int i;
-	
 	//inic variables
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
-	
 	/***GLOBAL VARIABLES INICIALIZE***/
 	ADC_N_CHANNELS=n_channels;
 	ADC_SELECTOR=0;
-	
 	//PROTOTIPOS
 	int ANALOG_read(int channel);
-
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
 	struct ANALOG analog;
 	//import parametros
 	//inic parameters
-	
 	//Direccionar apontadores para PROTOTIPOS
 	analog.read=ANALOG_read;
-
 	/***Pre-Processor Case 1***/
 	#if defined( ATMEGA_ANALOG )
-		
 		/******/
 		switch( Vreff ){
 			case 0:
@@ -149,30 +137,20 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 		}
 		//
 		ADC_SELECT&=~(1<<ADLAR);
-		
 		/******/
 		va_start(list, n_channels);
 		for(i=0;i<n_channels;i++){
 			ADC_CHANNEL_GAIN[i] = va_arg(list, int);
 		}
 		va_end(list);
-		
 		ADC_SELECT&=~MUX_MASK;
 		ADC_SELECT|=(MUX_MASK & ADC_CHANNEL_GAIN[ADC_SELECTOR]);
-		
-		/*
-		* maybe should read all channels in circulor buffer
-		* so a function "read" indicating ADC input is more logical
-		* or just one analog select allowed 
-		*/
-		
 		/******/
 		ADC_CONTROL|=(1<<ADEN);
 		ADC_CONTROL|=(1<<ADSC);
 		ADC_CONTROL&=~(1<<ADFR);
 		ADC_CONTROL|=(1<<ADIE);
 		/******/
-		
 		switch( Divfactor ){
 			case 2://1
 				ADC_CONTROL|=(1<<ADPS0);
@@ -209,11 +187,9 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 				ADC_CONTROL|=(7<<ADPS0);
 				analog.DIVISION_FACTOR=128;
 				break;
-		}
-			
+		}		
 	/***Pre-Processor Case 2***/	
 	#elif defined( MEGA_ANALOG )
-	
 		/******/
 		switch( Vreff ){
 			case 0:
@@ -236,23 +212,14 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 		}
 		//
 		ADC_SELECT&=~(1<<ADLAR);
-		
 		/******/
 		va_start(list, n_channels);
 		for(i=0;i<n_channels;i++){
 			ADC_CHANNEL_GAIN[i] = va_arg(list, uint8_t);
 		}
 		va_end(list);
-		
 		ADC_SELECT&=~MUX_MASK;
 		ADC_SELECT|=(MUX_MASK & ADC_CHANNEL_GAIN[ADC_SELECTOR]);
-		
-		/*
-		* maybe should read all channels in circulor buffer
-		* so a function "read" indicating ADC input is more logical
-		* or just one analog select allowed 
-		*/
-		
 		/******/
 		ADC_CONTROL|=(1<<ADEN);
 		ADC_CONTROL|=(1<<ADSC);
@@ -260,7 +227,6 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 		ADC_TRIGGER&=~(7<<ADTS0);
 		ADC_CONTROL|=(1<<ADIE);
 		/******/
-		
 		switch( Divfactor ){
 			case 2://1
 				ADC_CONTROL&=~(7<<ADPS0);
@@ -297,21 +263,18 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 				analog.DIVISION_FACTOR=128;
 				break;
 		}
-		
 	#endif
-	
 	SREG=tSREG;
 	SREG|=(1<<GLOBAL_INTERRUPT_ENABLE);
 	/******/
 	return analog;
 }
-
 /*
 ** module object 1 procedure and function definitions
 */
 int ANALOG_read(int selection)
 /*
-* Reads all analog inputs one after the other
+* 
 * Returns selected Channel ADC_VALUE
 */
 {
@@ -326,7 +289,6 @@ int ANALOG_read(int selection)
 		
 	return ADC_VALUE[selection];
 }
-
 /*
 ** module object 1 interrupts
 */
@@ -347,13 +309,10 @@ Purpose:  Read Analog Input
 	ADC_SELECT &= ~MUX_MASK;
 	ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
 }
-
 /*
 ** module procedure and function definitions
 */
-
 /*
 ** module interrupts
 */
-
 /***EOF***/
