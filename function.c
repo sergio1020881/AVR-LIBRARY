@@ -36,7 +36,6 @@ COMMENT:
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
-
 /*
 ** Library
 */
@@ -44,34 +43,53 @@ COMMENT:
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
-
 /*
 ** Private Library
 */
 #include"function.h"
-
 /*
 **  module constants and macros
 */
 #ifndef GLOBAL_INTERRUPT_ENABLE
  #define GLOBAL_INTERRUPT_ENABLE 7
 #endif
-
 /*
 **  module variables
 */
-
+char FUNCstr[16];
 /*
-** module funtion header
+** module function definitions
 */
 unsigned int Power(uint8_t base, uint8_t n);
 int StringLength (const char string[]);
 void Reverse(char s[]);
-
+/***Declare Local Function Header***/
+unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits);
+uint8_t FUNChmerge(uint8_t X, uint8_t Y);
+uint8_t FUNClmerge(uint8_t X, uint8_t Y);
+uint8_t FUNClh(uint8_t xi, uint8_t xf);
+uint8_t FUNChl(uint8_t xi, uint8_t xf);
+uint8_t FUNCdiff(uint8_t xi, uint8_t xf);
+void FUNCswap(int *px, int *py);
+void FUNCcopy(char to[], char from[]);
+void FUNCsqueeze(char s[], int c);
+void FUNCshellsort(int v[], int n);
+void FUNCitoa(int n, char s[]);
+int FUNCtrim(char s[]);
+int FUNCpmax(int a1, int a2);
+int FUNCgcd (int u, int v);
+int FUNCstrToInt (const char string[]);
+uint8_t FUNCfilter(uint8_t mask, uint8_t data);
+unsigned int FUNCticks(unsigned int num);
+int FUNCtwocomptoint8bit(int twoscomp);
+int FUNCtwocomptoint10bit(int twoscomp);
+int FUNCtwocomptointnbit(int twoscomp, uint8_t nbits);
+char FUNCdec2bcd(char num);
+char FUNCbcd2dec(char num);
+char* FUNCresizestr(char *string, int size);
 /*
-** module interrupt header
+** module interrupt definitions
 */
-
 /*
 **  module object 1 constructor
 */
@@ -80,35 +98,8 @@ struct FUNC FUNCenable( void )
 	uint8_t tSREG;
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
-	
-	/***Declare Local Function Header***/
-	unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits);
-	uint8_t FUNChmerge(uint8_t X, uint8_t Y);
-	uint8_t FUNClmerge(uint8_t X, uint8_t Y);
-	uint8_t FUNClh(uint8_t xi, uint8_t xf);
-	uint8_t FUNChl(uint8_t xi, uint8_t xf);
-	uint8_t FUNCdiff(uint8_t xi, uint8_t xf);
-	void FUNCswap(int *px, int *py);
-	void FUNCcopy(char to[], char from[]);
-	void FUNCsqueeze(char s[], int c);
-	void FUNCshellsort(int v[], int n);
-	void FUNCitoa(int n, char s[]);
-	int FUNCtrim(char s[]);
-	int FUNCpmax(int a1, int a2);
-	int FUNCgcd (int u, int v);
-	int FUNCstrToInt (const char string[]);
-	uint8_t FUNCfilter(uint8_t mask, uint8_t data);
-	unsigned int FUNCticks(unsigned int num);
-	int FUNCtwocomptoint8bit(int twoscomp);
-	int FUNCtwocomptoint10bit(int twoscomp);
-	int FUNCtwocomptointnbit(int twoscomp, uint8_t nbits);
-	char FUNCdec2bcd(char num);
-	char FUNCbcd2dec(char num);
-	char* FUNCresizestr(char *string, int size);
-	
 	// struct object
 	struct FUNC func;
-	
 	// function pointers
 	func.power=Power;
 	func.stringlength=StringLength;
@@ -136,14 +127,12 @@ struct FUNC FUNCenable( void )
 	func.dec2bcd=FUNCdec2bcd;
 	func.bcd2dec=FUNCbcd2dec;
 	func.resizestr=FUNCresizestr;
-	
 	SREG=tSREG;
 	/******/
 	return func;
 }
-
 /*
-** module object 1 procedure and function definitions
+** module object 1 procedure and function
 */
 // mayia
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
@@ -158,19 +147,16 @@ unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
 	trans=diff&xf;
 	return (trans<<nbits)|diff;
 }
-
 // hmerge
 uint8_t FUNChmerge(uint8_t X, uint8_t Y)
 {
 	return (X | Y);
 }
-
 // lmerge
 uint8_t FUNClmerge(uint8_t X, uint8_t Y)
 {
 	return (X & Y);
 }
-
 // lh
 uint8_t FUNClh(uint8_t xi, uint8_t xf)
 {
@@ -179,7 +165,6 @@ uint8_t FUNClh(uint8_t xi, uint8_t xf)
 	i&=xf;
 	return i;
 }
-
 // hl
 uint8_t FUNChl(uint8_t xi, uint8_t xf)
 {
@@ -188,13 +173,11 @@ uint8_t FUNChl(uint8_t xi, uint8_t xf)
 	i&=xi;
 	return i;
 }
-
 // diff
 uint8_t FUNCdiff(uint8_t xi, uint8_t xf)
 {
 	return xf^xi;
 }
-
 // interchange *px and *py
 void FUNCswap(int *px, int *py)
 {
@@ -203,7 +186,6 @@ void FUNCswap(int *px, int *py)
 	*px = *py;
 	*py = temp;
 }
-
 // copy: copy 'from' into 'to'; assume to is big enough
 void FUNCcopy(char to[], char from[])
 {
@@ -212,7 +194,6 @@ void FUNCcopy(char to[], char from[])
 	while ((to[i] = from[i]) != '\0')
 		++i;
 }
-
 // squeeze: delete all c from s
 void FUNCsqueeze(char s[], int c)
 {
@@ -222,7 +203,6 @@ void FUNCsqueeze(char s[], int c)
 			s[j++] = s[i];
 		s[j] = '\0';
 }
-
 // shellsort: sort v[0]...v[n-1] into increasing order
 void FUNCshellsort(int v[], int n)
 {
@@ -235,7 +215,6 @@ void FUNCshellsort(int v[], int n)
 				v[j+gap] = temp;
 			}
 }
-
 // itoa: convert n to characters in s
 void FUNCitoa(int n, char s[])
 {
@@ -251,7 +230,6 @@ void FUNCitoa(int n, char s[])
 	s[i] = '\0';
 	Reverse(s);
 }
-
 // trim: remove trailing blanks, tabs, newlines
 int FUNCtrim(char s[])
 {
@@ -262,7 +240,6 @@ int FUNCtrim(char s[])
 	s[n+1] = '\0';
 	return n;
 }
-
 // larger number of two
 int FUNCpmax(int a1, int a2)
 {
@@ -274,7 +251,6 @@ int FUNCpmax(int a1, int a2)
 	}
 	return biggest;
 }
-
 // common divisor
 int FUNCgcd (int u, int v)
 {
@@ -286,7 +262,6 @@ int FUNCgcd (int u, int v)
 	}
 	return u;
 }
-
 // Function to convert a string to an integer
 int FUNCstrToInt (const char string[])
 {
@@ -297,7 +272,6 @@ int FUNCstrToInt (const char string[])
 	}
 	return result;
 }
-
 // filter
 uint8_t FUNCfilter(uint8_t mask, uint8_t data)
 {
@@ -305,7 +279,6 @@ uint8_t FUNCfilter(uint8_t mask, uint8_t data)
 	Z=mask & data;
 	return Z;
 }
-
 // ticks
 unsigned int FUNCticks(unsigned int num)
 {
@@ -314,7 +287,6 @@ unsigned int FUNCticks(unsigned int num)
 		;
 	return count;
 }
-
 // Two's Complement function
 int FUNCtwocomptoint8bit(int twoscomp){
   
@@ -336,7 +308,6 @@ int FUNCtwocomptoint8bit(int twoscomp){
     return value;
   }
 }
-
 // Two's Complement function, shifts 10 bit binary to signed integers (-512 to 512)
 int FUNCtwocomptoint10bit(int twoscomp){
 	
@@ -359,7 +330,6 @@ int FUNCtwocomptoint10bit(int twoscomp){
     return value;
   }
 }
-
 // Two's Complement function, nbits
 int FUNCtwocomptointnbit(int twoscomp, uint8_t nbits){
   unsigned int signmask;
@@ -375,19 +345,16 @@ int FUNCtwocomptointnbit(int twoscomp, uint8_t nbits){
   }
   return twoscomp;
 }
-
 // Convert Decimal to Binary Coded Decimal (BCD)
 char FUNCdec2bcd(char num)
 {
 	return ((num/10 * 16) + (num % 10));
 }
-
 // Convert Binary Coded Decimal (BCD) to Decimal
 char FUNCbcd2dec(char num)
 {
 	return ((num/16 * 10) + (num % 16));
 }
-
 char* FUNCresizestr(char *string, int size)
 {
 	int i;
@@ -403,9 +370,8 @@ char* FUNCresizestr(char *string, int size)
 	}
 	return FUNCstr;
 }
-
 /*
-** module procedure and function definitions
+** module procedure and function
 */
 // power: raise base to n-th power; n >= 0
 unsigned int Power(uint8_t base, uint8_t n)
@@ -416,7 +382,6 @@ unsigned int Power(uint8_t base, uint8_t n)
         p = p * base;
     return p;
 }
-
 // Function to count the number of characters in a string
 int StringLength (const char string[])
 {
@@ -425,7 +390,6 @@ int StringLength (const char string[])
 		++count;
 	return count;
 }
-
 // reverse: reverse string s in place
 void Reverse(char s[])
 {
@@ -436,7 +400,6 @@ void Reverse(char s[])
 		s[j] = c;
 	}
 }
-
 /*
 int gcd( int a, int b ) {
     int result ;
