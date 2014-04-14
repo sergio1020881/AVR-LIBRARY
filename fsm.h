@@ -1,5 +1,5 @@
 #ifndef FSM_H_
-#define FSM_H_
+	#define FSM_H_
 /************************************************************************
 Title:    FSM
 Author:   Sergio Salazar Santos <sergio1020881@gmail.com>
@@ -23,7 +23,6 @@ LICENSE:
     GNU General Public License for more details.
     
 ************************************************************************/
-
 /*
 ** constants and macros
 */
@@ -32,19 +31,15 @@ LICENSE:
 /*
 ** global variables
 */
-
-
 /*
 ** global prototypes
 */
-
 struct EFSM{
 	uint8_t sizeeeprom;
 	uint8_t sizeblock;
 	uint8_t page;
 	uint8_t record[5];
 	char type;
-	
 	/***PROTOTYPES VTABLE***/
 	uint8_t (*read)(struct EFSM* fsm, uint8_t input, uint8_t feedback);
 	int (*learn)(struct EFSM *r, uint8_t input, uint8_t next, uint8_t feedback);
@@ -57,7 +52,6 @@ struct EFSM{
 	uint8_t (*diff)(uint8_t xi, uint8_t xf);
 };
 typedef struct EFSM EFSM;
-
 struct SFSM{
 	uint8_t *eeprom;
 	unsigned int sizeeeprom;
@@ -66,7 +60,6 @@ struct SFSM{
 	uint8_t state[SFSM_PAGES];
 };
 typedef struct SFSM SFSM;
-
 struct LFSM{
 	int *eeprom;
 	unsigned int sizeeeprom;
@@ -75,21 +68,15 @@ struct LFSM{
 	int feedback;
 	int instruction;
 };
-
-
 /*
 ** global object function header
 */
-
 EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog );
-
 /*
 ** global function header
 */
 void SFSMinit(uint8_t *eeprom, unsigned int sizeeeprom);
 uint8_t sfsm_read(uint8_t input, uint8_t feedback, uint8_t page);
 uint8_t sfsm_state(uint8_t page);
-
 #endif // FSM_H_
-
 /***EOF***/
