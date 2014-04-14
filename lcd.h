@@ -25,7 +25,6 @@ LICENSE:
 COMMENT:
 	  tested atemga 128 16Mhz, Very Stable
 ************************************************************************/
-
 /*
 ** constants and macros
 */
@@ -38,47 +37,34 @@ COMMENT:
 #define DB1 5
 #define DB2 6
 #define DB3 7
-//CMD RS
-#define INST 0
-#define DATA 1
-
 /*
 ** global variables
 */
-
 /*
 ** global prototypes
 */
 struct display{
 	/******/
-	volatile uint8_t *DDR;
-	volatile uint8_t *PIN;
-	volatile uint8_t *PORT;
-	uint8_t detect;
-	/******/
 	unsigned int (*ticks)(unsigned int num);
-	void (*strobe)(struct display* lcd, unsigned int num);
-	void (*inic)(struct display* lcd);
-	void (*write)(struct display* lcd, char c, unsigned short D_I);
-	char (*read)(struct display* lcd, unsigned short D_I);
-	void (*BF)(struct display* lcd);
-	void (*putch)(struct display* lcd, char c);
-	char (*getch)(struct display* lcd);
-	void (*string)(struct display* lcd, const char *s);
-	void (*clear)(struct display* lcd);
-	void (*gotoxy)(struct display* lcd, unsigned int x, unsigned int y);
-	void (*reboot)(struct display *lcd);
+	void (*strobe)(unsigned int num);
+	void (*inic)(void);
+	void (*write)(char c, unsigned short D_I);
+	char (*read)(unsigned short D_I);
+	void (*BF)(void);
+	void (*putch)(char c);
+	char (*getch)(void);
+	void (*string)(const char *s);
+	void (*clear)(void);
+	void (*gotoxy)(unsigned int x, unsigned int y);
+	void (*reboot)(void);
 };
 typedef struct display LCD;
-
 /*
 ** global object function header
 */
 LCD LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
-
 /*
 ** global function header
 */
-
 #endif // LCD_H_
 /***EOF***/
