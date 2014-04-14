@@ -1,5 +1,5 @@
 #ifndef VFSM_H_
-#define VFSM_H_
+	#define VFSM_H_
 /************************************************************************
 Title:    VFSM
 Author:   Sergio Salazar Santos <sergio.salazar.santos@gmail.com>
@@ -26,51 +26,38 @@ COMMENT:
 	Very Stable
     
 ************************************************************************/
-
 /*
 ** constants and macros
 */
-
 /*
 ** global variables
 */
-
 /*
 ** global prototypes
 */
 struct VFSM{
 	uint8_t *eeprom;
 	unsigned int sizeeeprom;
-	unsigned int sizeblock;
 	uint8_t input;
-	
 	/***PROTOTYPES VTABLE***/
 	uint8_t (*read)(struct VFSM *r, uint8_t input, uint8_t output);
-	uint8_t (*diff)(uint8_t xi, uint8_t xf);
 };
-typedef struct VFSM VFSM;
-
 struct VLOGIC{
 	uint8_t *eeprom;
 	unsigned int sizeeeprom;
-	unsigned int sizeblock;
 	uint8_t input;
-	
 	/***PROTOTYPES VTABLE***/
 	uint8_t (*read)(struct VLOGIC *l, uint8_t input, uint8_t output);
-	uint8_t (*diff)(uint8_t xi, uint8_t xf);
 };
+typedef struct VFSM VFSM;
 typedef struct VLOGIC VLOGIC;
-
 /*
 ** global object function header
 */
 VFSM VFSMenable(uint8_t *veeprom, unsigned int sizeeeprom );
 VLOGIC VLOGICenable(uint8_t *veeprom, unsigned int sizeeeprom );
-
 /*
 ** global function header
 */
 #endif // FSM_H_
-
 /***EOF***/
