@@ -4,32 +4,21 @@
  * Created: 13-04-2014
  * Author: SERGIO MANUEL SANTOS
  */ 
-
 /*
 ** TYPE OF CHIP
 */
 //Atmega 128 at 16MHZ
 #define F_CPU 16000000UL
-
 /*
 ** Library
 */
 #include <avr/io.h>
-
 /*
 ** constants and macros
 */
 #define TRUE 1
 #define FALSE 0
 #define GI 7
-
-// INPUT
-#define timertrigger 0x10
-
-// OUTPUT
-#define timerstart 0x10
-#define timerstop 0x20
-
 /*
 ** Private Library
 */
@@ -41,7 +30,6 @@
 #include "analog.h"
 #include "i2c.h"
 #include "timer.h"
-
 /*
 ** global variables
 */
@@ -87,18 +75,13 @@ uint8_t memoria_7[9]={
 10,			1,			6,
 9,			1,			5
 };
-
-uint8_t i2c_read_value;
-
 /*
 ** Procedure and Funtion Main Prototypes
 */
 void PORTINIT();
-
 int main(void)
 {
 	PORTINIT();
-	
 	/***INICIALIZE OBJECTS***/
 	FUNC function= FUNCenable();
 	LCD lcd = LCDenable(&DDRA,&PINA,&PORTA);
@@ -112,52 +95,44 @@ int main(void)
 	VFSM button_7 = VFSMenable(memoria_7,9);
 	//I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	TIMER0 timer0 = TIMER0enable(0,0,255,3);
-	
+	TIMER0 timer0 = TIMER0enable(0,0,3);
 	uart.puts("OLA SERGIO !!");
 	/******/
 	char tmp[16];
 	int entrada;
 	uint8_t vmfsm[7];
-	
 	while(TRUE){
-		lcd.reboot(&lcd);
+		lcd.reboot();
 		//ignore cancel stop enter delete run
 		//TODO:: Please write your application code
 		entrada=PINB;
-		
-		lcd.gotoxy(&lcd,0,0);
+		lcd.gotoxy(0,0);
 		function.itoa(entrada,tmp);
-		lcd.string(&lcd,function.resizestr(tmp,3));
-		
-		lcd.gotoxy(&lcd,4,0);
+		lcd.string(function.resizestr(tmp,3));
+		lcd.gotoxy(4,0);
 		function.itoa(PORTC,tmp);
-		lcd.string(&lcd,function.resizestr(tmp,3));
-		
-		lcd.gotoxy(&lcd,8,0);
+		lcd.string(function.resizestr(tmp,3));
+		lcd.gotoxy(8,0);
 		function.itoa(analog.read(0),tmp);
-		lcd.string(&lcd,function.resizestr(tmp,4));
-		
+		lcd.string(function.resizestr(tmp,4));
 		vmfsm[0]=button_1.read(&button_1, entrada & 1, (PINC & 15));//1
 		vmfsm[1]=button_2.read(&button_2, entrada & 3, vmfsm[0]);//3
 		vmfsm[2]=button_3.read(&button_3, entrada & 5, vmfsm[1]);//5
 		vmfsm[3]=button_4.read(&button_4, entrada & 7, vmfsm[2]);//2
 		vmfsm[4]=button_5.read(&button_5, entrada & 2, vmfsm[3]);//4
 		vmfsm[5]=button_6.read(&button_6, entrada & 4, vmfsm[4]);//4
-		vmfsm[6]=button_7.read(&button_7, timer0.cmpm(&timer0,1000) & 1, vmfsm[5]);
+		vmfsm[6]=button_7.read(&button_7, timer0.cmpm(100) & 1, vmfsm[5]);
 		PORTC =	vmfsm[6];
-		
 		/***TIMER***/
 		if(vmfsm[6]==10 || vmfsm[6]==9 || vmfsm[6]==0){
-			timer0.start(&timer0, 1024);
+			timer0.start(255, 1024);
 		}else{
-			timer0.stop(&timer0);
+			timer0.stop();
 		}
-		lcd.gotoxy(&lcd,0,1);
-		lcd.string(&lcd,function.resizestr(uart.read(),16));
+		lcd.gotoxy(0,1);
+		lcd.string(function.resizestr(uart.read(),16));
 	} 
 }
-
 /*
 ** Procedure and Funtion Definitions
 */
@@ -170,11 +145,9 @@ void PORTINIT()
 	PORTB=0XFF;
 	DDRD=0X00;
 	PORTD=0XFF;
-	
 	//OUTPUT
 	DDRC=0XFF;
 	PORTC=0x00;
-	
 	//UART0
 	//DDRE=0X02;
 	SREG|=(1<<GI);
