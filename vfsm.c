@@ -32,95 +32,75 @@ COMMENT:
 	Very Stable
                         
 *************************************************************************/
-
 //MADE TO WORK IN ANY MCU FROM ATMEL AVR
-
 /*
 ** Library
 */
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <avr/eeprom.h>
-
 /*
 ** Private Library
 */
 #include "vfsm.h"
-
 /*
 **  module constants and macros
 */
 #define VFSM_SIZE_BLOCK 3
 #define VLOGIC_SIZE_BLOCK 3
-
 /*
 ** module variables
 */
-
 /*
-** module function header
+** module function definitions
 */
-uint8_t VFSM_diff(uint8_t xi, uint8_t xf);
-
+uint8_t VFSM_read(struct VFSM *r, uint8_t input, uint8_t output);
+uint8_t VLOGIC_read(struct VLOGIC *l, uint8_t input, uint8_t output);
 /*
-** module interrupt header
+** module interrupt definitions
 */
 /***************************************************************************************
 ****************************************************************************************/
 /*
 ** module procedure and function definitions
 */
-
 /*
 **  module object 1 constructor
 */
 struct VFSM VFSMenable(uint8_t *veeprom, unsigned int sizeeeprom)
 {
 	unsigned int cells;
-	//uint8_t i;
-	/***Declare Functions***/
-	uint8_t VFSM_read(struct VFSM *r, uint8_t input, uint8_t output);
 	//struct
-	struct VFSM fsm;
+	VFSM fsm;
 	//Init vars
 	fsm.eeprom=veeprom;
-	fsm.sizeblock=VFSM_SIZE_BLOCK;
-	cells=sizeeeprom/fsm.sizeblock;
-	fsm.sizeeeprom=cells*fsm.sizeblock;
+	cells=sizeeeprom/VFSM_SIZE_BLOCK;
+	fsm.sizeeeprom=cells*VFSM_SIZE_BLOCK;
 	fsm.input=0;
-	//for(i=0;i<VFSM_PAGES;i++)
-		//fsm.output[i]=0;
 	//function pointers
 	fsm.read=VFSM_read;
-	fsm.diff=VFSM_diff;
 	/******/
 	return fsm;
 }
-
 /*
 **  module object 2 constructor
 */
 struct VLOGIC VLOGICenable(uint8_t *veeprom, unsigned int sizeeeprom)
 {
 	unsigned int cells;
-	//uint8_t i;
-	/***Declare Functions***/
-	uint8_t VLOGIC_read(struct VLOGIC *l, uint8_t input, uint8_t output);
 	//struct
-	struct VLOGIC logic;
+	VLOGIC logic;
 	//Init vars
 	logic.eeprom=veeprom;
-	logic.sizeblock=VLOGIC_SIZE_BLOCK;
-	cells=sizeeeprom/logic.sizeblock;
-	logic.sizeeeprom=cells*logic.sizeblock;
+	cells=sizeeeprom/VLOGIC_SIZE_BLOCK;
+	logic.sizeeeprom=cells*VLOGIC_SIZE_BLOCK;
 	logic.input=0;
-	//for(i=0;i<VFSM_PAGES;i++)
-		//fsm.output[i]=0;
 	//function pointers
 	logic.read=VLOGIC_read;
-	logic.diff=VFSM_diff;
 	/******/
 	return logic;
 }
-
 /*
 ** module object 1 procedures and function definitions
 */
@@ -129,14 +109,13 @@ uint8_t VFSM_read(struct VFSM *r, uint8_t input, uint8_t output)
 {
 	unsigned int i1;
 	unsigned int i2;
-	uint8_t block[r->sizeblock];
+	uint8_t block[VFSM_SIZE_BLOCK];
 	uint8_t ByteofData;
 	int keyfound;
-	
 	if(r->input!=input){
-		for(i1=0;i1<r->sizeeeprom;i1+=r->sizeblock){
+		for(i1=0;i1<r->sizeeeprom;i1+=VFSM_SIZE_BLOCK){
 			ByteofData=*(r->eeprom+i1);
-			for(i2=0;i2<r->sizeblock;i2++){ // get block from eeprom
+			for(i2=0;i2<VFSM_SIZE_BLOCK;i2++){ // get block from eeprom
 				ByteofData=*(r->eeprom+(i1+i2));
 				block[i2]=ByteofData;
 			}
@@ -154,7 +133,6 @@ uint8_t VFSM_read(struct VFSM *r, uint8_t input, uint8_t output)
 	// printf("Eoutput -> %d\n",r->present);
 	return output;
 }
-
 /*
 ** module object 2 procedures and function definitions
 */
@@ -163,13 +141,12 @@ uint8_t VLOGIC_read(struct VLOGIC *l, uint8_t input, uint8_t output)
 {
 	unsigned int i1;
 	unsigned int i2;
-	uint8_t block[l->sizeblock];
+	uint8_t block[VLOGIC_SIZE_BLOCK];
 	uint8_t ByteofData;
 	int keyfound;
-	
-	for(i1=0;i1<l->sizeeeprom;i1+=l->sizeblock){
+	for(i1=0;i1<l->sizeeeprom;i1+=VLOGIC_SIZE_BLOCK){
 		ByteofData=*(l->eeprom+i1);
-		for(i2=0;i2<l->sizeblock;i2++){ // get block from eeprom
+		for(i2=0;i2<VLOGIC_SIZE_BLOCK;i2++){ // get block from eeprom
 			ByteofData=*(l->eeprom+(i1+i2));
 			block[i2]=ByteofData;
 		}
@@ -183,16 +160,9 @@ uint8_t VLOGIC_read(struct VLOGIC *l, uint8_t input, uint8_t output)
 	}
 	return output;
 }
-
 /*
 ** modules global use functions
 */
-/***diff***/
-uint8_t VFSM_diff(uint8_t xi, uint8_t xf)
-{
-	return xf^xi;
-}
-
 /*
 ** module interrupts
 */
