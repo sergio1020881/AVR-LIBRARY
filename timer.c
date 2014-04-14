@@ -1,9 +1,10 @@
-/*
- * timer.c
- *
- * Created: 09-04-2014 14:30:00
- *  Author: SERGIO
- */ 
+/***********************************
+timer.c
+Created: 09-04-2014 14:30:00
+Author: SERGIO
+COMMENT:
+	Very Stable
+***********************************/ 
 // atmega 128 at 16MHZ
 #ifndef F_CPU
   #define F_CPU 16000000UL
@@ -27,17 +28,23 @@
  || defined(__AVR_AT90S4414__) || defined(__AVR_AT90S4434__) \
  || defined(__AVR_AT90S8515__) || defined(__AVR_AT90S8535__) \
  || defined(__AVR_ATmega103__)
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 2***/
 #elif defined(__AVR_AT90S2333__) || defined(__AVR_AT90S4433__)
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 3***/
 #elif  defined(__AVR_ATmega8__)  || defined(__AVR_ATmega16__) || defined(__AVR_ATmega32__) \
   || defined(__AVR_ATmega323__)
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 4***/
 #elif  defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__)
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 5***/
 #elif defined(__AVR_ATmega163__)
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 6***/
 #elif defined(__AVR_ATmega162__)
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 7***/
 #elif defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
 #define TIMER0_CONTROL TCCR0
@@ -51,7 +58,7 @@
 #define TIMER0_OVERFLOW_INTERRUPT TIMER0_OVF_vect
 /***TYPE 8***/
 #elif defined(__AVR_ATmega161__)
- #error "AVR ATmega161 currently not supported by this libaray !"
+	#error "AVR currently not supported by this libaray !"
 /***TYPE 9***/
 #elif defined(__AVR_ATmega169__)
 /***TYPE 10***/
@@ -91,9 +98,16 @@
 /*
 **  module variables
 */
+unsigned char timer0_state;
+unsigned char timer0_compare;
+unsigned int timer0_prescaler;
 /*
 ** module function header
 */
+void TIMER0_start(unsigned char compare, unsigned int prescaler);
+uint8_t TIMER0_cmpm(unsigned int multiplier);
+uint8_t TIMER0_ovfm(unsigned int multiplier);
+void TIMER0_stop(void);
 /*
 ** module interrupt header
 */
@@ -102,12 +116,8 @@ ISR(TIMER0_OVERFLOW_INTERRUPT);
 /*
 ** module procedure and function definitions
 */
-TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsigned char compare, unsigned char interrupt)
+TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsigned char interrupt)
 {
-	void TIMER0_start(struct TIMER0* timer0, unsigned int prescaler);
-	uint8_t TIMER0_cmpm(struct TIMER0* timer0, unsigned int multiplier);
-	uint8_t TIMER0_ovfm(struct TIMER0* timer0, unsigned int multiplier);
-	void TIMER0_stop(struct TIMER0* timer0);
 	//
 	TIMER0_COMPARE_MATCH=0;
 	TIMER0_OVERFLOW=0;
@@ -115,9 +125,8 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	struct TIMER0 timer0;
 	timer0.wavegenmode=wavegenmode;
 	timer0.compoutmode=compoutmode;
-	timer0.compare=compare;
 	timer0.interrupt=interrupt;
-	timer0.state=0;
+	timer0_state=0;
 	//
 	switch(timer0.wavegenmode){
 		case 0: // Normal
@@ -162,9 +171,8 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 			TIMER0_CONTROL&=~((1<<COM00) | (1<<COM01));
 			break;
 	}
-	timer0.prescaler=0x00;
 	TIMER0_CONTROL&=~(7<<CS0);
-	TIMER0_COMPARE=timer0.compare;
+	TIMER0_COMPARE=0;
 	switch(timer0.interrupt){
 		// Timer/Counter0 Output Compare Match Interrupt Enable
 		// TOIE0: Timer/Counter0 Overflow Interrupt Enable
@@ -197,11 +205,13 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	//
 	return timer0;
 }
-void TIMER0_start(struct TIMER0* timer0, unsigned int prescaler)
+void TIMER0_start(unsigned char compare, unsigned int prescaler)
 {
-	if(timer0->state==0){ // oneshot
-		timer0->prescaler=prescaler;
-		switch(timer0->prescaler){
+	if(timer0_state==0){ // oneshot
+		timer0_compare=compare;
+		TIMER0_COMPARE=timer0_compare;
+		timer0_prescaler=prescaler;
+		switch(timer0_prescaler){
 			case 1: // clk T0S /(No prescaling)
 				TIMER0_CONTROL|=(1<<(CS00));
 				TIMER0_CONTROL&=~(3<<(CS01));
@@ -236,33 +246,33 @@ void TIMER0_start(struct TIMER0* timer0, unsigned int prescaler)
 		TIMER0_COMPARE_MATCH=0;
 		TIMER0_OVERFLOW=0;
 		TIMER0_COUNTER=0X00;
-		timer0->state=1;
+		timer0_state=1;
 	}	
 }
-void TIMER0_stop(struct TIMER0* timer0)
+void TIMER0_stop(void)
 {
 	TIMER0_CONTROL&=~(7<<CS0);
 	TIMER0_COMPARE_MATCH=0;
 	TIMER0_OVERFLOW=0;
 	TIMER0_COUNTER=0X00;
-	timer0->state=0;
+	timer0_state=0;
 }
-uint8_t TIMER0_cmpm(struct TIMER0* timer0, unsigned int multiplier)
+uint8_t TIMER0_cmpm(unsigned int multiplier)
 {
 	uint8_t ret;
 	if(TIMER0_COMPARE_MATCH > multiplier){
 		ret=1;
-		timer0->stop(timer0);
+		TIMER0_stop();
 	}else
 		ret=0;
 	return ret;
 }
-uint8_t TIMER0_ovfm(struct TIMER0* timer0, unsigned int multiplier)
+uint8_t TIMER0_ovfm(unsigned int multiplier)
 {
 	uint8_t ret;
 	if(TIMER0_OVERFLOW > multiplier){
 		ret=1;
-		timer0->stop(timer0);
+		TIMER0_stop();
 	}else
 		ret=0;
 	return ret;
