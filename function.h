@@ -25,21 +25,16 @@ COMMENT:
 	Very Stable
     
 ************************************************************************/
-
 /*
 ** constants and macros
 */
-
 /*
 ** global variables
 */
-char FUNCstr[16];
-
 /*
 ** global prototypes
 */
 struct FUNC{
-	
 	/***PROTOTYPES VTABLE***/
 	unsigned int (*power)(uint8_t base, uint8_t n);
 	int (*stringlength)(const char string[]);
@@ -69,12 +64,10 @@ struct FUNC{
 	char* (*resizestr)(char *string, int size);
 };
 typedef struct FUNC FUNC;
-
 /*
 ** global object function header
 */
 FUNC FUNCenable( void );
-
 /*
 ** global function header
 */
