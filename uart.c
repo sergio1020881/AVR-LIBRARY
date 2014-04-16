@@ -1091,10 +1091,10 @@ Purpose:  called when the UART1 has received a character
         UART1_RxHead = tmphead;
 		if(lastRxError){
 			/* store received data in buffer */
-			UART_RxBuf[tmphead] = 'X';
+			UART1_RxBuf[tmphead] = 'X';
 		}else{
 			/* store received data in buffer */
-			UART_RxBuf[tmphead] = data;
+			UART1_RxBuf[tmphead] = data;
 		}		
     }
     UART1_LastRxError = lastRxError;   
