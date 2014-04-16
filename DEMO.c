@@ -28,7 +28,7 @@
 #include "fsm.h"
 #include "vfsm.h"
 #include "analog.h"
-#include "i2c.h"
+//#include "i2c.h"
 #include "timer.h"
 /*
 ** global variables
@@ -85,7 +85,7 @@ int main(void)
 	/***INICIALIZE OBJECTS***/
 	FUNC function= FUNCenable();
 	LCD lcd = LCDenable(&DDRA,&PINA,&PORTA);
-	UART uart= UARTenable(103,8,1,NONE);//103 para 9600, 68 para 14400
+	UART1 uart= UART1enable(103,8,1,NONE);//103 para 9600, 68 para 14400
 	VFSM button_1 = VFSMenable(memoria_1,18);
 	VFSM button_2 = VFSMenable(memoria_2,3);
 	VFSM button_3 = VFSMenable(memoria_3,3);
@@ -112,8 +112,11 @@ int main(void)
 		lcd.gotoxy(4,0);
 		function.itoa(PORTC,tmp);
 		lcd.string(function.resizestr(tmp,3));
-		lcd.gotoxy(8,0);
+		lcd.gotoxy(12,0);
 		function.itoa(analog.read(0),tmp);
+		lcd.string(function.resizestr(tmp,4));
+		lcd.gotoxy(12,1);
+		function.itoa(analog.read(2),tmp);
 		lcd.string(function.resizestr(tmp,4));
 		vmfsm[0]=button_1.read(&button_1, entrada & 1, (PINC & 15));//1
 		vmfsm[1]=button_2.read(&button_2, entrada & 3, vmfsm[0]);//3
@@ -130,7 +133,7 @@ int main(void)
 			timer0.stop();
 		}
 		lcd.gotoxy(0,1);
-		lcd.string(function.resizestr(uart.read(),16));
+		lcd.string(function.resizestr(uart.read(),12));
 	} 
 }
 /*
