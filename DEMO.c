@@ -28,7 +28,7 @@
 #include "fsm.h"
 #include "vfsm.h"
 #include "analog.h"
-//#include "i2c.h"
+#include "i2c.h"
 #include "timer.h"
 /*
 ** global variables
@@ -93,7 +93,7 @@ int main(void)
 	VLOGIC button_5 = VLOGICenable(memoria_5,3);
 	VLOGIC button_6 = VLOGICenable(memoria_6,3);
 	VFSM button_7 = VFSMenable(memoria_7,9);
-	//I2C i2c = I2Cenable(85, 1);
+	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
 	TIMER0 timer0 = TIMER0enable(0,0,3);
 	uart.puts("OLA SERGIO !!");
@@ -134,6 +134,11 @@ int main(void)
 		}
 		lcd.gotoxy(0,1);
 		lcd.string(function.resizestr(uart.read(),12));
+		/***/
+		i2c.start();
+		i2c.connect(10,TWI_WRITE);
+		i2c.write('h');
+		i2c.stop();
 	} 
 }
 /*
