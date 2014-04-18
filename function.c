@@ -91,7 +91,7 @@ char* FUNCresizestr(char *string, int size);
 ** module interrupt definitions
 */
 /*
-**  module object 1 constructor
+**  module constructor
 */
 struct FUNC FUNCenable( void )
 {
@@ -132,7 +132,7 @@ struct FUNC FUNCenable( void )
 	return func;
 }
 /*
-** module object 1 procedure and function
+** module procedure and function
 */
 // mayia
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
