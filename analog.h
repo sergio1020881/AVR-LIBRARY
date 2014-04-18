@@ -46,11 +46,11 @@ struct ANALOG{
 };
 typedef struct ANALOG ANALOG;
 /*
-** global object function prototypes
+** global function definitions
 */
 ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... );
 /*
-** global function prototypes
+** global interrupts
 */
 #endif // ANALOG_H
 /***EOF***/
