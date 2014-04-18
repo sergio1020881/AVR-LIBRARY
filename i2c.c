@@ -88,32 +88,25 @@ COMMENT:
 // Data byte will be received and ACK will be returned
 #define TWI_MASTER_RECEIVED_DATABYTE_SENT_NACK 0X58 // Data byte has been received; NOT ACK has been returned
 // Repeated START will be transmitted
-// STOP condition will be transmitted and TWSTO flag will
-// be reset
-// STOP condition followed by a START condition will be
-//transmitted and TWSTO flag will be reset
+// STOP condition will be transmitted and TWSTO flag will be reset
+// STOP condition followed by a START condition will be transmitted and TWSTO flag will be reset
 /*
 ** Status Codes for SLAVE Receiver Mode
 */
 #define TWI_SLAVE_RECEIVED_OSLA_W_SENT_ACK 0X60 // Own SLA+W has been received; ACK has been returned
-// Data byte will be received and NOT ACK will be
-// returned
+// Data byte will be received and NOT ACK will be returned
 // Data byte will be received and ACK will be returned
 #define TWI_SLAVE_MARBL_RECEIVED_OSLA_W_SENT_ACK 0X68 // Arbitration lost in SLA+R/W as master; own SLA+W has been received; ACK has been returned
-// Data byte will be received and NOT ACK will be
-// returned
+// Data byte will be received and NOT ACK will be returned
 // Data byte will be received and ACK will be returned
 #define TWI_SLAVE_RECEIVED_GCALL_SENT_ACK 0X70 // General call address has been received; ACK has been returned
-// Data byte will be received and NOT ACK will be
-// returned
+// Data byte will be received and NOT ACK will be returned
 // Data byte will be received and ACK will be returned
 #define TWI_SLAVE_MARBL_RECEIVED_GCALL_SENT_ACK 0X78 // Arbitration lost in SLA+R/W as master; General call address has been received; ACK has been returned
-// Data byte will be received and NOT ACK will be
-// returned
+// Data byte will be received and NOT ACK will be returned
 // Data byte will be received and ACK will be returned
 #define TWI_SLAVE_PAOSLA_W_RECEIVED_DATABYTE_SENT_ACK 0X80 // Previously addressed with own SLA+W; data has been received; ACK has been returned
-// Data byte will be received and NOT ACK will be
-// returned
+// Data byte will be received and NOT ACK will be returned
 // Data byte will be received and ACK will be returned
 #define TWI_SLAVE_PAOSLA_W_RECEIVED_DATABYTE_SENT_NACK 0X88 // Previously addressed with own SLA+W; data has been received; NOT ACK has been returned
 // Switched to the not addressed slave mode;
@@ -131,8 +124,7 @@ COMMENT:
 // a START condition will be transmitted when the bus
 // becomes free
 #define TWI_SLAVE_PGCALL_RECEIVE_DATABYTE_SENT_ACK 0X90 // Previously addressed with general call; data has been received; ACK has been returned
-// Data byte will be received and NOT ACK will be
-// returned
+// Data byte will be received and NOT ACK will be returned
 // Data byte will be received and ACK will be returned
 #define TWI_SLAVE_PGCALL_RECEIVE_DATABYTE_SENT_NACK 0X98 // Previously addressed with general call; data has been received; NOT ACK has been returned
 // Switched to the not addressed slave mode;
@@ -168,16 +160,13 @@ COMMENT:
 ** Status Codes for Slave Transmitter Mode
 */
 #define TWI_SLAVE_RECEIVED_OSLA_R_SENT_ACK 0XA8 // Own SLA+R has been received; ACK has been returned
-// Last data byte will be transmitted and NOT ACK should
-// be received
+// Last data byte will be transmitted and NOT ACK should be received
 // Data byte will be transmitted and ACK should be received
 #define TWI_SLAVE_MARBL_RECEIVED_OSLA_R_SENT_ACK 0XB0 // Arbitration lost in SLA+R/W as master; own SLA+R has been received; ACK has been returned
-// Last data byte will be transmitted and NOT ACK should
-// be received
+// Last data byte will be transmitted and NOT ACK should be received
 // Data byte will be transmitted and ACK should be received
 #define TWI_SLAVE_SENT_DATABYTE_RECEIVED_ACK 0XB8 // Data byte in TWDR has been transmitted; ACK has been received
-// Last data byte will be transmitted and NOT ACK should
-// be received
+// Last data byte will be transmitted and NOT ACK should be received
 // Data byte will be transmitted and ACK should be received
 #define TWI_SLAVE_SENT_DATABYTE_RECEIVED_NACK 0XC0 // Data byte in TWDR has been transmitted; NOT ACK has been received
 // Switched to the not addressed slave mode;
@@ -212,9 +201,7 @@ COMMENT:
 #define TWI_TWINT_AT_ZERO 0XF8 // No relevant state information available; TWINT = “0”
 // Wait or proceed current transfer
 #define TWI_BUS_ERROR 0X00 // Bus error due to an illegal START or STOP condition
-// Only the internal hardware is affected, no STOP condi-
-// tion is sent on the bus. In all cases, the bus is released
-// and TWSTO is cleared.
+// Only the internal hardware is affected, no STOP condi-tion is sent on the bus. In all cases, the bus is released and TWSTO is cleared.
 /*******************************************************************************/
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
@@ -261,15 +248,17 @@ COMMENT:
 /*
 ** module variables
 */
+unsigned char twi_chip_id;
 /*
 ** module function definitions
 */
 void twi_transmit(unsigned char type);
 unsigned char twi_status(void);
-void twi_start(void);
+void twi_poll(unsigned int ticks);
+void twi_start(unsigned char mode);
 void twi_connect(unsigned char addr, unsigned char rw);
 void twi_write(unsigned char data);
-unsigned char twi_read(void);
+unsigned char twi_read(unsigned char request);
 void twi_stop(void);
 /*
 ** module interrupt definition
@@ -294,11 +283,10 @@ struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 	i2c.stop=twi_stop;
 	/***/
 	if(device_id>0 && device_id<128){
-		i2c.id=(unsigned char)(device_id<<TWA0);
-		TWI_ADDRESS_REGISTER=i2c.id;
+		twi_chip_id = device_id;
+		TWI_ADDRESS_REGISTER = (twi_chip_id<<TWA0) | (1<<TWGCE);
 	}else{
-		i2c.id=(1<<TWA0);;
-		TWI_ADDRESS_REGISTER = i2c.id;
+		twi_chip_id=(1<<TWA0);
 	}
 	/***Pre-Processor Case 1***/
 	#if defined( MEGA_I2C )
@@ -317,11 +305,6 @@ struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 			break;
 	}
 	I2C_BIT_RATE = ((F_CPU/I2C_SCL_CLOCK)-16)/(2*prescaler);
-	// enable TWI (two-wire interface)
-	//TWI_CONTROL_REGISTER |= ( 1<<TWEN );
-	// enable TWI interrupt and slave address ACK
-	TWI_CONTROL_REGISTER |= ( 1<<TWIE );
-	//TWI_CONTROL_REGISTER |= ( 1<<TWEA );
 	/***Pre-Processor Case 2***/
 	#elif defined( ATMEGA_I2C )
 		I2C_DDR |= 0X03;
@@ -345,11 +328,6 @@ struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 			break;
 	}
 	TWI_BIT_RATE_REGISTER = ((F_CPU/I2C_SCL_CLOCK)-16)/(2*prescaler);
-	// enable TWI (two-wire interface)
-	//TWI_CONTROL_REGISTER |= ( 1<<TWEN );
-	// enable TWI interrupt and slave address ACK
-	TWI_CONTROL_REGISTER |= ( 1<<TWIE );
-	//TWI_CONTROL_REGISTER |= ( 1<<TWEA );
 	#endif
 	SREG=tSREG;
 	SREG |= (1<<GLOBAL_INTERRUPT_ENABLE);
@@ -378,24 +356,31 @@ void twi_transmit(unsigned char type)
 			TWI_CONTROL_REGISTER = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
 			break;
 	}
-	//while (!(TWI_CONTROL_REGISTER & (1 << TWINT))); // POLLING
 }
 unsigned char twi_status(void){
 	unsigned char status;
 	status = TWI_STATUS_REGISTER & TWI_STATUS_MASK;
 	return status;
 }
-void twi_start(void)
+void twi_poll(unsigned int ticks)
 {
-	unsigned int delay;
-	twi_transmit(TWI_START_CONDITION);
-	for(delay=0;!(TWI_CONTROL_REGISTER & (1<<TWINT));delay++) // polling.
-		if(delay > 680)
+	unsigned int i;
+	for(i=0;!(TWI_CONTROL_REGISTER & (1<<TWINT));i++) // polling.
+		if(i > ticks)
 			break;
+}
+void twi_start(unsigned char mode)
+{
+	if(mode){
+		TWI_CONTROL_REGISTER = (1<<TWEA) | (1<<TWEN) | (1<<TWIE);
+		TWI_CONTROL_REGISTER &= ~((1<<TWSTA) | (1<<TWSTO));
+	}else{
+		twi_transmit(TWI_START_CONDITION);
+		twi_poll(680);
+	}	
 }
 void twi_connect(unsigned char addr, unsigned char rw)
 {
-	unsigned int delay;
 	switch(twi_status()){
 		case TWI_SENT_START:
 			TWI_CONTROL_REGISTER &= ~(1<<TWSTA);
@@ -405,58 +390,95 @@ void twi_connect(unsigned char addr, unsigned char rw)
 				TWI_DATA_REGISTER=0;
 			}
 			twi_transmit(TWI_DATA_NO_ACK);
+			twi_poll(680);
 			break;
 		default:
 			break;
 	}
-	for(delay=0;!(TWI_CONTROL_REGISTER & (1<<TWINT));delay++) // polling.
-		if(delay > 680)
-			break;
 }
 void twi_write(unsigned char data)
 {
-	unsigned int delay;
 	switch(twi_status()){
 		case TWI_MASTER_SENT_SLA_W_RECEIVED_ACK:
 			TWI_DATA_REGISTER=data; // 8 bit data + ack = 9bit
 			twi_transmit(TWI_DATA_NO_ACK);
+			twi_poll(680);
 			break;
-		case TWI_MASTER_RECEIVED_DATABYTE_SENT_ACK:
+		case TWI_MASTER_SENT_DATABYTE_RECEIVED_ACK:
 			TWI_DATA_REGISTER=data; // 8 bit data + ack = 9bit
 			twi_transmit(TWI_DATA_NO_ACK);
+			twi_poll(680);
+			break;
+		default:
 			break;
 	}					
-	for(delay=0;!(TWI_CONTROL_REGISTER & (1<<TWINT));delay++) // polling.
-		if(delay > 680)
-			break;
 }
-unsigned char twi_read(void)
+unsigned char twi_read(unsigned char request)
 {
-	unsigned char data='0';
-	unsigned int delay;
+	unsigned char data='X';
 	switch(twi_status()){
 		case TWI_MASTER_SENT_SLA_R_RECEIVED_ACK:
-			data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
-			twi_transmit(TWI_DATA_NO_ACK);
-			break;
+			switch(request){
+				case TWI_DATA_ACK:
+					twi_transmit(TWI_DATA_ACK);
+					twi_poll(680);
+					data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+					break;
+				case TWI_DATA_NO_ACK:
+					twi_transmit(TWI_DATA_NO_ACK); // last byte to read
+					twi_poll(680);
+					data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+					break;
+				default:
+					twi_transmit(TWI_DATA_NO_ACK); // last byte to read
+					twi_poll(680);
+					data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+					break;
+			}
 		case TWI_MASTER_RECEIVED_DATABYTE_SENT_ACK:
-			data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
-			twi_transmit(TWI_DATA_NO_ACK);
+			switch(request){
+				case TWI_DATA_ACK:
+					twi_transmit(TWI_DATA_ACK);
+					twi_poll(680);
+					data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+					break;
+				case TWI_DATA_NO_ACK:
+					twi_transmit(TWI_DATA_NO_ACK); // last byte to read
+					twi_poll(680);
+					data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+					break;
+				default:
+					twi_transmit(TWI_DATA_NO_ACK); // last byte to read
+					twi_poll(680);
+					data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+					break;
+			}
+		default:
 			break;
-	}					
-	for(delay=0;!(TWI_CONTROL_REGISTER & (1<<TWINT));delay++) // polling.
-		if(delay > 680)
-			break;
+	}
 	return data;
 }
 void twi_stop(void)
 {
 	switch(twi_status()){
-		case TWI_MASTER_SENT_DATABYTE_RECEIVED_ACK:
-			TWI_CONTROL_REGISTER=(1<<TWIE);
+		case TWI_MASTER_SENT_SLA_W_RECEIVED_NACK:
+			//TWI_DATA_REGISTER=data; // 8 bit data + ack = 9bit
 			twi_transmit(TWI_STOP_CONDITION);
-		case TWI_MASTER_RECEIVED_DATABYTE_SENT_ACK:
-			TWI_CONTROL_REGISTER=(1<<TWIE);
+			break;
+		case TWI_MASTER_SENT_DATABYTE_RECEIVED_NACK:
+			//TWI_DATA_REGISTER=data; // 8 bit data + ack = 9bit
+			twi_transmit(TWI_STOP_CONDITION);
+			break;
+		case TWI_MASTER_SENT_SLA_R_RECEIVED_NACK:
+			//data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+			twi_transmit(TWI_STOP_CONDITION);
+			break;
+		case TWI_MASTER_RECEIVED_DATABYTE_SENT_NACK:
+			//data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
+			twi_transmit(TWI_STOP_CONDITION);
+			break;
+		case TWI_ARBL_NACK:
+			//data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
 			twi_transmit(TWI_STOP_CONDITION);
 			break;
 		default:
@@ -470,6 +492,12 @@ void twi_stop(void)
 //! I2C (TWI) interrupt service routine
 SIGNAL(SIG_2WIRE_SERIAL)
 {
-	//EMPTY
+	/***SLAVE CODE***/
+	switch(twi_status()){
+		case TWI_SLAVE_RECEIVED_OSLA_W_SENT_ACK:
+			break;
+		default:
+			break;
+	}
 }
 /***EOF***/
