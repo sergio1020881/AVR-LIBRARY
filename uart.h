@@ -124,7 +124,6 @@ COMMENT:
  *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
  */
 #define UART_BAUD_SELECT(baudRate,xtalCpu) ((xtalCpu)/((baudRate)*16l)-1)
-
 /** @brief  UART Baudrate Expression for ATmega double speed mode
  *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz           
  *  @param  baudrate baudrate in bps, e.g. 1200, 2400, 9600     
@@ -162,7 +161,6 @@ struct UART{
 	unsigned int FDbits;
 	unsigned int Stopbits;
 	unsigned int Parity;
-	
 	// prototype pointers
 	char* (*read)(void);
 	unsigned int (*getc)(void);
@@ -170,8 +168,6 @@ struct UART{
 	void (*puts)(const char *s );
 	int (*available)(void);
 	void (*flush)(void);
-	uint8_t (*tail)(void);
-	uint8_t (*head)(void);
 };
 typedef struct UART UART;
 struct UART1{
@@ -180,7 +176,6 @@ struct UART1{
 	unsigned int FDbits;
 	unsigned int Stopbits;
 	unsigned int Parity;
-	
 	//prototype pointers
 	char* (*read)(void);
 	unsigned int (*getc)(void);
@@ -188,25 +183,19 @@ struct UART1{
 	void (*puts)(const char *s );
 	int (*available)(void);
 	void (*flush)(void);
-	uint8_t (*tail)(void);
-	uint8_t (*head)(void);
 };
 typedef struct UART1 UART1;
 /*
-** global object function prototypes
+** global procedure and function
 */
 UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
 UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
-/*
-** global function prototypes
-*/
 /**
    @brief   Initialize UART and set baudrate 
    @param   baudrate Specify baudrate using macro UART_BAUD_SELECT()
    @return  none
 */
 //extern void uart_init(unsigned int baudrate);
-
 /**
  *  @brief   Get received byte from ringbuffer
  *
@@ -266,7 +255,6 @@ extern void uart_puts_p(const char *s );
  * @brief    Macro to automatically put a string constant into program memory
  */
 #define uart_puts_P(__s)       uart_puts_p(PSTR(__s))
-
 /**
  *  @brief   Return number of bytes waiting in the receive buffer
  *  @param   none
@@ -295,6 +283,8 @@ extern void uart1_puts_p(const char *s );
 //extern int uart1_available(void);
 /** @brief   Flush bytes waiting in receive buffer */
 //extern void uart1_flush(void);
+/*
+** Global interrupt
+*/
 #endif // UART_H
 /***EOF***/
-
