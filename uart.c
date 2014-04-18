@@ -374,8 +374,8 @@ void uart_putc(unsigned char data);
 void uart_puts(const char *s );
 int uart_available(void);
 void uart_flush(void);
-uint8_t uart_tail(void);
-uint8_t uart_head(void);
+unsigned char UART_Rx_pop(void);
+void UART_Tx_push(unsigned char data);
 /***PROTOTYPES***/
 char* uart1_read(void);
 unsigned int uart1_getc(void);
@@ -383,10 +383,17 @@ void uart1_putc(unsigned char data);
 void uart1_puts(const char *s );
 int uart1_available(void);
 void uart1_flush(void);
-uint8_t uart1_tail(void);
-uint8_t uart1_head(void);
+unsigned char UART1_Rx_pop(void);
+void UART1_Tx_push(unsigned char data);
 /*
-** module object 1 constructor
+** Module Interrupt definitions
+*/
+ISR(UART0_RECEIVE_INTERRUPT);
+ISR(UART0_TRANSMIT_INTERRUPT);
+SIGNAL(UART1_RECEIVE_INTERRUPT);
+SIGNAL(UART1_TRANSMIT_INTERRUPT);
+/*
+** module constructor
 */
 /*************************************************************************
 Function: UARTenable() 1
@@ -418,8 +425,6 @@ struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int 
 	uart.puts=uart_puts;
 	uart.available=uart_available;
 	uart.flush=uart_flush;
-	uart.tail=uart_tail;
-	uart.head=uart_head;
 	/***Pre-Processor Case 1***/
 	#if defined( AT90_UART )
 		/* set baud rate */
@@ -625,7 +630,7 @@ struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int 
 	return uart;
 }// UARTenable
 /*
-** module object 1 procedure and function definitions
+** module procedure and function
 */
 /*************************************************************************
 Function: uart_getc()
@@ -634,17 +639,15 @@ Returns:  lower byte:  received byte from ringbuffer
           higher byte: last receive error
 **************************************************************************/
 unsigned int uart_getc(void)
-{    
-    unsigned char tmptail;
+{
     unsigned char data;
     if ( UART_RxHead == UART_RxTail ) {
         return UART_NO_DATA;   /* no data available */
     }
     /* calculate /store buffer index */
-    tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
-    UART_RxTail = tmptail; 
+    UART_RxTail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
     /* get data from receive buffer */
-    data = UART_RxBuf[tmptail];
+    data = UART_RxBuf[UART_RxTail];
     return (UART_LastRxError << 8) + data;
 }/* uart_getc */
 /*************************************************************************
@@ -655,13 +658,7 @@ Returns:  none
 **************************************************************************/
 void uart_putc(unsigned char data)
 {
-    unsigned char tmphead;
-    tmphead  = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
-    while ( tmphead == UART_TxTail ){
-        ;/* wait for free space in buffer */
-    }
-    UART_TxBuf[tmphead] = data;
-    UART_TxHead = tmphead;
+    UART_Tx_push(data);
     /* enable UDRE interrupt */
     UART0_CONTROL |= _BV(UART0_UDRIE);
 }/* uart_putc */
@@ -696,7 +693,7 @@ Returns:  Integer number of bytes in the receive buffer
 **************************************************************************/
 int uart_available(void)
 {
-        return (UART_RX_BUFFER_MASK + UART_RxHead - UART_RxTail) % UART_RX_BUFFER_MASK;
+	return (UART_RX_BUFFER_MASK + UART_RxHead - UART_RxTail) % UART_RX_BUFFER_MASK;
 }/* uart_available */
 /*************************************************************************
 Function: uart_flush()
@@ -706,7 +703,7 @@ Returns:  None
 **************************************************************************/
 void uart_flush(void)
 {
-        UART_RxHead = UART_RxTail;
+	UART_RxHead = UART_RxTail;
 }/* uart_flush */
 /*************************************************************************
 Function: uart_read(&uart)
@@ -716,36 +713,36 @@ Returns:  Buffer Data
 **************************************************************************/
 char* uart_read(void)
 {
-	unsigned char tmptail;
-    unsigned char data;
 	char* ret;
 	ret="empty";
-	/* calculate /store buffer index */
-	tmptail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;	
 	if((UART_RxTail != UART_RxHead) && (uart_index < UART_RX_BUFFER_MASK)){
-		UART_RxTail = tmptail;
-		/* get data from receive buffer */
-		data = UART_RxBuf[tmptail];
-		uart_msg[uart_index]=data;
+		uart_msg[uart_index]=UART_Rx_pop();
 		uart_index++;
 		uart_msg[uart_index]='\0';
-//max index = UART_RX_BUFFER_MASK therefore UART_RX_BUFFER_MASK-1 max caracters more implies overflow.
+	//max index = UART_RX_BUFFER_MASK therefore UART_RX_BUFFER_MASK-1 max caracters more implies overflow.
 	}else{	
 		uart_index=0;
 		ret=uart_msg;
 	}
 	return ret;
 }
-uint8_t uart_tail(void)
+unsigned char UART_Rx_pop(void)
 {
-	return UART_RxTail;
+	if( UART_RxHead == UART_RxTail )
+		return (unsigned char)UART_NO_DATA;
+	UART_RxTail = (UART_RxTail + 1) & UART_RX_BUFFER_MASK;
+	return UART_RxBuf[UART_RxTail];
 }
-uint8_t uart_head(void)
+void UART_Tx_push(unsigned char data)
 {
-	return UART_RxHead;
+    UART_TxHead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
+    while ( UART_TxHead == UART_TxTail ){
+		; /* wait for free space in buffer, Tx interrupt will send to free space [Poll] */
+	}	
+    UART_TxBuf[UART_TxHead] = data;
 }
 /*
-** module object 1 interrupts
+** module interrupt
 */
 ISR(UART0_RECEIVE_INTERRUPT)
 /*************************************************************************
@@ -754,42 +751,40 @@ Purpose:  called when the UART has received a character
 **************************************************************************/
 {
     unsigned char tmphead;
-    unsigned char bit9;
-    unsigned char data;
+	unsigned char data;
+	unsigned char bit9;
     unsigned char usr;
-    unsigned char lastRxError;
-    /* read UART status register and UART data register */ 
-    usr  = UART0_STATUS;
+    /* read UART status register and UART data register */
+	usr  = UART0_STATUS;
     bit9 = UART0_CONTROL;
     bit9 = 0x01 & (bit9>>1);
-    data = UART0_DATA;
     /* */
 #if defined( AT90_UART )
-    lastRxError = (usr & (_BV(FE)|_BV(DOR)) );
+    UART_LastRxError = (usr & (_BV(FE)|_BV(DOR)) );
 #elif defined( ATMEGA_USART )
-    lastRxError = (usr & (_BV(FE)|_BV(DOR)) );
+    UART_LastRxError = (usr & (_BV(FE)|_BV(DOR)) );
 #elif defined( ATMEGA_USART0 )
-    lastRxError = (usr & (_BV(FE0)|_BV(DOR0)) );
+    UART_LastRxError = (usr & (_BV(FE0)|_BV(DOR0)) );
 #elif defined ( ATMEGA_UART )
-    lastRxError = (usr & (_BV(FE)|_BV(DOR)) );
-#endif  
-    /* calculate buffer index */ 
+    UART_LastRxError = (usr & (_BV(FE)|_BV(DOR)) );
+#endif
+	/* calculate buffer index */ 
     tmphead = ( UART_RxHead + 1) & UART_RX_BUFFER_MASK;
-    if ( tmphead == UART_RxTail ) {
-		/* error: receive buffer overflow */
-        lastRxError = UART_BUFFER_OVERFLOW >> 8;
-    }else{
-		/* store new index */
+    if ( tmphead == UART_RxTail ) {	
+        /* error: receive buffer overflow */
+        UART_LastRxError = UART_BUFFER_OVERFLOW >> 8; 
+	}else{
+        /* store new index */
         UART_RxHead = tmphead;
-		if(lastRxError){
-			/* store received err data in buffer has X */
+		if(UART_LastRxError){
+			/* store indication data error in buffer */
+			data = UART0_DATA;
 			UART_RxBuf[tmphead] = 'X';
-		}else{	
+		}else{
 			/* store received data in buffer */
-			UART_RxBuf[tmphead] = data;
-		}		
+			UART_RxBuf[tmphead] = UART0_DATA;
+		}
     }
-    UART_LastRxError = lastRxError;
 }
 ISR(UART0_TRANSMIT_INTERRUPT)
 /*************************************************************************
@@ -798,15 +793,15 @@ Purpose:  called when the UART is ready to transmit the next byte
 **************************************************************************/
 {
     unsigned char tmptail;
-    if ( UART_TxHead != UART_TxTail) {
+    if ( UART_TxHead == UART_TxTail) {
+		/* tx buffer empty, disable UDRE interrupt */
+        UART0_CONTROL &= ~_BV(UART0_UDRIE);
+    }else{
 		/* calculate and store new buffer index */
         tmptail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
         UART_TxTail = tmptail;
 		/* get one byte from buffer and write it to UART */
         UART0_DATA = UART_TxBuf[tmptail];  /* start transmission */
-    }else{
-        /* tx buffer empty, disable UDRE interrupt */
-        UART0_CONTROL &= ~_BV(UART0_UDRIE);
     }
 }
 /*
@@ -814,7 +809,7 @@ Purpose:  called when the UART is ready to transmit the next byte
 */
 #if defined( ATMEGA_USART1 )
 /*
-** module object 2 constructor
+** module constructor
 */
 /*************************************************************************
 Function: UART1enable() 2
@@ -846,8 +841,6 @@ struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned in
 	uart.puts=uart1_puts;
 	uart.available=uart1_available;
 	uart.flush=uart1_flush;
-	uart.tail=uart1_tail;
-	uart.head=uart1_head;
     /* Set baud rate */
     if ( baudrate & 0x8000 ) 
     {
@@ -940,7 +933,7 @@ struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned in
 	return uart;
 }// UART1enable
 /*
-** module object 2 procedure and function definitions
+** module procedure and function
 */
 /*************************************************************************
 Function: uart1_getc()
@@ -949,17 +942,14 @@ Returns:  lower byte:  received byte from ringbuffer
           higher byte: last receive error
 **************************************************************************/
 unsigned int uart1_getc(void)
-{    
-    unsigned char tmptail;
+{
     unsigned char data;
-    if ( UART1_RxHead == UART1_RxTail ) {
+    if ( UART1_RxHead == UART1_RxTail )
         return UART_NO_DATA;   /* no data available */
-    }
     /* calculate /store buffer index */
-    tmptail = (UART1_RxTail + 1) & UART_RX_BUFFER_MASK;
-    UART1_RxTail = tmptail; 
+    UART1_RxTail = (UART1_RxTail + 1) & UART_RX_BUFFER_MASK;
     /* get data from receive buffer */
-    data = UART1_RxBuf[tmptail];
+    data = UART1_RxBuf[UART1_RxTail];
     return (UART1_LastRxError << 8) + data;
 }/* uart1_getc */
 /*************************************************************************
@@ -970,15 +960,9 @@ Returns:  none
 **************************************************************************/
 void uart1_putc(unsigned char data)
 {
-    unsigned char tmphead;
-    tmphead  = (UART1_TxHead + 1) & UART_TX_BUFFER_MASK;
-    while ( tmphead == UART1_TxTail ){
-        ;/* wait for free space in buffer */
-    }
-    UART1_TxBuf[tmphead] = data;
-    UART1_TxHead = tmphead;
+    UART1_Tx_push(data);
     /* enable UDRE interrupt */
-    UART1_CONTROL    |= _BV(UART1_UDRIE);
+    UART1_CONTROL |= _BV(UART1_UDRIE);
 }/* uart1_putc */
 /*************************************************************************
 Function: uart1_puts()
@@ -991,7 +975,6 @@ void uart1_puts(const char *s )
     while (*s) 
       uart1_putc(*s++);
 }/* uart1_puts */
-
 /*************************************************************************
 Function: uart1_puts_p()
 Purpose:  transmit string from program memory to UART1
@@ -1004,7 +987,6 @@ void uart1_puts_p(const char *progmem_s )
     while ( (c = pgm_read_byte(progmem_s++)) ) 
       uart1_putc(c);
 }/* uart1_puts_p */
-
 /*************************************************************************
 Function: uart1_available()
 Purpose:  Determine the number of bytes waiting in the receive buffer
@@ -1013,7 +995,7 @@ Returns:  Integer number of bytes in the receive buffer
 **************************************************************************/
 int uart1_available(void)
 {
-        return (UART_RX_BUFFER_MASK + UART1_RxHead - UART1_RxTail) % UART_RX_BUFFER_MASK;
+	return (UART_RX_BUFFER_MASK + UART1_RxHead - UART1_RxTail) % UART_RX_BUFFER_MASK;
 }/* uart1_available */
 /*************************************************************************
 Function: uart1_flush()
@@ -1023,7 +1005,7 @@ Returns:  None
 **************************************************************************/
 void uart1_flush(void)
 {
-        UART1_RxHead = UART1_RxTail;
+	UART1_RxHead = UART1_RxTail;
 }/* uart1_flush */
 /*************************************************************************
 Function: uart1_read(&uart1)
@@ -1033,17 +1015,10 @@ Returns:  Buffer Data
 **************************************************************************/
 char* uart1_read(void)
 {
-	unsigned char tmptail;
-    unsigned char data;
 	char* ret;
 	ret="empty";
-	/* calculate /store buffer index */
-	tmptail = (UART1_RxTail + 1) & UART_RX_BUFFER_MASK;
 	if((UART1_RxTail != UART1_RxHead) && (uart1_index < UART_RX_BUFFER_MASK)){
-		UART1_RxTail = tmptail;
-		/* get data from receive buffer */
-		data = UART1_RxBuf[tmptail];
-		uart1_msg[uart1_index]=data;
+		uart1_msg[uart1_index]=UART1_Rx_pop();
 		uart1_index++;
 		uart1_msg[uart1_index]='\0';
 	}else{
@@ -1052,16 +1027,23 @@ char* uart1_read(void)
 	}
 	return ret;
 }
-uint8_t uart1_tail(void)
+unsigned char UART1_Rx_pop(void)
 {
-	return UART1_RxTail;
+	if( UART1_RxHead == UART1_RxTail )
+		return (unsigned char)UART_NO_DATA;
+	UART1_RxTail = (UART1_RxTail + 1) & UART_RX_BUFFER_MASK;
+	return UART1_RxBuf[UART1_RxTail];
 }
-uint8_t uart1_head(void)
+void UART1_Tx_push(unsigned char data)
 {
-	return UART1_RxHead;
+    UART1_TxHead = (UART1_TxHead + 1) & UART_TX_BUFFER_MASK;
+    while ( UART1_TxHead == UART1_TxTail ){
+		; /* wait for free space in buffer, Tx interrupt will send to free space [Poll] */
+	}	
+    UART1_TxBuf[UART1_TxHead] = data;
 }
 /*
-** module object 2 interrupts
+** module interrupt
 */
 SIGNAL(UART1_RECEIVE_INTERRUPT)
 /*************************************************************************
@@ -1070,34 +1052,32 @@ Purpose:  called when the UART1 has received a character
 **************************************************************************/
 {
     unsigned char tmphead;
-    unsigned char bit9;
-    unsigned char data;
+	unsigned char data;
+	unsigned char bit9;
     unsigned char usr;
-    unsigned char lastRxError;
-    /* read UART status register and UART data register */ 
-    usr  = UART1_STATUS;
+    /* read UART status register and UART data register */
+	usr  = UART1_STATUS;
     bit9 = UART1_CONTROL;
     bit9 = 0x01 & (bit9>>1);
-    data = UART1_DATA;
     /* */
-    lastRxError = (usr & (_BV(FE1)|_BV(DOR1)) );   
-    /* calculate buffer index */ 
+    UART1_LastRxError = (usr & (_BV(FE1)|_BV(DOR1)));
+	/* calculate buffer index */ 
     tmphead = ( UART1_RxHead + 1) & UART_RX_BUFFER_MASK;
     if ( tmphead == UART1_RxTail ) {	
-        /* error: receive buffer overflow */
-        lastRxError = UART_BUFFER_OVERFLOW >> 8; 
+        /* error: receive buffer overflow, caracter is lost*/
+        UART1_LastRxError = UART_BUFFER_OVERFLOW >> 8; 
 	}else{
         /* store new index */
         UART1_RxHead = tmphead;
-		if(lastRxError){
-			/* store received data in buffer */
+		if(UART1_LastRxError){
+			/* store indication data error in buffer */
+			data = UART1_DATA;
 			UART1_RxBuf[tmphead] = 'X';
 		}else{
 			/* store received data in buffer */
-			UART1_RxBuf[tmphead] = data;
-		}		
+			UART1_RxBuf[tmphead] = UART1_DATA;
+		}
     }
-    UART1_LastRxError = lastRxError;   
 }
 SIGNAL(UART1_TRANSMIT_INTERRUPT)
 /*************************************************************************
@@ -1105,23 +1085,15 @@ Function: UART1 Data Register Empty interrupt
 Purpose:  called when the UART1 is ready to transmit the next byte
 **************************************************************************/
 {
-    unsigned char tmptail;
-    if ( UART1_TxHead != UART1_TxTail) {
-        /* calculate and store new buffer index */
-        tmptail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
-        UART1_TxTail = tmptail;
-        /* get one byte from buffer and write it to UART */
-        UART1_DATA = UART1_TxBuf[tmptail];  /* start transmission */
-    }else{
+    if ( UART1_TxHead == UART1_TxTail ) {
         /* tx buffer empty, disable UDRE interrupt */
         UART1_CONTROL &= ~_BV(UART1_UDRIE);
-    }
+    }else{
+		/* calculate and store new buffer index */
+        UART1_TxTail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
+        /* get one byte from buffer and write it to UART */
+		UART1_DATA = UART1_TxBuf[UART1_TxTail];  /* start transmission */
+	}	
 }
 #endif
-/*
-** module procedure and function definitions
-*/
-/*
-** module interrupts
-*/
 /***EOF***/
