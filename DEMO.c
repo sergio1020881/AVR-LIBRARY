@@ -14,12 +14,6 @@
 */
 #include <avr/io.h>
 /*
-** constants and macros
-*/
-#define TRUE 1
-#define FALSE 0
-#define GI 7
-/*
 ** Private Library
 */
 #include "function.h"
@@ -30,6 +24,12 @@
 #include "analog.h"
 #include "i2c.h"
 #include "timer.h"
+/*
+** constants and macros
+*/
+#define TRUE 1
+#define FALSE 0
+#define GI 7
 /*
 ** global variables
 */
@@ -76,9 +76,12 @@ uint8_t memoria_7[9]={
 9,			1,			5
 };
 /*
-** Procedure and Funtion Main Prototypes
+** Procedure and Funtion Definitions
 */
 void PORTINIT();
+/*
+** MAIN
+*/
 int main(void)
 {
 	PORTINIT();
@@ -98,6 +101,7 @@ int main(void)
 	TIMER0 timer0 = TIMER0enable(0,0,3);
 	uart.puts("OLA SERGIO !!");
 	/******/
+	int analog_value;
 	char tmp[16];
 	int entrada;
 	uint8_t vmfsm[7];
@@ -113,7 +117,8 @@ int main(void)
 		function.itoa(PORTC,tmp);
 		lcd.string(function.resizestr(tmp,3));
 		lcd.gotoxy(12,0);
-		function.itoa(analog.read(0),tmp);
+		analog_value=analog.read(0);
+		function.itoa(analog_value,tmp);
 		lcd.string(function.resizestr(tmp,4));
 		lcd.gotoxy(12,1);
 		function.itoa(analog.read(2),tmp);
@@ -124,7 +129,7 @@ int main(void)
 		vmfsm[3]=button_4.read(&button_4, entrada & 7, vmfsm[2]);//2
 		vmfsm[4]=button_5.read(&button_5, entrada & 2, vmfsm[3]);//4
 		vmfsm[5]=button_6.read(&button_6, entrada & 4, vmfsm[4]);//4
-		vmfsm[6]=button_7.read(&button_7, timer0.cmpm(100) & 1, vmfsm[5]);
+		vmfsm[6]=button_7.read(&button_7, timer0.cmpm(analog_value) & 1, vmfsm[5]);
 		PORTC =	vmfsm[6];
 		/***TIMER***/
 		if(vmfsm[6]==10 || vmfsm[6]==9 || vmfsm[6]==0){
@@ -135,14 +140,14 @@ int main(void)
 		lcd.gotoxy(0,1);
 		lcd.string(function.resizestr(uart.read(),12));
 		/***/
-		i2c.start();
+		i2c.start(TWI_MASTER_MODE);
 		i2c.connect(10,TWI_WRITE);
 		i2c.write('h');
 		i2c.stop();
 	} 
 }
 /*
-** Procedure and Funtion Definitions
+** Procedure and Funtion
 */
 void PORTINIT()
 {
