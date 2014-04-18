@@ -87,7 +87,15 @@ static volatile int ADC_CHANNEL_GAIN[MAX_CHANNELS];
 static volatile int ADC_N_CHANNELS;
 static volatile int ADC_SELECTOR;
 /*
-** module object 1 constructor
+** module function definitions
+*/
+int ANALOG_read(int selection);
+/*
+** module interrupt definitions
+*/
+ISR(ANALOG_INTERRUPT);
+/*
+** module constructor
 */
 struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 /*
@@ -270,7 +278,7 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 	return analog;
 }
 /*
-** module object 1 procedure and function definitions
+** module procedure and function
 */
 int ANALOG_read(int selection)
 /*
@@ -290,7 +298,7 @@ int ANALOG_read(int selection)
 	return ADC_VALUE[selection];
 }
 /*
-** module object 1 interrupts
+** module interrupts
 */
 ISR(ANALOG_INTERRUPT)
 /*************************************************************************
@@ -309,10 +317,4 @@ Purpose:  Read Analog Input
 	ADC_SELECT &= ~MUX_MASK;
 	ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
 }
-/*
-** module procedure and function definitions
-*/
-/*
-** module interrupts
-*/
 /***EOF***/
