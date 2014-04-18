@@ -102,7 +102,7 @@ unsigned char timer0_state;
 unsigned char timer0_compare;
 unsigned int timer0_prescaler;
 /*
-** module function header
+** module function definition
 */
 void TIMER0_start(unsigned char compare, unsigned int prescaler);
 uint8_t TIMER0_cmpm(unsigned int multiplier);
@@ -114,7 +114,7 @@ void TIMER0_stop(void);
 ISR(TIMER0_COMPARE_MATCH_INTERRUPT);
 ISR(TIMER0_OVERFLOW_INTERRUPT);
 /*
-** module procedure and function definitions
+** module procedure and function
 */
 TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsigned char interrupt)
 {
