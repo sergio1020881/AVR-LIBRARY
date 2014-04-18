@@ -33,18 +33,18 @@ COMMENT:
 #define TWI_READ 1
 #define TWI_ACK 1
 #define TWI_NACK 0
+#define TWI_MASTER_MODE 0
+#define TWI_SLAVE_MODE 1
 /*
 ** global variables
 */
 unsigned char i2c_output;
 struct I2C{
-	// Parameter
-	unsigned char id;
 	/***PROTOTYPES VTABLE***/
-	void (*start)(void);
+	void (*start)(unsigned char mode);
 	void (*connect)(unsigned char addr, unsigned char rw);
 	void (*write)(unsigned char data);
-	unsigned char (*read)(void);
+	unsigned char (*read)(unsigned char request);
 	void (*stop)(void);
 };
 typedef struct I2C I2C;
