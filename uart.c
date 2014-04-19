@@ -751,11 +751,11 @@ Purpose:  called when the UART has received a character
 **************************************************************************/
 {
     unsigned char tmphead;
-	unsigned char data;
-	unsigned char bit9;
+    unsigned char data;
+    unsigned char bit9;
     unsigned char usr;
     /* read UART status register and UART data register */
-	usr  = UART0_STATUS;
+    usr  = UART0_STATUS;
     bit9 = UART0_CONTROL;
     bit9 = 0x01 & (bit9>>1);
     /* */
@@ -768,21 +768,21 @@ Purpose:  called when the UART has received a character
 #elif defined ( ATMEGA_UART )
     UART_LastRxError = (usr & (_BV(FE)|_BV(DOR)) );
 #endif
-	/* calculate buffer index */ 
+    /* calculate buffer index */ 
     tmphead = ( UART_RxHead + 1) & UART_RX_BUFFER_MASK;
     if ( tmphead == UART_RxTail ) {	
         /* error: receive buffer overflow */
         UART_LastRxError = UART_BUFFER_OVERFLOW >> 8; 
 	}else{
+	data = UART0_DATA;
         /* store new index */
         UART_RxHead = tmphead;
 		if(UART_LastRxError){
 			/* store indication data error in buffer */
-			data = UART0_DATA;
 			UART_RxBuf[tmphead] = 'X';
 		}else{
 			/* store received data in buffer */
-			UART_RxBuf[tmphead] = UART0_DATA;
+			UART_RxBuf[tmphead] = data;
 		}
     }
 }
@@ -1052,30 +1052,30 @@ Purpose:  called when the UART1 has received a character
 **************************************************************************/
 {
     unsigned char tmphead;
-	unsigned char data;
-	unsigned char bit9;
+    unsigned char data;
+    unsigned char bit9;
     unsigned char usr;
     /* read UART status register and UART data register */
-	usr  = UART1_STATUS;
+    usr  = UART1_STATUS;
     bit9 = UART1_CONTROL;
     bit9 = 0x01 & (bit9>>1);
     /* */
     UART1_LastRxError = (usr & (_BV(FE1)|_BV(DOR1)));
-	/* calculate buffer index */ 
+    /* calculate buffer index */ 
     tmphead = ( UART1_RxHead + 1) & UART_RX_BUFFER_MASK;
     if ( tmphead == UART1_RxTail ) {	
         /* error: receive buffer overflow, caracter is lost*/
         UART1_LastRxError = UART_BUFFER_OVERFLOW >> 8; 
 	}else{
+	data = UART1_DATA;
         /* store new index */
         UART1_RxHead = tmphead;
 		if(UART1_LastRxError){
 			/* store indication data error in buffer */
-			data = UART1_DATA;
 			UART1_RxBuf[tmphead] = 'X';
 		}else{
 			/* store received data in buffer */
-			UART1_RxBuf[tmphead] = UART1_DATA;
+			UART1_RxBuf[tmphead] = data;
 		}
     }
 }
