@@ -1,5 +1,3 @@
-#ifndef FUNCTION_H_
-#define FUNCTION_H_
 /************************************************************************
 Title:    FUNCTION
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
@@ -8,31 +6,26 @@ Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License 
 Usage:    
-
 LICENSE:
-    Copyright (C) 2013
-
+    Copyright (C) 2014
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
 	Very Stable
-    
 ************************************************************************/
+#ifndef FUNCTION_H_
+	#define FUNCTION_H_
 /*
-** constants and macros
+** constant and macro
 */
 /*
-** global variables
-*/
-/*
-** global prototypes
+** variable
 */
 struct FUNC{
 	/***PROTOTYPES VTABLE***/
@@ -65,11 +58,8 @@ struct FUNC{
 };
 typedef struct FUNC FUNC;
 /*
-** global object function header
+** procedure and function header
 */
 FUNC FUNCenable( void );
-/*
-** global function header
-*/
-#endif // FUNCTION_H_
+#endif
 /***EOF***/
