@@ -4,34 +4,26 @@ Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: lcd.c,v 0.2 2014/4/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License 
-          
+License:  GNU General Public License        
 DESCRIPTION:
-    
-    
+	Atemga 128 at 16Mhz
 USAGE:
-    Refere to the header file analog.h for a description of the routines. 
-
+    Refere to the header file lcd.h for a description of the routines.
 NOTES:
     Based on Atmel Application Note AVR306
-                    
 LICENSE:
     Copyright (C) 2014
-
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-	
 COMMENT:
 	  tested atemga 128 16Mhz, Very Stable                    
 *************************************************************************/
-//atmega 128 at 16MHZ
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
@@ -40,12 +32,11 @@ COMMENT:
 */
 #include <avr/io.h>
 #include <util/delay.h>
-/*
-** Private Library
-*/
+#include <inttypes.h>
+/***/
 #include "lcd.h"
 /*
-** module constants and macros
+** constant and macro
 */
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
@@ -54,7 +45,7 @@ COMMENT:
 #define INST 0
 #define DATA 1
 /*
-** module variables
+** variable
 */
 //ticks depends on CPU frequency this case 16Mhz
 volatile uint8_t *lcd_DDR;
@@ -62,7 +53,7 @@ volatile uint8_t *lcd_PIN;
 volatile uint8_t *lcd_PORT;
 uint8_t lcd_detect;
 /*
-** module function definitions
+** procedure and function header
 */
 unsigned int LCD_ticks(unsigned int num);
 void LCD_inic(void);
@@ -77,10 +68,7 @@ void LCD_gotoxy(unsigned int x, unsigned int y);
 void LCD_strobe(unsigned int num);
 void LCD_reboot(void);
 /*
-** module interrupt definitions
-*/
-/*
-** module object 1 constructor
+** procedure and function
 */
 LCD LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port)
 {
@@ -117,9 +105,6 @@ LCD LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *po
 	//
 	return lcd;
 }
-/*
-**  module object 1 procedure and function
-*/
 void LCD_inic(void)
 {
 	//LCD INIC
@@ -270,12 +255,6 @@ void LCD_reboot(void)
 	lcd_detect=tmp;
 }
 /*
-** module object 1 interrupts
-*/
-/*
-**  module procedure and function
-*/
-/*
-** module interrupts
+** interrupt
 */
 /***EOF***/
