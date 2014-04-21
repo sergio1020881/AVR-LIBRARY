@@ -1,48 +1,39 @@
 /*************************************************************************
 Title:    FSM
-Author:   Sergio Salazar Santos <sergio1020881@gmail.com>
+Author:   Sergio Manuel Santos <sergio1020881@gmail.com>
 File:     $Id: fsm.c,v 0.1 2013/12/30 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License 
-          
+License:  GNU General Public License        
 DESCRIPTION:
-    
-    
+	MADE TO WORK IN ANY MCU FROM ATMEL AVR
 USAGE:
-    Refere to the header file analog.h for a description of the routines. 
-
+    Refere to the header file fsm.h for a description of the routines.
 NOTES:
     Based on Atmel Application Note AVR306
-                    
 LICENSE:
     Copyright (C) 2013
-
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-                        
+    GNU General Public License for more details.  
 *************************************************************************/
-//MADE TO WORK IN ANY MCU FROM ATMEL AVR
 /*
-** Library
+** library
 */
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
-/*
-** Private Library
-*/
+#include <inttypes.h>
+/***/
 #include "fsm.h"
 /*
-**  module constants and macros
+** constant and macro
 */
 #define SFSM_SIZE_BLOCK 5
 #define EFSM_SIZE_BLOCK 5
@@ -52,21 +43,16 @@ LICENSE:
 #define FEEDBACK 3
 #define PRESENT 4
 /*
-** module variables
+** variable
 */
 struct LFSM lfsm;
 struct SFSM sfsm;
 /*
-** module function header
+** procedure and function header
 */
 uint8_t FSM_diff(uint8_t xi, uint8_t xf);
 /*
-** module interrupt header
-*/
-/***************************************************************************************
-****************************************************************************************/
-/*
-** module procedure and function definitions
+** procedure and function
 */
 uint8_t FSM_routine(uint8_t cmd)
 {
@@ -149,17 +135,11 @@ uint8_t sfsm_state(uint8_t page)
 	//printf("FSMpresent: %d\n",r->record[PRESENT]);
 	return sfsm.state[page];
 }
-/*
-** module local use
-*/
 /***diff***/
 uint8_t FSM_diff(uint8_t xi, uint8_t xf)
 {
 	return xf^xi;
 }
-/*
-**  module object 1 constructor
-*/
 struct EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog)
 {
 	unsigned int cells;
@@ -198,9 +178,6 @@ struct EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog)
 	/******/
 	return fsm;
 }
-/*
-** module object 1 procedures and function definitions
-*/
 /***read***/
 uint8_t EFSM_read(struct EFSM *r, uint8_t input, uint8_t feedback)
 {
@@ -210,7 +187,6 @@ uint8_t EFSM_read(struct EFSM *r, uint8_t input, uint8_t feedback)
 	uint8_t ByteofData;
 	int keyfound;
 	int diferenca;
-	
 	diferenca=r->diff(r->record[INPUT],input);
 	if(diferenca){
 		for(i1=0;i1<r->sizeeeprom;i1+=r->sizeblock){
@@ -368,6 +344,6 @@ char EFSM_typeget(struct EFSM *r)
 	return r->type;
 }
 /*
-** module interrupts
+** interrupt
 */
 /***EOF***/
