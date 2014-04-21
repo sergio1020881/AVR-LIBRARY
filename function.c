@@ -4,66 +4,55 @@ Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: function.c,v 0.1 2013/12/30 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License 
-          
+License:  GNU General Public License        
 DESCRIPTION:
-    
-    
+	Atmega 128 at 16MHZ
 USAGE:
-    Refere to the header file analog.h for a description of the routines. 
-
+    Refere to the header file function.h for a description of the routines. 
 NOTES:
     Based on Atmel Application Note AVR306
-                    
 LICENSE:
     Copyright (C) 2013
-
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-	
 COMMENT:
 	Very Stable
-                        
 *************************************************************************/
-//atmega 128 at 16MHZ
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
 /*
-** Library
+** library
 */
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
-/*
-** Private Library
-*/
+/***/
 #include"function.h"
 /*
-**  module constants and macros
+** constant and macro
 */
 #ifndef GLOBAL_INTERRUPT_ENABLE
  #define GLOBAL_INTERRUPT_ENABLE 7
 #endif
 /*
-**  module variables
+** variable
 */
 char FUNCstr[16];
 /*
-** module function definitions
+** procedure and function header
 */
 unsigned int Power(uint8_t base, uint8_t n);
 int StringLength (const char string[]);
 void Reverse(char s[]);
-/***Declare Local Function Header***/
+/******/
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits);
 uint8_t FUNChmerge(uint8_t X, uint8_t Y);
 uint8_t FUNClmerge(uint8_t X, uint8_t Y);
@@ -88,10 +77,7 @@ char FUNCdec2bcd(char num);
 char FUNCbcd2dec(char num);
 char* FUNCresizestr(char *string, int size);
 /*
-** module interrupt definitions
-*/
-/*
-**  module constructor
+** procedure and function
 */
 struct FUNC FUNCenable( void )
 {
@@ -131,9 +117,6 @@ struct FUNC FUNCenable( void )
 	/******/
 	return func;
 }
-/*
-** module procedure and function
-*/
 // mayia
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
 {//magic formula
@@ -370,9 +353,6 @@ char* FUNCresizestr(char *string, int size)
 	}
 	return FUNCstr;
 }
-/*
-** module procedure and function
-*/
 // power: raise base to n-th power; n >= 0
 unsigned int Power(uint8_t base, uint8_t n)
 {
@@ -461,6 +441,6 @@ float square_root( float val ) {
 }
 */
 /*
-**  module interrupts
+** interrupt
 */
 /***EOF***/
