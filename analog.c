@@ -4,47 +4,38 @@ Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: analog.c,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License 
-          
+License:  GNU General Public License        
 DESCRIPTION:
-    
-    
+	reads selected analog channels
 USAGE:
     Refere to the header file analog.h for a description of the routines. 
-
 NOTES:
     Based on Atmel Application Note AVR306
-                    
 LICENSE:
     Copyright (C) 2014
-
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-	
 COMMENT:
 	Very Stable
-                        
 *************************************************************************/
 /*
-** Library
+** library
 */
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
-/*
-** Private Library
-*/
+#include <inttypes.h>
+/***/
 #include "analog.h"
 /*
-**  module constants and macros
+** constant and macro
 */
 // if using differential channels this value has to be greater than one
 #define ADC_NUMBER_INTERRUPT 2
@@ -80,27 +71,23 @@ COMMENT:
  	#error "no ANALOG definition for MCU available"
 #endif
 /*
-** module variables
+** variable
 */
 static volatile int ADC_VALUE[MAX_CHANNELS];
 static volatile int ADC_CHANNEL_GAIN[MAX_CHANNELS];
 static volatile int ADC_N_CHANNELS;
 static volatile int ADC_SELECTOR;
 /*
-** module function definitions
+** procedure and function header
 */
 int ANALOG_read(int selection);
 /*
-** module interrupt definitions
-*/
-ISR(ANALOG_INTERRUPT);
-/*
-** module constructor
+** procedure and function
 */
 struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 /*
 * Interrupt running mode setup
-* setup and list of channels to be probed
+* setup, and list of channels to be probed
 */
 {
 	/***LOCAL VARIABLES***/
@@ -277,9 +264,6 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 	/******/
 	return analog;
 }
-/*
-** module procedure and function
-*/
 int ANALOG_read(int selection)
 /*
 * 
@@ -288,17 +272,15 @@ int ANALOG_read(int selection)
 {
 	uint8_t ADSC_FLAG;
 	ADSC_FLAG=(1<<ADSC);
-	
 	if( !(ADC_CONTROL & ADSC_FLAG) ){
 		//ADC_SELECT
 		/***/
 		ADC_CONTROL|=(1<<ADSC);
-	}
-		
+	}	
 	return ADC_VALUE[selection];
 }
 /*
-** module interrupts
+** interrupt
 */
 ISR(ANALOG_INTERRUPT)
 /*************************************************************************
