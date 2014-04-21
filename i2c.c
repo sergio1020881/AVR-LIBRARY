@@ -1,41 +1,44 @@
-/*****************************************************************************
-//  File Name    : i2c.c
-//  Version      : 1.0
-//  Description  : 
-//  Author       : sergio manuel santos
-//  Target       : Atmega128 Board
-//  Compiler     : AVR-GCC 4.3.0; avr-libc 1.6.2 (WinAVR 20080610)
-//  IDE          : Atmel AVR Studio 6
-//  Programmer   : Ponyprog
-//               : AVR Visual Studio 6.1
-//  Last Updated : April 2014
-
+/************************************************************************
+Title:    I2C library
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: analog.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
+Software: AVR-GCC 4.1, AVR Libc 1.4
+Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
+License:  GNU General Public License
+DESCRIPTION:
+	Atmega 128 at 16MHZ
+USAGE:    
+LICENSE:
+    Copyright (C) 2014
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 COMMENT:
 	testing phase
-	
-*****************************************************************************/
-/*
-** atmega 128 at 16MHZ
-*/
+************************************************************************/
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
 /* I2C clock in Hz */ 
 #define I2C_SCL_CLOCK 100000UL
 /*
-** Library
+** library
 */
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <inttypes.h>
 //#include <compat/twi.h>
-/*
-** Private Library
-*/
+/***/
 #include "i2c.h"
 /*
-** module constants and macros
+** constant and macro
 */
 /*******************************************************************************/
 /*
@@ -246,11 +249,11 @@ COMMENT:
 #define TWI_DATA_ACK 2
 #define TWI_STOP_CONDITION 3
 /*
-** module variables
+** variable
 */
 unsigned char twi_chip_id;
 /*
-** module function definitions
+** procedure function header
 */
 void twi_transmit(unsigned char type);
 unsigned char twi_status(void);
@@ -261,11 +264,7 @@ void twi_write(unsigned char data);
 unsigned char twi_read(unsigned char request);
 void twi_stop(void);
 /*
-** module interrupt definition
-*/
-SIGNAL(SIG_2WIRE_SERIAL);
-/*
-** module object 1 constructor
+** procedure and function
 */
 struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 {
@@ -334,9 +333,6 @@ struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 	/******/
 	return i2c;
 }
-/*
-** module procedure and function
-*/
 void twi_transmit(unsigned char type)
 {
 	switch(type){
@@ -487,7 +483,7 @@ void twi_stop(void)
 	}
 }
 /*
-** module interrupts
+** interrupt
 */
 //! I2C (TWI) interrupt service routine
 SIGNAL(SIG_2WIRE_SERIAL)
