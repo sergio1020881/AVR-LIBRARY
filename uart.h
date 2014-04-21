@@ -1,123 +1,34 @@
-#ifndef UART_H
-	#define UART_H
 /************************************************************************
 Title:    Interrupt UART library with receive/transmit circular buffers
-Author:   Peter Fleury <pfleury@gmx.ch>   http://jump.to/fleury
-File:     $Id: uart.h,v 1.8.2.1 2007/07/01 11:14:38 peter Exp $
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: uart.h,v 1.8.2.1 2014/04/21 13:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
-Hardware: any AVR with built-in UART, tested on AT90S8515 & ATmega8 at 4 Mhz
-License:  GNU General Public License 
-Usage:    see Doxygen manual
-
+Hardware: any AVR with built-in UART, tested on ATMEGA 128 at 16 Mhz
+License:  GNU General Public License
+DESCRIPTION:
+	Atmega 128 at 16Mhz 
+USAGE:    see Doxygen manual
 LICENSE:
-    Copyright (C) 2006 Peter Fleury
-
+    Copyright (C) 2014 Sergio Santos
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-    
-************************************************************************/
-
-/************************************************************************
-uart_available, uart_flush, uart1_available, and uart1_flush functions
-were adapted from the Arduino HardwareSerial.h library by Tim Sharpe on 
-11 Jan 2009.  The license info for HardwareSerial.h is as follows:
-
-  HardwareSerial.h - Hardware serial library for Wiring
-  Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-************************************************************************/
-
-/************************************************************************
-Changelog for modifications made by Tim Sharpe, starting with the current
-  library version on his Web site as of 05/01/2009. 
-
-Date        Description
-=========================================================================
-05/12/2009  Added Arduino-style available() and flush() functions for both
-			supported UARTs.  Really wanted to keep them out of the library, so
-			that it would be as close as possible to Peter Fleury's original
-			library, but has scoping issues accessing internal variables from
-			another program.  Go C!
-
-************************************************************************/
-
-/** 
- *  @defgroup pfleury_uart UART Library
- *  @code #include <uart.h> @endcode
- * 
- *  @brief Interrupt UART library using the built-in UART with transmit and receive circular buffers. 
- *
- *  This library can be used to transmit and receive data through the built in UART. 
- *
- *  An interrupt is generated when the UART has finished transmitting or
- *  receiving a byte. The interrupt handling routines use circular buffers
- *  for buffering received and transmitted data.
- *
- *  The UART_RX_BUFFER_SIZE and UART_TX_BUFFER_SIZE constants define
- *  the size of the circular buffers in bytes. Note that these constants must be a power of 2.
- *  You may need to adapt this constants to your target and your application by adding 
- *  CDEFS += -DUART_RX_BUFFER_SIZE=nn -DUART_RX_BUFFER_SIZE=nn to your Makefile.
- *
- *  @note Based on Atmel Application Note AVR306
- *  @author Peter Fleury pfleury@gmx.ch  http://jump.to/fleury
- */
-
-/************************************************************************
-Changelog for modifications made by Sergio Salazar Santos, starting with the current
-  library version on his Web site as of 05/01/2009. 
-
-Date        Description
-=========================================================================
-File:     $Id: uart.c,v 1.6.2.1 2014/04/13 16:30:00 sergio Exp $
-13/04/2014  Object oriented aproach
-			Option for FDbits, Stopbits and Parity
-			char* uart_read(struct UART* uart)
-			char* uart1_read(struct UART1* uart)
-			uint8_t uart_tail(void);
-			uint8_t uart_head(void);
-			uint8_t* uart_parameters(struct UART* uart);
-			uint8_t uart1_tail(void);
-			uint8_t uart1_head(void);
-			uint8_t* uart1_parameters(struct UART1* uart);
-			tested using atmega 128
-			
-			Things to be Added:
-			bit 9 option for FDbits not yet functional
-			More MCU Support
-			More procedures could be added
-			Also Synchronous option not available
-			More contribuitores
-			tested on atmega 128 16Mhz, very stable.
 COMMENT:
 	stable
-			
 ************************************************************************/
+#ifndef UART_H
+	#define UART_H
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
 /*
-** constants and macros
+** constant and macro
 */
 /** @brief  UART Baudrate Expression
  *  @param  xtalcpu  system clock in Mhz, e.g. 4000000L for 4Mhz          
@@ -153,7 +64,7 @@ COMMENT:
 #define EVEN 2
 #define ODD 3
 /*
-** global variables
+** variable
 */
 struct UART{
 	/***Parameters***/
@@ -186,7 +97,7 @@ struct UART1{
 };
 typedef struct UART1 UART1;
 /*
-** global procedure and function
+** procedure and function header
 */
 UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
 UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
@@ -283,8 +194,6 @@ extern void uart1_puts_p(const char *s );
 //extern int uart1_available(void);
 /** @brief   Flush bytes waiting in receive buffer */
 //extern void uart1_flush(void);
-/*
-** Global interrupt
-*/
-#endif // UART_H
+#endif
 /***EOF***/
+
