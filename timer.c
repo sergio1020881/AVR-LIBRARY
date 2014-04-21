@@ -1,27 +1,43 @@
-/***********************************
-timer.c
-Created: 09-04-2014 14:30:00
-Author: SERGIO
+/*************************************************************************
+Title:    TIMER0
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: vfsm.c,v 0.1 2014/04/09 14:30:00 sergio Exp $
+Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
+Hardware: AVR ATmega128 at 16 Mhz, 
+License:  GNU General Public License 
+DESCRIPTION:
+	Atmega 128 at 16MHZ
+USAGE:
+NOTES:
+    Based on Atmel Application Note AVR306
+LICENSE:
+    Copyright (C) 2014
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 COMMENT:
 	Very Stable
-***********************************/ 
-// atmega 128 at 16MHZ
+*************************************************************************/
 #ifndef F_CPU
   #define F_CPU 16000000UL
 #endif
 /*
-** Library
+** library
 */
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-/*
-** Private Library
-*/
+#include <inttypes.h>
+/***/
 #include "timer.h"
 /*
-**  module constants and macros
+** constant and macro
 */
 /***TYPE 1***/
 #if defined(__AVR_AT90S2313__) \
@@ -96,31 +112,19 @@ COMMENT:
  #error "no UART definition for MCU available"
 #endif
 /*
-**  module variables
+** variable
 */
 unsigned char timer0_state;
-unsigned char timer0_compare;
-unsigned int timer0_prescaler;
 /*
-** module function definition
+** procedure and function header
 */
 void TIMER0_start(unsigned char compare, unsigned int prescaler);
-uint8_t TIMER0_cmpm(unsigned int multiplier);
-uint8_t TIMER0_ovfm(unsigned int multiplier);
 void TIMER0_stop(void);
 /*
-** module interrupt header
-*/
-ISR(TIMER0_COMPARE_MATCH_INTERRUPT);
-ISR(TIMER0_OVERFLOW_INTERRUPT);
-/*
-** module procedure and function
+** procedure and function
 */
 TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsigned char interrupt)
 {
-	//
-	TIMER0_COMPARE_MATCH=0;
-	TIMER0_OVERFLOW=0;
 	//
 	struct TIMER0 timer0;
 	timer0.wavegenmode=wavegenmode;
@@ -200,18 +204,14 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	//
 	timer0.start=TIMER0_start;
 	timer0.stop=TIMER0_stop;
-	timer0.cmpm=TIMER0_cmpm;
-	timer0.ovfm=TIMER0_ovfm;
 	//
 	return timer0;
 }
 void TIMER0_start(unsigned char compare, unsigned int prescaler)
 {
 	if(timer0_state==0){ // oneshot
-		timer0_compare=compare;
-		TIMER0_COMPARE=timer0_compare;
-		timer0_prescaler=prescaler;
-		switch(timer0_prescaler){
+		TIMER0_COMPARE=compare;
+		switch(prescaler){
 			case 1: // clk T0S /(No prescaling)
 				TIMER0_CONTROL|=(1<<(CS00));
 				TIMER0_CONTROL&=~(3<<(CS01));
@@ -243,50 +243,19 @@ void TIMER0_start(unsigned char compare, unsigned int prescaler)
 				TIMER0_CONTROL|=(7<<CS00);
 				break;
 		}
-		TIMER0_COMPARE_MATCH=0;
-		TIMER0_OVERFLOW=0;
-		TIMER0_COUNTER=0X00;
 		timer0_state=1;
 	}	
 }
 void TIMER0_stop(void)
 {
 	TIMER0_CONTROL&=~(7<<CS0);
-	TIMER0_COMPARE_MATCH=0;
-	TIMER0_OVERFLOW=0;
 	TIMER0_COUNTER=0X00;
 	timer0_state=0;
 }
-uint8_t TIMER0_cmpm(unsigned int multiplier)
-{
-	uint8_t ret;
-	if(TIMER0_COMPARE_MATCH > multiplier){
-		ret=1;
-		TIMER0_stop();
-	}else
-		ret=0;
-	return ret;
-}
-uint8_t TIMER0_ovfm(unsigned int multiplier)
-{
-	uint8_t ret;
-	if(TIMER0_OVERFLOW > multiplier){
-		ret=1;
-		TIMER0_stop();
-	}else
-		ret=0;
-	return ret;
-}
 /*
-** module interrupts
+** interrupt
 */
-ISR(TIMER0_COMPARE_MATCH_INTERRUPT)
-{
-	TIMER0_COMPARE_MATCH++;
-}
-ISR(TIMER0_OVERFLOW_INTERRUPT){
-	TIMER0_OVERFLOW++;
-}
-/*
-**EOF
-*/
+// to be defined in MAIN file
+// Note if you configure to use interrupts and do not define them program will block,
+// so be carefull when enabling, make sure corect parameters for specified aplication are applied.
+/***EOF***/
