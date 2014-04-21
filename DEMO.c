@@ -21,12 +21,14 @@ COMMENT:
 ************************************************************************/
 #define F_CPU 16000000UL
 /*
-** Library
+** library
 */
 #include <avr/io.h>
-/*
-** Private Library
-*/
+#include <avr/pgmspace.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+#include <inttypes.h>
+/***/
 #include "function.h"
 #include "lcd.h"
 #include "uart.h"
@@ -35,14 +37,15 @@ COMMENT:
 #include "analog.h"
 #include "i2c.h"
 #include "timer.h"
+#include "spi.h"
 /*
-** constants and macros
+** constant and macro
 */
 #define TRUE 1
 #define FALSE 0
 #define GI 7
 /*
-** global variables
+** variable
 */
 //B1
 uint8_t memoria_1[18]={
@@ -83,16 +86,19 @@ uint8_t memoria_6[3]={
 uint8_t memoria_7[9]={
 //output,	input,		change
 0,			1,			5,
-10,			1,			6,
+10,			1,			5,
 9,			1,			5
 };
+unsigned int TIMER0_COMPARE_MATCH;
 /*
-** Procedure and Funtion Definitions
+** procedure and funtion header
 */
 void PORTINIT();
+int trigger(int multipler);
 /*
-** MAIN
+** procedure and function
 */
+/*MAIN*/
 int main(void)
 {
 	PORTINIT();
@@ -109,7 +115,8 @@ int main(void)
 	VFSM button_7 = VFSMenable(memoria_7,9);
 	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	TIMER0 timer0 = TIMER0enable(0,0,3);
+	TIMER0 timer0 = TIMER0enable(0,0,2);
+	SPI spi = SPIenable(SPI_MASTER_MODE, SPI_MSB_DATA_ORDER, 0, 8);
 	uart.puts("OLA SERGIO !!");
 	/******/
 	int analog_value;
@@ -120,7 +127,7 @@ int main(void)
 		lcd.reboot();
 		//ignore cancel stop enter delete run
 		//TODO:: Please write your application code
-		entrada=PINB;
+		entrada=PINE;
 		lcd.gotoxy(0,0);
 		function.itoa(entrada,tmp);
 		lcd.string(function.resizestr(tmp,3));
@@ -134,18 +141,21 @@ int main(void)
 		lcd.gotoxy(12,1);
 		function.itoa(analog.read(2),tmp);
 		lcd.string(function.resizestr(tmp,4));
-		vmfsm[0]=button_1.read(&button_1, entrada & 1, (PINC & 15));//1
-		vmfsm[1]=button_2.read(&button_2, entrada & 3, vmfsm[0]);//3
-		vmfsm[2]=button_3.read(&button_3, entrada & 5, vmfsm[1]);//5
-		vmfsm[3]=button_4.read(&button_4, entrada & 7, vmfsm[2]);//2
-		vmfsm[4]=button_5.read(&button_5, entrada & 2, vmfsm[3]);//4
-		vmfsm[5]=button_6.read(&button_6, entrada & 4, vmfsm[4]);//4
-		vmfsm[6]=button_7.read(&button_7, timer0.cmpm(analog_value) & 1, vmfsm[5]);
+		vmfsm[0]=button_1.read(&button_1, 1, entrada, (PINC & 15));//1
+		vmfsm[1]=button_2.read(&button_2, 3, entrada, vmfsm[0]);//3
+		vmfsm[2]=button_3.read(&button_3, 5, entrada, vmfsm[1]);//5
+		vmfsm[3]=button_4.read(&button_4, 7, entrada, vmfsm[2]);//2
+		vmfsm[4]=button_5.read(&button_5, 2, entrada, vmfsm[3]);//4
+		vmfsm[5]=button_6.read(&button_6, 4, entrada, vmfsm[4]);//4
+		vmfsm[6]=button_7.read(&button_7, 1, trigger(analog_value), vmfsm[5]);
 		PORTC =	vmfsm[6];
+		spi.fast_shift(vmfsm[6]);
+		//trigger(analog_value)
 		/***TIMER***/
 		if(vmfsm[6]==10 || vmfsm[6]==9 || vmfsm[6]==0){
 			timer0.start(255, 1024);
 		}else{
+			TIMER0_COMPARE_MATCH=0;
 			timer0.stop();
 		}
 		lcd.gotoxy(0,1);
@@ -157,16 +167,13 @@ int main(void)
 		i2c.stop();
 	} 
 }
-/*
-** Procedure and Funtion
-*/
 void PORTINIT()
 {
 	//INPUT
 	DDRF=0x00;
 	PORTF=0x0F;
-	DDRB=0XF0;
-	PORTB=0XFF;
+	DDRE=0X00;
+	PORTE=0XFF;
 	DDRD=0X00;
 	PORTD=0XFF;
 	//OUTPUT
@@ -175,5 +182,22 @@ void PORTINIT()
 	//UART0
 	//DDRE=0X02;
 	SREG|=(1<<GI);
+}
+int trigger(int multiplier)
+{
+	int ret=0;
+	if(TIMER0_COMPARE_MATCH > multiplier){
+		ret=1;
+	}else{
+		ret=0;
+	}	
+	return ret;
+}
+/*
+** interrupt
+*/
+ISR(TIMER0_COMP_vect)
+{
+	TIMER0_COMPARE_MATCH++;
 }
 /***EOF***/
