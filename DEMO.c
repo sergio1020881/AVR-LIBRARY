@@ -1,13 +1,24 @@
-/*
- * LMACHINE.c
- *
- * Created: 13-04-2014
- * Author: SERGIO MANUEL SANTOS
- */ 
-/*
-** TYPE OF CHIP
-*/
-//Atmega 128 at 16MHZ
+/************************************************************************
+Title:    LMACHINE.c
+Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File:     $Id: MAIN,v 1.8.2.1 2014/04/21 13:00:00 sergio Exp $
+Software: AVR-GCC 4.1, AVR Libc 1.4
+Hardware: any AVR with built-in UART, tested on ATMEGA 128 at 16 Mhz
+License:  GNU General Public License 
+Usage:    see Doxygen manual
+LICENSE:
+    Copyright (C) 2014 Sergio Santos
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+COMMENT:
+	stable
+************************************************************************/
 #define F_CPU 16000000UL
 /*
 ** Library
