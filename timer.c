@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    TIMER0
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: vfsm.c,v 0.1 2014/04/09 14:30:00 sergio Exp $
+File:     $Id: timer.c,v 0.1 2014/04/09 14:30:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR ATmega128 at 16 Mhz, 
 License:  GNU General Public License 
@@ -119,11 +119,21 @@ unsigned char timer0_state;
 ** procedure and function header
 */
 void TIMER0_start(unsigned char compare, unsigned int prescaler);
+void TIMER0_compare(unsigned char compare);
 void TIMER0_stop(void);
 /*
 ** procedure and function
 */
 TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsigned char interrupt)
+/*
+	PARAMETER SETTING
+	wavegen mode: Normal; PWM phase correct; Fast PWM; default-Normasl;
+	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
+	Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
+	Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
+	default-Normal port operation, OC0 disconnected.
+	interrupt: off; overflow; output compare; both; default - non.
+*/
 {
 	//
 	struct TIMER0 timer0;
@@ -203,11 +213,20 @@ TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmode, unsign
 	}
 	//
 	timer0.start=TIMER0_start;
+	timer0.compare=TIMER0_compare;
 	timer0.stop=TIMER0_stop;
 	//
 	return timer0;
 }
 void TIMER0_start(unsigned char compare, unsigned int prescaler)
+/*
+	PARAMETER SETTING
+	compare: unsigned char value from 0 to 255.
+	Frequency oscilator devision factor or prescaler.
+	prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /32 (From prescaler);
+	clk T0S /64 (From prescaler); clk T0S /128 (From prescaler); clk T 0 S /256 (From prescaler);
+	clk T 0 S /1024 (From prescaler); default - clk T 0 S /1024 (From prescaler).
+*/
 {
 	if(timer0_state==0){ // oneshot
 		TIMER0_COMPARE=compare;
@@ -246,7 +265,14 @@ void TIMER0_start(unsigned char compare, unsigned int prescaler)
 		timer0_state=1;
 	}	
 }
+void TIMER0_compare(unsigned char compare)
+{
+	TIMER0_COMPARE=compare;
+}
 void TIMER0_stop(void)
+/*
+	stops timer by setting prescaler to zero
+*/
 {
 	TIMER0_CONTROL&=~(7<<CS0);
 	TIMER0_COUNTER=0X00;
