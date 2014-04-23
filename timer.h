@@ -1,7 +1,7 @@
 /*************************************************************************
-Title:    TIMER0
+Title:    TIMER
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: time.h,v 0.1 2014/04/09 14:30:00 sergio Exp $
+File:     $Id: timer.h,v 0.1 2014/04/09 14:30:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR ATmega128 at 16 Mhz, 
 License:  GNU General Public License 
@@ -34,20 +34,30 @@ COMMENT:
 /*
 ** variable
 */
-struct TIMER0{
-	/***Parameters***/
-	unsigned char wavegenmode;
-	unsigned char compoutmode;
-	unsigned char interrupt;
+struct TIMER_COUNTER0{
 	// prototype pointers
-	void (*start)(unsigned char compare, unsigned int prescaler);
+	void (*compoutmode)(unsigned char compoutmode);
 	void (*compare)(unsigned char compare);
+	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
-typedef struct TIMER0 TIMER0;
+typedef struct TIMER_COUNTER0 TIMER_COUNTER0;
+struct TIMER_COUNTER1{
+	// prototype pointers
+	void (*compoutmodeA)(unsigned char compoutmode);
+	void (*compoutmodeB)(unsigned char compoutmode);
+	void (*compoutmodeC)(unsigned char compoutmode);
+	void (*compareA)(uint16_t compareA);
+	void (*compareB)(uint16_t compareB);
+	void (*compareC)(uint16_t compareC);
+	void (*start)(unsigned int prescaler);
+	void (*stop)(void);
+};
+typedef struct TIMER_COUNTER1 TIMER_COUNTER1;
 /*
 ** procedure and function header
 */
-TIMER0 TIMER0enable(unsigned char wavegenmode, unsigned char compoutmod, unsigned char interrupt);
+TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char interrupt);
+TIMER_COUNTER1 TIMER_COUNTER1enable(unsigned char wavegenmode, unsigned char interrupt);
 #endif
 /***EOF***/
