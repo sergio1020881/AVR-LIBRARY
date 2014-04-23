@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    I2C library
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: analog.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
+File:     $Id: i2c.c,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License
@@ -259,9 +259,9 @@ void twi_transmit(unsigned char type);
 unsigned char twi_status(void);
 void twi_poll(unsigned int ticks);
 void twi_start(unsigned char mode);
-void twi_connect(unsigned char addr, unsigned char rw);
-void twi_write(unsigned char data);
-unsigned char twi_read(unsigned char request);
+void twi_master_connect(unsigned char addr, unsigned char rw);
+void twi_master_write(unsigned char data);
+unsigned char twi_master_read(unsigned char request);
 void twi_stop(void);
 /*
 ** procedure and function
@@ -276,9 +276,9 @@ struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 	struct I2C i2c;
 	// function pointers
 	i2c.start=twi_start;
-	i2c.connect=twi_connect;
-	i2c.write=twi_write;
-	i2c.read=twi_read;
+	i2c.master_connect=twi_master_connect;
+	i2c.master_write=twi_master_write;
+	i2c.master_read=twi_master_read;
 	i2c.stop=twi_stop;
 	/***/
 	if(device_id>0 && device_id<128){
@@ -375,7 +375,7 @@ void twi_start(unsigned char mode)
 		twi_poll(680);
 	}	
 }
-void twi_connect(unsigned char addr, unsigned char rw)
+void twi_master_connect(unsigned char addr, unsigned char rw)
 {
 	switch(twi_status()){
 		case TWI_SENT_START:
@@ -392,7 +392,7 @@ void twi_connect(unsigned char addr, unsigned char rw)
 			break;
 	}
 }
-void twi_write(unsigned char data)
+void twi_master_write(unsigned char data)
 {
 	switch(twi_status()){
 		case TWI_MASTER_SENT_SLA_W_RECEIVED_ACK:
@@ -409,7 +409,7 @@ void twi_write(unsigned char data)
 			break;
 	}					
 }
-unsigned char twi_read(unsigned char request)
+unsigned char twi_master_read(unsigned char request)
 {
 	unsigned char data='X';
 	switch(twi_status()){
@@ -459,24 +459,15 @@ void twi_stop(void)
 	switch(twi_status()){
 		case TWI_MASTER_SENT_SLA_W_RECEIVED_NACK:
 			//TWI_DATA_REGISTER=data; // 8 bit data + ack = 9bit
-			twi_transmit(TWI_STOP_CONDITION);
-			break;
 		case TWI_MASTER_SENT_DATABYTE_RECEIVED_NACK:
 			//TWI_DATA_REGISTER=data; // 8 bit data + ack = 9bit
-			twi_transmit(TWI_STOP_CONDITION);
-			break;
 		case TWI_MASTER_SENT_SLA_R_RECEIVED_NACK:
 			//data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
-			twi_transmit(TWI_STOP_CONDITION);
-			break;
 		case TWI_MASTER_RECEIVED_DATABYTE_SENT_NACK:
 			//data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
-			twi_transmit(TWI_STOP_CONDITION);
-			break;
 		case TWI_ARBL_NACK:
 			//data=TWI_DATA_REGISTER; // 8 bit data + ack = 9bit
 			twi_transmit(TWI_STOP_CONDITION);
-			break;
 		default:
 			twi_transmit(TWI_STOP_CONDITION);
 			break;
