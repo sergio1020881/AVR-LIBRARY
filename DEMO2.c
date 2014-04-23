@@ -53,7 +53,7 @@ uint8_t memoria_1[3*vector_size]={
 1,			0,			16,
 16,			1,			2,
 2,			2,			128,
-128,		3,			8,
+128,			3,			8,
 8,			4,			4,
 4,			5,			64,
 64,			6,			32,
@@ -61,7 +61,7 @@ uint8_t memoria_1[3*vector_size]={
 33,			8,			80,
 80,			9,			6,
 6,			10,			136,
-136,		11,			8,
+136,			11,			8,
 8,			12,			4,
 4,			13,			64,
 64,			14,			32,
@@ -89,7 +89,7 @@ int main(void)
 	VLOGIC timer_0 = VLOGICenable(memoria_1,3*vector_size);
 	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	TIMER0 timer0 = TIMER0enable(0,0,2);
+	TIMER0 timer0 = TIMER0enable(0,2);
 	SPI spi = SPIenable(SPI_MASTER_MODE, SPI_MSB_DATA_ORDER, 0, 8);
 	uart.puts("OLA SERGIO !!");
 	/******/
