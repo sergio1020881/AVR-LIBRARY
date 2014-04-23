@@ -42,7 +42,7 @@ struct FUNC{
 	void (*copy)(char to[], char from[]);
 	void (*squeeze)(char s[], int c);
 	void (*shellsort)(int v[], int n);
-	void (*itoa)(int n, char s[]);
+	void (*itoa)(int32_t n, char s[]);
 	int (*trim)(char s[]);
 	int (*pmax)(int a1, int a2);
 	int (*gcd)(int u, int v);
@@ -55,6 +55,7 @@ struct FUNC{
 	char (*dec2bcd)(char num);
 	char (*bcd2dec)(char num);
 	char* (*resizestr)(char *string, int size);
+	long (*trimmer)(long x, long in_min, long in_max, long out_min, long out_max);
 };
 typedef struct FUNC FUNC;
 /*
