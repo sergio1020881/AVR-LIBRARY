@@ -34,6 +34,8 @@ COMMENT:
 #include <avr/pgmspace.h>
 #include <avr/eeprom.h>
 #include <util/delay.h>
+#include <stdarg.h>
+#include <inttypes.h>
 /***/
 #include"function.h"
 /*
@@ -63,7 +65,7 @@ void FUNCswap(int *px, int *py);
 void FUNCcopy(char to[], char from[]);
 void FUNCsqueeze(char s[], int c);
 void FUNCshellsort(int v[], int n);
-void FUNCitoa(int n, char s[]);
+void FUNCitoa(int32_t n, char s[]);
 int FUNCtrim(char s[]);
 int FUNCpmax(int a1, int a2);
 int FUNCgcd (int u, int v);
@@ -76,6 +78,7 @@ int FUNCtwocomptointnbit(int twoscomp, uint8_t nbits);
 char FUNCdec2bcd(char num);
 char FUNCbcd2dec(char num);
 char* FUNCresizestr(char *string, int size);
+long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max);
 /*
 ** procedure and function
 */
@@ -113,6 +116,7 @@ struct FUNC FUNCenable( void )
 	func.dec2bcd=FUNCdec2bcd;
 	func.bcd2dec=FUNCbcd2dec;
 	func.resizestr=FUNCresizestr;
+	func.trimmer=FUNCtrimmer;
 	SREG=tSREG;
 	/******/
 	return func;
@@ -199,7 +203,7 @@ void FUNCshellsort(int v[], int n)
 			}
 }
 // itoa: convert n to characters in s
-void FUNCitoa(int n, char s[])
+void FUNCitoa(int32_t n, char s[])
 {
 	int i, sign;
 	if ((sign = n) < 0) // record sign
@@ -352,6 +356,13 @@ char* FUNCresizestr(char *string, int size)
 		FUNCstr[i]=*(string+i);
 	}
 	return FUNCstr;
+}
+long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max)
+/*
+	same as arduino map function.
+*/
+{
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 // power: raise base to n-th power; n >= 0
 unsigned int Power(uint8_t base, uint8_t n)
