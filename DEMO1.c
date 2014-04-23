@@ -115,7 +115,7 @@ int main(void)
 	VFSM button_7 = VFSMenable(memoria_7,9);
 	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	TIMER0 timer0 = TIMER0enable(0,0,2);
+	TIMER0 timer0 = TIMER0enable(0,2);
 	SPI spi = SPIenable(SPI_MASTER_MODE, SPI_MSB_DATA_ORDER, 0, 8);
 	uart.puts("OLA SERGIO !!");
 	/******/
