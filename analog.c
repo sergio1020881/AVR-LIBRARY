@@ -77,10 +77,14 @@ static volatile int ADC_VALUE[MAX_CHANNELS];
 static volatile int ADC_CHANNEL_GAIN[MAX_CHANNELS];
 static volatile int ADC_N_CHANNELS;
 static volatile int ADC_SELECTOR;
+static volatile int adc_sample;
+static volatile int adc_tmp;
+static volatile unsigned char adc_n_sample;
 /*
 ** procedure and function header
 */
 int ANALOG_read(int selection);
+int16_t ANALOG_power(int16_t base, int16_t n);
 /*
 ** procedure and function
 */
@@ -100,6 +104,7 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 	/***GLOBAL VARIABLES INICIALIZE***/
 	ADC_N_CHANNELS=n_channels;
 	ADC_SELECTOR=0;
+	adc_n_sample=0;
 	//PROTOTIPOS
 	int ANALOG_read(int channel);
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
@@ -279,6 +284,14 @@ int ANALOG_read(int selection)
 	}	
 	return ADC_VALUE[selection];
 }
+int16_t ANALOG_power(int16_t base, int16_t n)
+{
+    unsigned int i, p;
+    p = 1;
+    for (i = 1; i <= n; ++i)
+        p = p * base;
+    return p;
+}
 /*
 ** interrupt
 */
@@ -289,14 +302,21 @@ Purpose:  Read Analog Input
 **************************************************************************/
 {
 	/******/
-	ADC_VALUE[ADC_SELECTOR]=ADCL;
-	ADC_VALUE[ADC_SELECTOR]|=(ADCH<<8);
-	/******/
-	if(ADC_SELECTOR < ADC_N_CHANNELS)
-		ADC_SELECTOR++;
-	else
-		ADC_SELECTOR=0;
-	ADC_SELECT &= ~MUX_MASK;
-	ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
+	adc_tmp=ADCL;
+	adc_tmp|=(ADCH<<8);
+	if(adc_n_sample < ANALOG_power(2, ADC_NUMBER_SAMPLE)){
+		adc_n_sample++;
+		adc_sample+=adc_tmp;
+	}else{
+		ADC_VALUE[ADC_SELECTOR]=adc_sample>>ADC_NUMBER_SAMPLE;
+		adc_n_sample=adc_sample=0;
+		/******/
+		if(ADC_SELECTOR < ADC_N_CHANNELS)
+			ADC_SELECTOR++;
+		else
+			ADC_SELECTOR=0;
+		ADC_SELECT &= ~MUX_MASK;
+		ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
+	}		
 }
 /***EOF***/
