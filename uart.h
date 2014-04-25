@@ -6,7 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: any AVR with built-in UART, tested on ATMEGA 128 at 16 Mhz
 License:  GNU General Public License
 DESCRIPTION:
-	Atmega 128 at 16Mhz 
+	Atmega 128 at 16Mhz
 USAGE:    see Doxygen manual
 LICENSE:
     Copyright (C) 2014 Sergio Santos
