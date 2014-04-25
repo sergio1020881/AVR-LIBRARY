@@ -272,8 +272,6 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 	TIMER_COUNTER_INTERRUPT_MASK_REGISTER&=~(1<<TOIE0);
 	TIMER_COUNTER_INTERRUPT_MASK_REGISTER&=~(1<<OCIE0);
 	switch(interrupt){
-		// OCIE0: Timer/Counter0 Output Compare Match Interrupt Enable
-		// TOIE0: Timer/Counter0 Overflow Interrupt Enable
 		case 0: 
 			break;
 		case 1:
