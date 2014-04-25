@@ -3,8 +3,8 @@ Title:    Interrupt UART library with receive/transmit circular buffers
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: uart.c,v 1.6.2.1 2014/04/21 13:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: any AVR with built-in UART, 
-License:  GNU General Public License          
+Hardware: any AVR with built-in UART,
+License:  GNU General Public License       
 DESCRIPTION:
     An interrupt is generated when the UART has finished transmitting or
     receiving a byte. The interrupt handling routines use circular buffers
@@ -14,7 +14,7 @@ DESCRIPTION:
     power of 2.
 	Atmega 128 at 16Mhz.
 USAGE:
-    Refere to the header file uart.h for a description of the routines. 
+    Refere to the header file uart.h for a description of the routines.
     See also example test_uart.c.
 NOTES:
     Based on Atmel Application Note AVR306
