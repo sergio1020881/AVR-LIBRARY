@@ -8,6 +8,7 @@ License:  GNU General Public License
 DESCRIPTION:
 	Atemga 128 16Mhz
 USAGE:
+	Supports two LCD display
 LICENSE:
     Copyright (C) 2014
     This program is free software; you can redistribute it and/or modify
@@ -40,9 +41,6 @@ COMMENT:
 */
 struct display{
 	/******/
-	unsigned int (*ticks)(unsigned int num);
-	void (*strobe)(unsigned int num);
-	void (*inic)(void);
 	void (*write)(char c, unsigned short D_I);
 	char (*read)(unsigned short D_I);
 	void (*BF)(void);
@@ -53,10 +51,12 @@ struct display{
 	void (*gotoxy)(unsigned int x, unsigned int y);
 	void (*reboot)(void);
 };
-typedef struct display LCD;
+typedef struct display LCD0;
+typedef struct display LCD1;
 /*
 ** procedure and function header
 */
-LCD LCDenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
+LCD0 LCD0enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
+LCD1 LCD1enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
 #endif
 /***EOF***/
