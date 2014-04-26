@@ -6,7 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in SPI, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
 DESCRIPTION:
-	reads selected analog channels, Atmega 128 at 16Mhz
+	Atmega 128 at 16Mhz
 USAGE:
     file spi.h for a description of the routines. 
 NOTES:
