@@ -3,7 +3,7 @@ Title:    I2C library
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: i2c.c,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
+Hardware: ATmega128 at 16 Mhz
 License:  GNU General Public License
 DESCRIPTION:
 	Atmega 128 at 16MHZ
@@ -266,14 +266,14 @@ void twi_stop(void);
 /*
 ** procedure and function
 */
-struct I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
+I2C I2Cenable(unsigned char device_id, unsigned char prescaler)
 {
 	// local variables
 	uint8_t tSREG;
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	// object
-	struct I2C i2c;
+	I2C i2c;
 	// function pointers
 	i2c.start=twi_start;
 	i2c.master_connect=twi_master_connect;
@@ -342,13 +342,13 @@ void twi_transmit(unsigned char type)
 		case TWI_DATA_NO_ACK:		// Data with No-Acknowledge 1
 			TWI_CONTROL_REGISTER |= (1 << TWINT) | (1 << TWEN);
 			break;
-		case TWI_DATA_ACK:	// Data with Acknowledge 2
+		case TWI_DATA_ACK:			// Data with Acknowledge 2
 			TWI_CONTROL_REGISTER |= (1 << TWINT) | (1 << TWEA) | (1 << TWEN);
 			break;
-		case TWI_STOP_CONDITION:			// Stop Condition 3
+		case TWI_STOP_CONDITION:	// Stop Condition 3
 			TWI_CONTROL_REGISTER |= (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
 			break;
-		default:				// Stop Condition
+		default:					// Stop Condition
 			TWI_CONTROL_REGISTER = (1 << TWINT) | (1 << TWSTO) | (1 << TWEN);
 			break;
 	}
