@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    I2C library
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: analog.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
+File:     $Id: i2c.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License
@@ -52,9 +52,9 @@ unsigned char i2c_output;
 struct I2C{
 	/***PROTOTYPES VTABLE***/
 	void (*start)(unsigned char mode);
-	void (*connect)(unsigned char addr, unsigned char rw);
-	void (*write)(unsigned char data);
-	unsigned char (*read)(unsigned char request);
+	void (*master_connect)(unsigned char addr, unsigned char rw);
+	void (*master_write)(unsigned char data);
+	unsigned char (*master_read)(unsigned char request);
 	void (*stop)(void);
 };
 typedef struct I2C I2C;
