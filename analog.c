@@ -84,11 +84,10 @@ static volatile unsigned char adc_n_sample;
 ** procedure and function header
 */
 int ANALOG_read(int selection);
-int16_t ANALOG_power(int16_t base, int16_t n);
 /*
 ** procedure and function
 */
-struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
+ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 /*
 * Interrupt running mode setup
 * setup, and list of channels to be probed
@@ -108,7 +107,7 @@ struct ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ..
 	//PROTOTIPOS
 	int ANALOG_read(int channel);
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
-	struct ANALOG analog;
+	ANALOG analog;
 	//import parametros
 	//inic parameters
 	//Direccionar apontadores para PROTOTIPOS
@@ -284,14 +283,6 @@ int ANALOG_read(int selection)
 	}	
 	return ADC_VALUE[selection];
 }
-int16_t ANALOG_power(int16_t base, int16_t n)
-{
-    unsigned int i, p;
-    p = 1;
-    for (i = 1; i <= n; ++i)
-        p = p * base;
-    return p;
-}
 /*
 ** interrupt
 */
@@ -304,7 +295,7 @@ Purpose:  Read Analog Input
 	/******/
 	adc_tmp=ADCL;
 	adc_tmp|=(ADCH<<8);
-	if(adc_n_sample < ANALOG_power(2, ADC_NUMBER_SAMPLE)){
+	if(adc_n_sample < (1<<ADC_NUMBER_SAMPLE)){
 		adc_n_sample++;
 		adc_sample+=adc_tmp;
 	}else{
