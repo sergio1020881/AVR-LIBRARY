@@ -304,7 +304,7 @@ Purpose:  initialize UART and set baudrate
 Input:    baudrate using macro UART_BAUD_SELECT()
 Returns:  none
 **************************************************************************/
-struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity )
+UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity )
 {
 	/***LOCAL VARIABLES***/
 	uint8_t tSREG;
@@ -318,7 +318,7 @@ struct UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int 
 	uart_index=0;
 	uart_msg[0]='\0';
 	/***struct***/
-	struct UART uart;
+	UART uart;
 	//local variables
 	uart.ubrr=baudrate;
 	/***FUNCTION POINTER***/
@@ -715,7 +715,7 @@ Purpose:  initialize UART1 and set baudrate
 Input:    baudrate using macro UART_BAUD_SELECT()
 Returns:  none
 **************************************************************************/
-struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity )
+UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity )
 {
 	/***LOCAL VARIABLES***/
 	uint8_t tSREG;
@@ -729,7 +729,7 @@ struct UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned in
 	uart1_index=0;
 	uart1_msg[0]='\0';
 	/***struct***/
-	struct UART1 uart;
+	UART1 uart;
 	//local variables
 	uart.ubrr=baudrate;
 	/***FUNCTION POINTER***/
