@@ -251,7 +251,7 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 	interrupt: off; overflow; output compare; both; default - non.
 */
 {
-	struct TIMER_COUNTER0 timer0;
+	TIMER_COUNTER0 timer0;
 	timer0_state=0;
 	TIMER_COUNTER0_CONTROL_REGISTER&=~((1<<WGM00) | (1<<WGM01));
 	switch(wavegenmode){
@@ -388,7 +388,7 @@ TIMER_COUNTER1 TIMER_COUNTER1enable(unsigned char wavegenmode, unsigned char int
 	for more information read datasheet.
 */
 {
-	struct TIMER_COUNTER1 timer1;
+	TIMER_COUNTER1 timer1;
 	timer1_state=0;
 	TIMER_COUNTER1A_CONTROL_REGISTER&=~((1<<WGM11) | (1<<WGM10));
 	TIMER_COUNTER1B_CONTROL_REGISTER&=~((1<<WGM13) | (1<<WGM12));
@@ -654,7 +654,7 @@ TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char int
 	interrupt: off; overflow; output compare; both; default - non.
 */
 {
-	struct TIMER_COUNTER2 timer2;
+	TIMER_COUNTER2 timer2;
 	timer2_state=0;
 	TIMER_COUNTER0_CONTROL_REGISTER&=~((1<<WGM20) | (1<<WGM21));
 	switch(wavegenmode){
@@ -791,7 +791,7 @@ TIMER_COUNTER3 TIMER_COUNTER3enable(unsigned char wavegenmode, unsigned char int
 	for more information read datasheet.
 */
 {
-	struct TIMER_COUNTER3 timer3;
+	TIMER_COUNTER3 timer3;
 	timer3_state=0;
 	TIMER_COUNTER3A_CONTROL_REGISTER&=~((1<<WGM31) | (1<<WGM30));
 	TIMER_COUNTER3B_CONTROL_REGISTER&=~((1<<WGM33) | (1<<WGM32));
