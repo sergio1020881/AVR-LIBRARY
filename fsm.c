@@ -140,7 +140,7 @@ uint8_t FSM_diff(uint8_t xi, uint8_t xf)
 {
 	return xf^xi;
 }
-struct EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog)
+EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog)
 {
 	unsigned int cells;
 	/***Declare Functions***/
@@ -153,7 +153,7 @@ struct EFSM EFSMenable(unsigned int sizeeeprom, uint8_t prog)
 	uint8_t EFSM_present(struct EFSM *r);
 	char EFSM_typeget(struct EFSM *r);
 	//struct
-	struct EFSM fsm;
+	EFSM fsm;
 	//Init vars
 	fsm.sizeblock=5;
 	cells=sizeeeprom/fsm.sizeblock;
