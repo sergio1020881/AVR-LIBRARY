@@ -32,7 +32,6 @@ COMMENT:
 */
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include <avr/eeprom.h>
 #include <util/delay.h>
 #include <stdarg.h>
 #include <inttypes.h>
@@ -82,13 +81,13 @@ long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max);
 /*
 ** procedure and function
 */
-struct FUNC FUNCenable( void )
+FUNC FUNCenable( void )
 {
 	uint8_t tSREG;
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	// struct object
-	struct FUNC func;
+	FUNC func;
 	// function pointers
 	func.power=Power;
 	func.stringlength=StringLength;
