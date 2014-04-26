@@ -6,7 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in SPI, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
 DESCRIPTION:
-	reads selected analog channels, atmega 128 at 16MHZ.
+	Atmega 128 at 16MHZ.
 USAGE:
     Refere to the header file spi.h for a description of the routines. 
 NOTES:
@@ -75,9 +75,9 @@ uint8_t spi_fast_shift (uint8_t data);
 /*
 ** procedure and function
 */
-struct SPI SPIenable(uint8_t master_slave_select, uint8_t data_order,  uint8_t data_modes, uint8_t prescaler)
+SPI SPIenable(uint8_t master_slave_select, uint8_t data_order,  uint8_t data_modes, uint8_t prescaler)
 {
-	struct SPI spi;
+	SPI spi;
 	spi.transfer_sync = spi_transfer_sync;
 	spi.transmit_sync = spi_transmit_sync;
 	spi.fast_shift = spi_fast_shift;
