@@ -6,7 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
 DESCRIPTION:
-	reads selected analog channels
+	reads selected analog channel
 USAGE:
     Refere to the header file analog.h for a description of the routines. 
 NOTES:
@@ -38,8 +38,7 @@ COMMENT:
 ** constant and macro
 */
 // if using differential channels this value has to be greater than one
-#define ADC_NUMBER_INTERRUPT 2
-#define MAX_CHANNELS 8
+#define MAX_CHANNEL 8
 /***TYPE 1***/
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
 	/******/
@@ -73,9 +72,9 @@ COMMENT:
 /*
 ** variable
 */
-static volatile int ADC_VALUE[MAX_CHANNELS];
-static volatile int ADC_CHANNEL_GAIN[MAX_CHANNELS];
-static volatile int ADC_N_CHANNELS;
+static volatile int ADC_VALUE[MAX_CHANNEL];
+static volatile int ADC_CHANNEL_GAIN[MAX_CHANNEL];
+static volatile int ADC_N_CHANNEL;
 static volatile int ADC_SELECTOR;
 static volatile int adc_sample;
 static volatile int adc_tmp;
@@ -87,7 +86,7 @@ int ANALOG_read(int selection);
 /*
 ** procedure and function
 */
-ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
+ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 /*
 * Interrupt running mode setup
 * setup, and list of channels to be probed
@@ -101,7 +100,7 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	/***GLOBAL VARIABLES INICIALIZE***/
-	ADC_N_CHANNELS=n_channels;
+	ADC_N_CHANNEL=n_channel;
 	ADC_SELECTOR=0;
 	adc_n_sample=0;
 	//PROTOTIPOS
@@ -137,8 +136,8 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 		//
 		ADC_SELECT&=~(1<<ADLAR);
 		/******/
-		va_start(list, n_channels);
-		for(i=0;i<n_channels;i++){
+		va_start(list, n_channel);
+		for(i=0;i<n_channel;i++){
 			ADC_CHANNEL_GAIN[i] = va_arg(list, int);
 		}
 		va_end(list);
@@ -212,8 +211,8 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... )
 		//
 		ADC_SELECT&=~(1<<ADLAR);
 		/******/
-		va_start(list, n_channels);
-		for(i=0;i<n_channels;i++){
+		va_start(list, n_channel);
+		for(i=0;i<n_channel;i++){
 			ADC_CHANNEL_GAIN[i] = va_arg(list, uint8_t);
 		}
 		va_end(list);
@@ -302,7 +301,7 @@ Purpose:  Read Analog Input
 		ADC_VALUE[ADC_SELECTOR]=adc_sample>>ADC_NUMBER_SAMPLE;
 		adc_n_sample=adc_sample=0;
 		/******/
-		if(ADC_SELECTOR < ADC_N_CHANNELS)
+		if(ADC_SELECTOR < ADC_N_CHANNEL)
 			ADC_SELECTOR++;
 		else
 			ADC_SELECTOR=0;
