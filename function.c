@@ -60,7 +60,7 @@ uint8_t FUNClmerge(uint8_t X, uint8_t Y);
 uint8_t FUNClh(uint8_t xi, uint8_t xf);
 uint8_t FUNChl(uint8_t xi, uint8_t xf);
 uint8_t FUNCdiff(uint8_t xi, uint8_t xf);
-void FUNCswap(int *px, int *py);
+void FUNCswap(long *px, long *py);
 void FUNCcopy(char to[], char from[]);
 void FUNCsqueeze(char s[], int c);
 void FUNCshellsort(int v[], int n);
@@ -78,6 +78,9 @@ char FUNCdec2bcd(char num);
 char FUNCbcd2dec(char num);
 char* FUNCresizestr(char *string, int size);
 long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max);
+unsigned char FUNCbcd2bin(unsigned char val);
+unsigned char FUNCbin2bcd(unsigned val);
+long FUNCgcd1(long a, long b);
 /*
 ** procedure and function
 */
@@ -116,6 +119,9 @@ FUNC FUNCenable( void )
 	func.bcd2dec=FUNCbcd2dec;
 	func.resizestr=FUNCresizestr;
 	func.trimmer=FUNCtrimmer;
+	func.bcd2bin=FUNCbcd2bin;
+	func.bin2bcd=FUNCbin2bcd;
+	func.gcd1=FUNCgcd1;
 	SREG=tSREG;
 	/******/
 	return func;
@@ -165,9 +171,9 @@ uint8_t FUNCdiff(uint8_t xi, uint8_t xf)
 	return xf^xi;
 }
 // interchange *px and *py
-void FUNCswap(int *px, int *py)
+void FUNCswap(long *px, long *py)
 {
-	int temp;
+	long temp;
 	temp = *px;
 	*px = *py;
 	*py = temp;
@@ -321,7 +327,7 @@ int FUNCtwocomptointnbit(int twoscomp, uint8_t nbits){
   unsigned int signmask;
   unsigned int mask;
   signmask = (1<<(nbits-1));
-  mask = Power(2,(nbits-1))-1;
+  mask=signmask-1;
   //Let's see if the number is negative
   if (twoscomp & signmask){
 	twoscomp &= mask;
@@ -389,6 +395,27 @@ void Reverse(char s[])
 		s[i] = s[j];
 		s[j] = c;
 	}
+}
+unsigned char FUNCbcd2bin(unsigned char val)
+{
+	return (val & 0x0f) + (val >> 4) * 10;
+}
+unsigned char FUNCbin2bcd(unsigned val)
+{
+	return ((val / 10) << 4) + val % 10;
+}
+long FUNCgcd1(long a, long b)
+{
+	long r;
+	if (a < b)
+		FUNCswap(&a, &b);
+	if (!b){
+		while ((r = a % b) != 0) {
+			a = b;
+			b = r;
+		}
+	}	
+	return b;
 }
 /*
 int gcd( int a, int b ) {
