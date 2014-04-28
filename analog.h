@@ -28,7 +28,7 @@ COMMENT:
 /*
 ** constant and macro
 */
-#define ADC_NUMBER_SAMPLE 4 // ADC_NUMBER_SAMPLE^2 gives number of samples, note values can only range from 0 to 4.
+#define ADC_NUMBER_SAMPLE 2 // ADC_NUMBER_SAMPLE^2 gives number of samples, note values can only range from 0 to 4.
 /*
 ** variable
 */
@@ -43,6 +43,6 @@ typedef struct ANALOG ANALOG;
 /*
 ** procedure and function header
 */
-ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channels, ... );
+ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... );
 #endif
 /***EOF***/
