@@ -123,6 +123,8 @@ COMMENT:
 	// can always do it yourself.
 /***TYPE 9***/
 #elif defined(__AVR_ATmega169__)
+	#error "AVR currently not supported by this libaray !"
+	// can always do it yourself.
 /***TYPE 10***/
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
@@ -178,11 +180,15 @@ COMMENT:
 	#define ASYNCHRONOUS_STATUS_REGISTER ASSR
 /***TYPE 11***/
 #elif defined(__AVR_ATtiny2313__)
+	#error "AVR currently not supported by this libaray !"
+	// can always do it yourself.
 /***TYPE 12***/
 #elif defined(__AVR_ATmega329__) ||\
       defined(__AVR_ATmega649__) ||\
       defined(__AVR_ATmega325__) ||defined(__AVR_ATmega3250__) ||\
       defined(__AVR_ATmega645__) ||defined(__AVR_ATmega6450__)
+	#error "AVR currently not supported by this libaray !"
+	// can always do it yourself.
 /* ATmega with one USART */
 /***TYPE 13***/
 #elif defined(__AVR_ATmega3290__) || defined(__AVR_ATmega6490__)
