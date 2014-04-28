@@ -38,7 +38,7 @@ struct FUNC{
 	uint8_t (*diff)(uint8_t xi, uint8_t xf);
 	uint8_t (*hmerge)(uint8_t X, uint8_t Y);
 	uint8_t (*lmerge)(uint8_t X, uint8_t Y);
-	void (*swap)(int *px, int *py);
+	void (*swap)(long *px, long *py);
 	void (*copy)(char to[], char from[]);
 	void (*squeeze)(char s[], int c);
 	void (*shellsort)(int v[], int n);
@@ -56,6 +56,9 @@ struct FUNC{
 	char (*bcd2dec)(char num);
 	char* (*resizestr)(char *string, int size);
 	long (*trimmer)(long x, long in_min, long in_max, long out_min, long out_max);
+	unsigned char (*bcd2bin)(unsigned char val);
+	unsigned char (*bin2bcd)(unsigned val);
+	long (*gcd1)(long a, long b);
 };
 typedef struct FUNC FUNC;
 /*
