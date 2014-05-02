@@ -11,7 +11,7 @@ Hardware:
 	using uart1 threw ftdi usb to connect pc
 	4 buttons on porte
 	using potenciometer portf
-	simulation od adc, timer, interrupt, lcd, eeprom, uart0, uart1, i2c, 
+	simulation of adc, timer, interrupt, lcd, eeprom, uart0, uart1, i2c, 
 	servomotor, ftdi usb, potenciometer, and spi, using ponyprog has 
 	programmer software, and Atmega128 by ETT ET-BASE.
 	Little else to add on.
