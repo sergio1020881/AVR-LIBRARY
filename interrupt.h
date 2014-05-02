@@ -34,6 +34,7 @@ COMMENT:
 struct INTERRUPT{
 	void (*set)(uint8_t channel, uint8_t sense);
 	void (*off)(uint8_t channel);
+	uint8_t (*reset_status)(void);
 };
 typedef struct INTERRUPT INTERRUPT;
 /*
