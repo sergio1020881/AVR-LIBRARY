@@ -42,6 +42,8 @@ COMMENT:
 	#define External_Interrupt_Control_Register_B EICRB
 	#define External_Interrupt_Mask_Register EIMSK
 	#define External_Interrupt_Flag_Register EIFR
+	#define MCU_Control_Status_Register MCUCSR
+	#define MCU_Control_Status_Register_Mask 0X1F
 /***TYPE 2***/
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
@@ -52,6 +54,8 @@ COMMENT:
 	#define External_Interrupt_Control_Register_B EICRB
 	#define External_Interrupt_Mask_Register EIMSK
 	#define External_Interrupt_Flag_Register EIFR
+	#define MCU_Control_Status_Register MCUCSR
+	#define MCU_Control_Status_Register_Mask 0X1F
 /***TYPE 3***/
 #elif defined(__AVR_ATmega161__)
 	/* ATmega with UART */
@@ -68,6 +72,7 @@ COMMENT:
 */
 void INTERRUPT_set(uint8_t channel, uint8_t sense);
 void INTERRUPT_off(uint8_t channel);
+uint8_t INTERRUPT_reset_status(void);
 /*
 ** procedure and function
 */
@@ -87,7 +92,39 @@ INTERRUPT INTERRUPTenable(void)
 	/******/
 	interrupt.set=INTERRUPT_set;
 	interrupt.off=INTERRUPT_off;
+	interrupt.reset_status=INTERRUPT_reset_status;
 	return interrupt;
+}
+uint8_t INTERRUPT_reset_status(void)
+{
+	uint8_t reset,ret=0;
+	reset=(MCU_Control_Status_Register & MCU_Control_Status_Register_Mask);
+	switch(reset){
+		case 1: // Power-On Reset Flag
+			ret=0;
+			MCU_Control_Status_Register&=~(1<<PORF);
+			break;
+		case 2: // External Reset Flag
+			MCU_Control_Status_Register&=~(1<<EXTRF);
+			ret=1;
+			break;
+		case 4: // Brown-out Reset Flag
+			MCU_Control_Status_Register&=~(1<<BORF);
+			ret=2;
+			break;
+		case 8: // Watchdog Reset Flag
+			MCU_Control_Status_Register&=~(1<<WDRF);
+			ret=3;
+			break;
+		case 16: // JTAG Reset Flag
+			MCU_Control_Status_Register&=~(1<<JTRF);
+			ret=4;
+			break;
+		default: // clear all status
+			MCU_Control_Status_Register&=~(MCU_Control_Status_Register_Mask);
+			break;
+	}
+	return ret;
 }
 void INTERRUPT_set(uint8_t channel, uint8_t sense)
 {
