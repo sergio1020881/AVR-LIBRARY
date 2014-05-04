@@ -19,8 +19,8 @@ LICENSE:
 COMMENT:
 	Very Stable
 ************************************************************************/
-#ifndef FUNCTION_H_
-	#define FUNCTION_H_
+#ifndef _FUNCTION_H_
+	#define _FUNCTION_H_
 /*
 ** constant and macro
 */
@@ -59,11 +59,20 @@ struct FUNC{
 	unsigned char (*bcd2bin)(unsigned char val);
 	unsigned char (*bin2bcd)(unsigned val);
 	long (*gcd1)(long a, long b);
+	/***pc use***
+	char* (*fltos)(FILE* stream);
+	char* (*ftos)(FILE* stream);
+	int (*strtotok)(char* line,char* token[],const char* parser);
+	char* (*putstr)(char* str);
+	int (*getnum)(char* x);
+	unsigned int (*getnumv2)(char* x);
+	int (*readint)(int nmin, int nmax);
+	*/
 };
 typedef struct FUNC FUNC;
 /*
 ** procedure and function header
 */
-FUNC FUNCenable( void );
+FUNC FUNCenable(void);
 #endif
 /***EOF***/
