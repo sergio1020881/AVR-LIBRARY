@@ -35,6 +35,12 @@ COMMENT:
 #include <util/delay.h>
 #include <stdarg.h>
 #include <inttypes.h>
+/***pc use***
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<errno.h>
+*/
 /***/
 #include"function.h"
 /*
@@ -81,6 +87,15 @@ long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max);
 unsigned char FUNCbcd2bin(unsigned char val);
 unsigned char FUNCbin2bcd(unsigned val);
 long FUNCgcd1(long a, long b);
+/***pc use***
+char* FUNCfltos(FILE* stream);
+char* FUNCftos(FILE* stream);
+int FUNCstrtotok(char* line,char* token[],const char* parser);
+char* FUNCputstr(char* str);
+int FUNCgetnum(char* x);
+unsigned int FUNCgetnumv2(char* x);
+int FUNCreadint(int nmin, int nmax);
+*/
 /*
 ** procedure and function
 */
@@ -122,6 +137,15 @@ FUNC FUNCenable( void )
 	func.bcd2bin=FUNCbcd2bin;
 	func.bin2bcd=FUNCbin2bcd;
 	func.gcd1=FUNCgcd1;
+	/***pc use***
+	func.fltos=FUNCfltos;
+	func.ftos=FUNCftos;
+	func.strtotok=FUNCstrtotok;
+	func.putstr=FUNCputstr;
+	func.getnum=FUNCgetnum;
+	func.getnumv2=FUNCgetnumv2;
+	func.readint=FUNCreadint;
+	*/
 	SREG=tSREG;
 	/******/
 	return func;
@@ -475,6 +499,114 @@ float square_root( float val ) {
                             "fstp %0;" : "=g" (result) : "g" (val)
     ) ;
     return result ;
+}
+*/
+/***pc use***
+char* FUNCfltos(FILE* stream)
+{
+	int i, block, NBytes;
+	char caracter;
+	char* value=NULL;
+	for(i=0, block=4, NBytes=0; (caracter=getc(stream)) != EOF; i++){
+		if(i==NBytes){
+			NBytes+=block;
+			value=(char*)realloc(value, NBytes*sizeof(char));
+			if(value==NULL){
+				perror("fltos at calloc");
+				break;
+			}
+		}
+		*(value+i)=caracter;
+		if(caracter=='\n'){
+			*(value+i)='\0';
+			break;
+		}
+	}
+	return value;
+}
+char* FUNCftos(FILE* stream)
+{
+	int i, block, NBytes;
+	char caracter;
+	char* value=NULL;
+	for(i=0, block=8, NBytes=0; (caracter=getc(stream)) != EOF; i++){
+		if(i==NBytes){
+			NBytes+=block;
+			value=(char*)realloc(value, NBytes*sizeof(char));
+			if(value==NULL){
+				perror("ftos at calloc");
+				break;
+			}
+		}
+		*(value+i)=caracter;
+	}
+	return value;
+}
+int FUNCstrtotok(char* line,char* token[],const char* parser)
+{
+	int i;
+	char *str;
+	str=(char*)calloc(strlen(line),sizeof(char));
+	for (i = 0, strcpy(str,line); ; i++, str = NULL) {
+		token[i] = strtok(str, parser);
+		if (token[i] == NULL)
+			break;
+		printf("%d: %s\n", i, token[i]);
+	}
+	free(str);
+	return i;
+}
+char* FUNCputstr(char* str)
+{
+	int i; char* ptr;
+	ptr = (char*)calloc(strlen(str), sizeof(char));
+	if(ptr == NULL){
+		perror("NULL!\n");
+		return NULL;
+	}
+	for(i=0; (ptr[i] = str[i]); i++){
+		if(ptr[i] == '\0')
+			break;
+	}
+	return (ptr);
+}
+int FUNCgetnum(char* x)
+{
+	int num;
+	if(!sscanf(x, "%d", &num))
+		num=0;
+	return num;
+}
+unsigned int FUNCgetnumv2(char* x)
+{
+	unsigned int RETURN;
+	unsigned int value;
+	unsigned int n;
+	errno=0;
+	n=sscanf(x,"%d",&value);
+	if(n==1){
+		RETURN=value;
+	}else if(errno != 0){
+		perror("getnum at sscanf");
+		RETURN=0;
+	}else{
+		RETURN=0;
+	}
+	return RETURN;
+}
+int FUNCreadint(int nmin, int nmax)
+{
+	int num;
+	int flag;
+	for(flag=1; flag;){
+		for( num=0; !scanf("%d",&num);getchar())
+			;
+		//printf("num: %d nmin: %d nmax: %d\n",num, nmin, nmax);
+		if((num < nmin) || (num > nmax))
+			continue;
+		flag=0;
+	}
+		return num;
 }
 */
 /*
