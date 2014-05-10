@@ -33,12 +33,15 @@ COMMENT:
 ** variable
 */
 struct TIME{
-	uint8_t hour;
-	uint8_t minute;
-	uint8_t second;
+	int8_t hour;
+	int8_t minute;
+	int8_t second;
 };
 struct CLOCK{
 	void (*increment)(void);
+	void (*decrement)(void);
+	uint8_t (*alarm)(uint8_t hour, uint8_t minute, uint8_t second);
+	void (*alarm_reset)(void);
 	char* (*show)(void);
 };
 typedef struct CLOCK CLOCK;
