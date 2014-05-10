@@ -7,7 +7,7 @@ Hardware: ATmega128 at 16 Mhz,
 License:  GNU General Public License        
 DESCRIPTION:
 USAGE:
-    Refere to the header file clock.h for a description of the routines. 
+    Refer to the header file clock.h for a description of the routines. 
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -27,7 +27,6 @@ COMMENT:
 ** library
 */
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <inttypes.h>
 /***/
@@ -39,11 +38,15 @@ COMMENT:
 ** variable
 */
 struct TIME time;
-char timp[8];
+char CLOCK_timp[8];
+uint8_t CLOCK_alarm_flag;
 /*
 ** procedure and function header
 */
 void CLOCK_increment(void);
+void CLOCK_decrement(void);
+uint8_t CLOCK_alarm(uint8_t hour, uint8_t minute, uint8_t second);
+void CLOCK_alarm_reset(void);
 char* CLOCK_show(void);
 /*
 ** procedure and function
@@ -54,7 +57,11 @@ CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second)
 	time.hour=hour;
 	time.minute=minute;
 	time.second=second;
+	CLOCK_alarm_flag=0;
 	clock.increment=CLOCK_increment;
+	clock.decrement=CLOCK_decrement;
+	clock.alarm=CLOCK_alarm;
+	clock.alarm_reset=CLOCK_alarm_reset;
 	clock.show=CLOCK_show;
 	return clock;
 }
@@ -84,22 +91,62 @@ void CLOCK_increment(void)
 		}
 	}		
 }
+void CLOCK_decrement(void)
+{
+	time.second--;
+	if(time.second<0){
+		time.minute--;
+		time.second=59;
+		if(time.minute<0){
+			time.hour--;
+			time.minute=59;
+			switch (HORA){
+				case 24:
+					if(time.hour<0)
+						time.hour=23;
+					break;
+				case 12:
+					if (time.hour<1)
+						time.hour=12;
+					break;
+				default:
+					if(time.hour<0)
+						time.hour=23;
+					break;
+			}
+		}
+	}		
+}
+uint8_t CLOCK_alarm(uint8_t hour, uint8_t minute, uint8_t second)
+{
+	if(time.hour==hour && time.minute==minute && time.second==second)
+		CLOCK_alarm_flag=1;
+	if(time.hour==hour && time.minute==minute)
+		CLOCK_alarm_flag=2;
+	if(time.hour==hour)
+		CLOCK_alarm_flag=3;
+	return CLOCK_alarm_flag;
+}
+void CLOCK_alarm_reset(void)
+{
+	CLOCK_alarm_flag=0;
+}
 char* CLOCK_show(void)
 {
 	uint8_t tmp;
-	timp[8]='\0';
-	timp[7]=time.second % 10 + '0';
+	CLOCK_timp[8]='\0';
+	CLOCK_timp[7]=time.second % 10 + '0';
 	tmp = time.second / 10;
-	timp[6]=tmp % 10 + '0';
-	timp[5]=':';
-	timp[4]=time.minute % 10 + '0';
+	CLOCK_timp[6]=tmp % 10 + '0';
+	CLOCK_timp[5]=':';
+	CLOCK_timp[4]=time.minute % 10 + '0';
 	tmp = time.minute / 10;
-	timp[3]=tmp % 10 + '0';
-	timp[2]=':';
-	timp[1]=time.hour % 10 + '0';
+	CLOCK_timp[3]=tmp % 10 + '0';
+	CLOCK_timp[2]=':';
+	CLOCK_timp[1]=time.hour % 10 + '0';
 	tmp = time.hour / 10;
-	timp[0]=tmp % 10 + '0';
-	return timp;
+	CLOCK_timp[0]=tmp % 10 + '0';
+	return CLOCK_timp;
 }
 /*
 ** interrupt
