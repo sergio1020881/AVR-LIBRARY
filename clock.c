@@ -21,7 +21,7 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	in progress
+	Very Stable
 *************************************************************************/
 /*
 ** library
@@ -119,12 +119,12 @@ void CLOCK_decrement(void)
 }
 uint8_t CLOCK_alarm(uint8_t hour, uint8_t minute, uint8_t second)
 {
-	if(time.hour==hour && time.minute==minute && time.second==second)
-		CLOCK_alarm_flag=1;
-	if(time.hour==hour && time.minute==minute)
-		CLOCK_alarm_flag=2;
 	if(time.hour==hour)
 		CLOCK_alarm_flag=3;
+	if(time.hour==hour && time.minute==minute)
+		CLOCK_alarm_flag=2;
+	if(time.hour==hour && time.minute==minute && time.second==second)
+		CLOCK_alarm_flag=1;
 	return CLOCK_alarm_flag;
 }
 void CLOCK_alarm_reset(void)
