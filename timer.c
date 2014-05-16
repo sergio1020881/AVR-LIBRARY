@@ -3,12 +3,14 @@ Title:    TIMER
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: timer.c,v 0.1 2014/04/09 14:30:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: AVR ATmega128 at 16 Mhz, 
+Hardware:
+	AVR ATmega128 at 16 Mhz,
+	Atmega 328p at 16Mhz
 License:  GNU General Public License 
 DESCRIPTION:
-	Atmega 128 at 16MHZ
-	Atmega 328p 16Mhz only one timer counter
+	Refer to datasheet
 USAGE:
+	All timers for Type 7 and only timer 0 for Type 10, to be completed.
 NOTES:
     Based on Atmega128 Datasheet
 LICENSE:
@@ -446,129 +448,7 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 		TIMER_COUNTER0_REGISTER=0X00;
 		timer0_state=0;
 	}
-/***TYPE 10***/
-#elif defined( MEGA_TIMER_COUNTER )
-	void TIMER_COUNTER0_start(unsigned int prescaler)
-	/*
-		PARAMETER SETTING
-		Frequency oscilator devision factor or prescaler.
-		prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /32 (From prescaler);
-		clk T0S /64 (From prescaler); clk T0S /128 (From prescaler); clk T 0 S /256 (From prescaler);
-		clk T 0 S /1024 (From prescaler); default - clk T 0 S /1024 (From prescaler).
-	*/
-	{
-		if(timer0_state==0){ // oneshot
-			TIMER_COUNTER0A_COMPARE_REGISTER=0XFF;
-			TIMER_COUNTER0B_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
-			switch(prescaler){
-				case 1: // clk T0S /(No prescaling)
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(1<<CS00);
-					break;
-				case 8: // clk T0S /8 (From prescaler)
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(1<<CS01);
-					break;
-				case 64: // clk T0S /64 (From prescaler)
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(3<<CS00);
-					break;
-				case 256: // clk T 0 S /256 (From prescaler)
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(4<<CS00);
-					break;
-				case 1024: // clk T 0 S /1024 (From prescaler)
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(5<<CS00);
-					break;
-				case 3: // External clock source on T0 pin. Clock on falling edge.
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(6<<CS00);
-					break;
-				case 5: // External clock source on T0 pin. Clock on rising edge.
-					TIMER_COUNTER0B_CONTROL_REGISTER|=(7<<CS00);
-					break;
-				default:
-					break;
-			}
-			timer0_state=1;
-		}	
-	}
-	void TIMER_COUNTER0_compoutmodeA(unsigned char compoutmode)
-	/*
-		compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
-		Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
-		Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
-		default-Normal port operation, OC0 disconnected.
-	*/
-	{
-		TIMER_COUNTER0A_CONTROL_REGISTER&=~((1<<COM0A0) | (1<<COM0A1));
-		switch(compoutmode){
-			case 0: // Normal port operation, OC0 disconnected.
-				break;
-			case 1: // Reserved
-					// Toggle OC0 on compare match
-				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A0);
-				break;
-			case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-					// match when downcounting.
-					// Clear OC0 on compare match
-				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A1);
-				break;
-			case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-					// match when downcounting.
-					// Set OC0 on compare match
-				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A0) | (1<<COM0A1);
-				break;
-			default:
-				break;
-		}
-	}
-	void TIMER_COUNTER0_compoutmodeB(unsigned char compoutmode)
-	/*
-		compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
-		Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
-		Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
-		default-Normal port operation, OC0 disconnected.
-	*/
-	{
-		TIMER_COUNTER0A_CONTROL_REGISTER&=~((1<<COM0B0) | (1<<COM0B1));
-		switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
-			case 0: // Normal port operation, OC0 disconnected.
-				break;
-			case 1: // Reserved
-					// Toggle OC0 on compare match
-				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B0);
-				break;
-			case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-					// match when downcounting.
-					// Clear OC0 on compare match
-				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B1);
-				break;
-			case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-					// match when downcounting.
-					// Set OC0 on compare match
-				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B0) | (1<<COM0B1);
-				break;
-			default:
-				break;
-		}
-	}
-	void TIMER_COUNTER0_compareA(unsigned char compare)
-	{
-		TIMER_COUNTER0A_COMPARE_REGISTER=compare;
-	}
-	void TIMER_COUNTER0_compareB(unsigned char compare)
-	{
-		TIMER_COUNTER0B_COMPARE_REGISTER=compare;
-	}
-	void TIMER_COUNTER0_stop(void)
-	/*
-		stops timer by setting prescaler to zero
-	*/
-	{
-		TIMER_COUNTER0B_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
-		TIMER_COUNTER0_REGISTER=0X00;
-		timer0_state=0;
-	}
-#endif
-/*****************************************************************************************/
-/***TYPE 7***/
-#if defined( ATMEGA_TIMER_COUNTER )
+	/*****************************************************************************************/
 	TIMER_COUNTER1 TIMER_COUNTER1enable(unsigned char wavegenmode, unsigned char interrupt)
 	/*
 		PARAMETER SETTING
@@ -837,10 +717,7 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 		TIMER_COUNTER1_REGISTER=0X0000;
 		timer1_state=0;
 	}
-#endif
-/*****************************************************************************************/
-/***TYPE 7***/
-#if defined( ATMEGA_TIMER_COUNTER )
+	/*****************************************************************************************/
 	TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char interrupt)
 	/*
 		PARAMETER SETTING
@@ -974,10 +851,7 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 		TIMER_COUNTER2_REGISTER=0X00;
 		timer2_state=0;
 	}
-#endif
-/*****************************************************************************************/
-/***TYPE 7***/
-#if defined( ATMEGA_TIMER_COUNTER )
+	/*****************************************************************************************/
 	TIMER_COUNTER3 TIMER_COUNTER3enable(unsigned char wavegenmode, unsigned char interrupt)
 	/*
 		PARAMETER SETTING
@@ -1241,6 +1115,125 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 		TIMER_COUNTER3B_CONTROL_REGISTER&=~(7<<CS30); // No clock source. (Timer/Counter stopped)
 		TIMER_COUNTER3_REGISTER=0X0000;
 		timer3_state=0;
+	}
+/***TYPE 10***/
+#elif defined( MEGA_TIMER_COUNTER )
+	void TIMER_COUNTER0_start(unsigned int prescaler)
+	/*
+		PARAMETER SETTING
+		Frequency oscilator devision factor or prescaler.
+		prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /32 (From prescaler);
+		clk T0S /64 (From prescaler); clk T0S /128 (From prescaler); clk T 0 S /256 (From prescaler);
+		clk T 0 S /1024 (From prescaler); default - clk T 0 S /1024 (From prescaler).
+	*/
+	{
+		if(timer0_state==0){ // oneshot
+			TIMER_COUNTER0A_COMPARE_REGISTER=0XFF;
+			TIMER_COUNTER0B_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
+			switch(prescaler){
+				case 1: // clk T0S /(No prescaling)
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(1<<CS00);
+					break;
+				case 8: // clk T0S /8 (From prescaler)
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(1<<CS01);
+					break;
+				case 64: // clk T0S /64 (From prescaler)
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(3<<CS00);
+					break;
+				case 256: // clk T 0 S /256 (From prescaler)
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(4<<CS00);
+					break;
+				case 1024: // clk T 0 S /1024 (From prescaler)
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(5<<CS00);
+					break;
+				case 3: // External clock source on T0 pin. Clock on falling edge.
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(6<<CS00);
+					break;
+				case 5: // External clock source on T0 pin. Clock on rising edge.
+					TIMER_COUNTER0B_CONTROL_REGISTER|=(7<<CS00);
+					break;
+				default:
+					break;
+			}
+			timer0_state=1;
+		}	
+	}
+	void TIMER_COUNTER0_compoutmodeA(unsigned char compoutmode)
+	/*
+		compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
+		Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
+		Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
+		default-Normal port operation, OC0 disconnected.
+	*/
+	{
+		TIMER_COUNTER0A_CONTROL_REGISTER&=~((1<<COM0A0) | (1<<COM0A1));
+		switch(compoutmode){
+			case 0: // Normal port operation, OC0 disconnected.
+				break;
+			case 1: // Reserved
+					// Toggle OC0 on compare match
+				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A0);
+				break;
+			case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+					// match when downcounting.
+					// Clear OC0 on compare match
+				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A1);
+				break;
+			case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+					// match when downcounting.
+					// Set OC0 on compare match
+				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A0) | (1<<COM0A1);
+				break;
+			default:
+				break;
+		}
+	}
+	void TIMER_COUNTER0_compoutmodeB(unsigned char compoutmode)
+	/*
+		compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
+		Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
+		Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
+		default-Normal port operation, OC0 disconnected.
+	*/
+	{
+		TIMER_COUNTER0A_CONTROL_REGISTER&=~((1<<COM0B0) | (1<<COM0B1));
+		switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
+			case 0: // Normal port operation, OC0 disconnected.
+				break;
+			case 1: // Reserved
+					// Toggle OC0 on compare match
+				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B0);
+				break;
+			case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+					// match when downcounting.
+					// Clear OC0 on compare match
+				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B1);
+				break;
+			case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+					// match when downcounting.
+					// Set OC0 on compare match
+				TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B0) | (1<<COM0B1);
+				break;
+			default:
+				break;
+		}
+	}
+	void TIMER_COUNTER0_compareA(unsigned char compare)
+	{
+		TIMER_COUNTER0A_COMPARE_REGISTER=compare;
+	}
+	void TIMER_COUNTER0_compareB(unsigned char compare)
+	{
+		TIMER_COUNTER0B_COMPARE_REGISTER=compare;
+	}
+	void TIMER_COUNTER0_stop(void)
+	/*
+		stops timer by setting prescaler to zero
+	*/
+	{
+		TIMER_COUNTER0B_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
+		TIMER_COUNTER0_REGISTER=0X00;
+		timer0_state=0;
 	}
 #endif
 /*
