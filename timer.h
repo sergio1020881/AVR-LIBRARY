@@ -37,7 +37,11 @@ COMMENT:
 struct TIMER_COUNTER0{
 	// prototype pointers
 	void (*compoutmode)(unsigned char compoutmode);
+	void (*compoutmodeA)(unsigned char compoutmode);
+	void (*compoutmodeB)(unsigned char compoutmode);
 	void (*compare)(unsigned char compare);
+	void (*compareA)(unsigned char compare);
+	void (*compareB)(unsigned char compare);
 	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
