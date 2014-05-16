@@ -8,7 +8,8 @@ License:  GNU General Public License
 DESCRIPTION:
 	reads selected analog channel
 USAGE:
-    Refere to the header file analog.h for a description of the routines. 
+    Refere to the header file analog.h for a description of the routines.
+	Datasheet Atmega328p and Atmega128
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -114,14 +115,13 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 	/***Pre-Processor Case 1***/
 	#if defined( ATMEGA_ANALOG )
 		/******/
+		ADC_SELECT&=~(3<<REFS0);
 		switch( Vreff ){
 			case 0:
-				ADC_SELECT&=~(3<<REFS0);
 				analog.VREFF=0;
 				break;
 			case 1:
 				ADC_SELECT|=(1<<REFS0);
-				ADC_SELECT&=~(1<<REFS1);
 				analog.VREFF=1;
 				break;
 			case 3:
@@ -129,7 +129,6 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 				analog.VREFF=3;
 				break;
 			default:
-				ADC_SELECT&=~(3<<REFS0);
 				analog.VREFF=0;
 				break;
 		}
@@ -149,24 +148,22 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 		ADC_CONTROL&=~(1<<ADFR);
 		ADC_CONTROL|=(1<<ADIE);
 		/******/
+		ADC_CONTROL&=~(7<<ADPS0);
 		switch( Divfactor ){
 			case 2://1
 				ADC_CONTROL|=(1<<ADPS0);
-				ADC_CONTROL&=~(3<<ADPS1);
 				analog.DIVISION_FACTOR=2;
 				break;
 			case 4://2
-				ADC_CONTROL|=(2<<ADPS0);
-				ADC_CONTROL&=~(1<<ADPS2);
+				ADC_CONTROL|=(1<<ADPS1);
 				analog.DIVISION_FACTOR=4;
 				break;
 			case 8://3
 				ADC_CONTROL|=(3<<ADPS0);
-				ADC_CONTROL&=~(1<<ADPS2);
 				analog.DIVISION_FACTOR=8;
 				break;
 			case 16://4
-				ADC_CONTROL|=(4<<ADPS0);
+				ADC_CONTROL|=(1<<ADPS2);
 				analog.DIVISION_FACTOR=16;
 				break;
 			case 32://5
@@ -189,14 +186,13 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 	/***Pre-Processor Case 2***/	
 	#elif defined( MEGA_ANALOG )
 		/******/
+		ADC_SELECT&=~(3<<REFS0);
 		switch( Vreff ){
 			case 0:
-				ADC_SELECT&=~(3<<REFS0);
 				analog.VREFF=0;
 				break;
 			case 1:
 				ADC_SELECT|=(1<<REFS0);
-				ADC_SELECT&=~(1<<REFS1);
 				analog.VREFF=1;
 				break;
 			case 3:
@@ -204,7 +200,6 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 				analog.VREFF=3;
 				break;
 			default:
-				ADC_SELECT&=~(3<<REFS0);
 				analog.VREFF=0;
 				break;
 		}
@@ -213,7 +208,7 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 		/******/
 		va_start(list, n_channel);
 		for(i=0;i<n_channel;i++){
-			ADC_CHANNEL_GAIN[i] = va_arg(list, uint8_t);
+			ADC_CHANNEL_GAIN[i] = va_arg(list, int);
 		}
 		va_end(list);
 		ADC_SELECT&=~MUX_MASK;
@@ -225,23 +220,21 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 		ADC_TRIGGER&=~(7<<ADTS0);
 		ADC_CONTROL|=(1<<ADIE);
 		/******/
+		ADC_CONTROL&=~(7<<ADPS0);
 		switch( Divfactor ){
 			case 2://1
-				ADC_CONTROL&=~(7<<ADPS0);
 				analog.DIVISION_FACTOR=2;
 				break;
 			case 4://2
-				ADC_CONTROL|=(2<<ADPS0);
-				ADC_CONTROL&=~(1<<ADPS2);
+				ADC_CONTROL|=(1<<ADPS1);
 				analog.DIVISION_FACTOR=4;
 				break;
 			case 8://3
 				ADC_CONTROL|=(3<<ADPS0);
-				ADC_CONTROL&=~(1<<ADPS2);
 				analog.DIVISION_FACTOR=8;
 				break;
 			case 16://4
-				ADC_CONTROL|=(4<<ADPS0);
+				ADC_CONTROL|=(1<<ADPS2);
 				analog.DIVISION_FACTOR=16;
 				break;
 			case 32://5
