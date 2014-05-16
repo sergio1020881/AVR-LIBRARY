@@ -51,18 +51,22 @@ COMMENT:
 	/******/
 	#define MEGA_INTERRUPT
 	#define External_Interrupt_Control_Register_A EICRA
-	#define External_Interrupt_Control_Register_B EICRB
 	#define External_Interrupt_Mask_Register EIMSK
 	#define External_Interrupt_Flag_Register EIFR
-	#define MCU_Control_Status_Register MCUCSR
-	#define MCU_Control_Status_Register_Mask 0X1F
+	#define Pin_Change_Interrrupt_Control_Register PCICR
+	#define Pin_Change_Interrupt_Flag_Register PCIFR
+	#define Pin_Change_Mask_Register_2 PCMSK2
+	#define Pin_Change_Mask_Register_1 PCMSK1
+	#define Pin_Change_Mask_Register_0 PCMSK0
+	#define MCU_Control_Status_Register MCUSR
+	#define MCU_Control_Status_Register_Mask 0X0F
 /***TYPE 3***/
 #elif defined(__AVR_ATmega161__)
 	/* ATmega with UART */
  	#error "AVR ATmega161 currently not supported by this libaray !"
 #else
 	/***TYPE 4***/
- 	#error "no ANALOG definition for MCU available"
+ 	#error "no INTERRUPT definition for MCU available"
 #endif
 /*
 ** variable
@@ -84,10 +88,10 @@ INTERRUPT INTERRUPTenable(void)
 	INTERRUPT interrupt;
 	/***Pre-Processor Case 1***/
 	#if defined( ATMEGA_INTERRUPT )
-	External_Interrupt_Mask_Register=0X00;
+		External_Interrupt_Mask_Register=0X00;
 	/***Pre-Processor Case 2***/	
 	#elif defined( MEGA_INTERRUPT )
-	External_Interrupt_Mask_Register=0X00;
+		External_Interrupt_Mask_Register=0X00;
 	#endif
 	/******/
 	interrupt.set=INTERRUPT_set;
@@ -95,229 +99,319 @@ INTERRUPT INTERRUPTenable(void)
 	interrupt.reset_status=INTERRUPT_reset_status;
 	return interrupt;
 }
-uint8_t INTERRUPT_reset_status(void)
-{
-	uint8_t reset,ret=0;
-	reset=(MCU_Control_Status_Register & MCU_Control_Status_Register_Mask);
-	switch(reset){
-		case 1: // Power-On Reset Flag
-			ret=0;
-			MCU_Control_Status_Register&=~(1<<PORF);
-			break;
-		case 2: // External Reset Flag
-			MCU_Control_Status_Register&=~(1<<EXTRF);
-			ret=1;
-			break;
-		case 4: // Brown-out Reset Flag
-			MCU_Control_Status_Register&=~(1<<BORF);
-			ret=2;
-			break;
-		case 8: // Watchdog Reset Flag
-			MCU_Control_Status_Register&=~(1<<WDRF);
-			ret=3;
-			break;
-		case 16: // JTAG Reset Flag
-			MCU_Control_Status_Register&=~(1<<JTRF);
-			ret=4;
-			break;
-		default: // clear all status
-			MCU_Control_Status_Register&=~(MCU_Control_Status_Register_Mask);
-			break;
+/***Pre-Processor Case 1***/
+#if defined( ATMEGA_INTERRUPT )
+	uint8_t INTERRUPT_reset_status(void)
+	{
+		uint8_t reset,ret=0;
+		reset=(MCU_Control_Status_Register & MCU_Control_Status_Register_Mask);
+		switch(reset){
+			case 1: // Power-On Reset Flag
+				ret=0;
+				MCU_Control_Status_Register&=~(1<<PORF);
+				break;
+			case 2: // External Reset Flag
+				MCU_Control_Status_Register&=~(1<<EXTRF);
+				ret=1;
+				break;
+			case 4: // Brown-out Reset Flag
+				MCU_Control_Status_Register&=~(1<<BORF);
+				ret=2;
+				break;
+			case 8: // Watchdog Reset Flag
+				MCU_Control_Status_Register&=~(1<<WDRF);
+				ret=3;
+				break;
+			case 16: // JTAG Reset Flag
+				MCU_Control_Status_Register&=~(1<<JTRF);
+				ret=4;
+				break;
+			default: // clear all status
+				MCU_Control_Status_Register&=~(MCU_Control_Status_Register_Mask);
+				break;
+		}
+		return ret;
 	}
-	return ret;
-}
-void INTERRUPT_set(uint8_t channel, uint8_t sense)
-{
-	switch( channel ){
-		case 0: 
-			External_Interrupt_Mask_Register&=~(1<<INT0);
-			External_Interrupt_Control_Register_A&=~((1<<ISC01) | (1<<ISC00));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-				case 1: // The low level of INTn generates an interrupt request.
-					break;
-				case 2: // The falling edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=(1<<ISC01);
-					break;
-				case 3: // The rising edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=((1<<ISC01) | (1<<ISC00));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT0);
-			break;
-		case 1:
-			External_Interrupt_Mask_Register&=~(1<<INT1);
-			External_Interrupt_Control_Register_A&=~((1<<ISC11) | (1<<ISC10));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-				case 1: // The low level of INTn generates an interrupt request.
-					break;
-				case 2: // The falling edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=(1<<ISC11);
-					break;
-				case 3: // The rising edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=((1<<ISC11) | (1<<ISC10));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT1);
-			break;
-		case 2:
-			External_Interrupt_Mask_Register&=~(1<<INT2);
-			External_Interrupt_Control_Register_A&=~((1<<ISC21) | (1<<ISC20));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-				case 1: // The low level of INTn generates an interrupt request.
-					break;
-				case 2: // The falling edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=(1<<ISC21);
-					break;
-				case 3: // The rising edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=((1<<ISC21) | (1<<ISC20));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT2);
-			break;
-		case 3:
-			External_Interrupt_Mask_Register&=~(1<<INT3);
-			External_Interrupt_Control_Register_A&=~((1<<ISC31) | (1<<ISC30));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-				case 1: // The low level of INTn generates an interrupt request.
-					break;
-				case 2: // The falling edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=(1<<ISC31);
-					break;
-				case 3: // The rising edge of INTn generates asynchronously an interrupt request.
-					External_Interrupt_Control_Register_A|=((1<<ISC31) | (1<<ISC30));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT3);
-			break;
-		case 4:
-			External_Interrupt_Mask_Register&=~(1<<INT4);
-			External_Interrupt_Control_Register_B&=~((1<<ISC41) | (1<<ISC40));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-					break;
-				case 1: // Any logical change on INTn generates an interrupt request
-					External_Interrupt_Control_Register_B|=(1<<ISC40);
-					break;
-				case 2: // The falling edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=(1<<ISC41);
-					break;
-				case 3: // The rising edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=((1<<ISC41) | (1<<ISC40));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT4);
-			break;
-		case 5:
-			External_Interrupt_Mask_Register&=~(1<<INT5);
-			External_Interrupt_Control_Register_B&=~((1<<ISC51) | (1<<ISC50));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-					break;
-				case 1: // Any logical change on INTn generates an interrupt request
-					External_Interrupt_Control_Register_B|=(1<<ISC50);
-					break;
-				case 2: // The falling edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=(1<<ISC51);
-					break;
-				case 3: // The rising edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=((1<<ISC51) | (1<<ISC50));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT5);
-			break;
-		case 6:
-			External_Interrupt_Mask_Register&=~(1<<INT6);
-			External_Interrupt_Control_Register_B&=~((1<<ISC61) | (1<<ISC60));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-					break;
-				case 1: // Any logical change on INTn generates an interrupt request
-					External_Interrupt_Control_Register_B|=(1<<ISC60);
-					break;
-				case 2: // The falling edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=(1<<ISC61);
-					break;
-				case 3: // The rising edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=((1<<ISC61) | (1<<ISC60));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT6);
-			break;
-		case 7:
-			External_Interrupt_Mask_Register&=~(1<<INT7);
-			External_Interrupt_Control_Register_B&=~((1<<ISC71) | (1<<ISC70));
-			switch(sense){
-				case 0: // The low level of INTn generates an interrupt request.
-					break;
-				case 1: // Any logical change on INTn generates an interrupt request
-					External_Interrupt_Control_Register_B|=(1<<ISC70);
-					break;
-				case 2: // The falling edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=(1<<ISC71);
-					break;
-				case 3: // The rising edge between two samples of INTn generates an interrupt request.
-					External_Interrupt_Control_Register_B|=((1<<ISC71) | (1<<ISC70));
-					break;
-				default: // The low level of INTn generates an interrupt request.
-					break;
-			}
-			External_Interrupt_Mask_Register|=(1<<INT7);
-			break;
-		default:
-			External_Interrupt_Mask_Register=0X00;
-			break;
+	void INTERRUPT_set(uint8_t channel, uint8_t sense)
+	{
+		switch( channel ){
+			case 0: 
+				External_Interrupt_Mask_Register&=~(1<<INT0);
+				External_Interrupt_Control_Register_A&=~((1<<ISC01) | (1<<ISC00));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+					case 1: // The low level of INTn generates an interrupt request.
+						break;
+					case 2: // The falling edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=(1<<ISC01);
+						break;
+					case 3: // The rising edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=((1<<ISC01) | (1<<ISC00));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT0);
+				break;
+			case 1:
+				External_Interrupt_Mask_Register&=~(1<<INT1);
+				External_Interrupt_Control_Register_A&=~((1<<ISC11) | (1<<ISC10));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+					case 1: // The low level of INTn generates an interrupt request.
+						break;
+					case 2: // The falling edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=(1<<ISC11);
+						break;
+					case 3: // The rising edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=((1<<ISC11) | (1<<ISC10));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT1);
+				break;
+			case 2:
+				External_Interrupt_Mask_Register&=~(1<<INT2);
+				External_Interrupt_Control_Register_A&=~((1<<ISC21) | (1<<ISC20));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+					case 1: // The low level of INTn generates an interrupt request.
+						break;
+					case 2: // The falling edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=(1<<ISC21);
+						break;
+					case 3: // The rising edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=((1<<ISC21) | (1<<ISC20));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT2);
+				break;
+			case 3:
+				External_Interrupt_Mask_Register&=~(1<<INT3);
+				External_Interrupt_Control_Register_A&=~((1<<ISC31) | (1<<ISC30));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+					case 1: // The low level of INTn generates an interrupt request.
+						break;
+					case 2: // The falling edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=(1<<ISC31);
+						break;
+					case 3: // The rising edge of INTn generates asynchronously an interrupt request.
+						External_Interrupt_Control_Register_A|=((1<<ISC31) | (1<<ISC30));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT3);
+				break;
+			case 4:
+				External_Interrupt_Mask_Register&=~(1<<INT4);
+				External_Interrupt_Control_Register_B&=~((1<<ISC41) | (1<<ISC40));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+						break;
+					case 1: // Any logical change on INTn generates an interrupt request
+						External_Interrupt_Control_Register_B|=(1<<ISC40);
+						break;
+					case 2: // The falling edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=(1<<ISC41);
+						break;
+					case 3: // The rising edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=((1<<ISC41) | (1<<ISC40));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT4);
+				break;
+			case 5:
+				External_Interrupt_Mask_Register&=~(1<<INT5);
+				External_Interrupt_Control_Register_B&=~((1<<ISC51) | (1<<ISC50));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+						break;
+					case 1: // Any logical change on INTn generates an interrupt request
+						External_Interrupt_Control_Register_B|=(1<<ISC50);
+						break;
+					case 2: // The falling edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=(1<<ISC51);
+						break;
+					case 3: // The rising edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=((1<<ISC51) | (1<<ISC50));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT5);
+				break;
+			case 6:
+				External_Interrupt_Mask_Register&=~(1<<INT6);
+				External_Interrupt_Control_Register_B&=~((1<<ISC61) | (1<<ISC60));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+						break;
+					case 1: // Any logical change on INTn generates an interrupt request
+						External_Interrupt_Control_Register_B|=(1<<ISC60);
+						break;
+					case 2: // The falling edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=(1<<ISC61);
+						break;
+					case 3: // The rising edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=((1<<ISC61) | (1<<ISC60));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT6);
+				break;
+			case 7:
+				External_Interrupt_Mask_Register&=~(1<<INT7);
+				External_Interrupt_Control_Register_B&=~((1<<ISC71) | (1<<ISC70));
+				switch(sense){
+					case 0: // The low level of INTn generates an interrupt request.
+						break;
+					case 1: // Any logical change on INTn generates an interrupt request
+						External_Interrupt_Control_Register_B|=(1<<ISC70);
+						break;
+					case 2: // The falling edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=(1<<ISC71);
+						break;
+					case 3: // The rising edge between two samples of INTn generates an interrupt request.
+						External_Interrupt_Control_Register_B|=((1<<ISC71) | (1<<ISC70));
+						break;
+					default: // The low level of INTn generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT7);
+				break;
+			default:
+				External_Interrupt_Mask_Register=0X00;
+				break;
 		}
-}
-void INTERRUPT_off(uint8_t channel)
-{
-	switch( channel ){
-		case 0: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT0);
-			break;
-		case 1: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT1);
-			break;
-		case 2: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT2);
-			break;
-		case 3: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT3);
-			break;
-		case 4: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT4);
-			break;
-		case 5: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT5);
-			break;
-		case 6: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT6);
-			break;
-		case 7: // desable
-			External_Interrupt_Mask_Register&=~(1<<INT7);
-			break;
-		default: // all desable
-			External_Interrupt_Mask_Register=0X00;
-			break;
+	}
+	void INTERRUPT_off(uint8_t channel)
+	{
+		switch( channel ){
+			case 0: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT0);
+				break;
+			case 1: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT1);
+				break;
+			case 2: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT2);
+				break;
+			case 3: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT3);
+				break;
+			case 4: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT4);
+				break;
+			case 5: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT5);
+				break;
+			case 6: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT6);
+				break;
+			case 7: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT7);
+				break;
+			default: // all disable
+				External_Interrupt_Mask_Register=0X00;
+				break;
 		}
-}
+	}
+/***Pre-Processor Case 2***/	
+#elif defined( MEGA_INTERRUPT )
+	uint8_t INTERRUPT_reset_status(void)
+	{
+		uint8_t reset,ret=0;
+		reset=(MCU_Control_Status_Register & MCU_Control_Status_Register_Mask);
+		switch(reset){
+			case 1: // Power-On Reset Flag
+				ret=0;
+				MCU_Control_Status_Register&=~(1<<PORF);
+				break;
+			case 2: // External Reset Flag
+				MCU_Control_Status_Register&=~(1<<EXTRF);
+				ret=1;
+				break;
+			case 4: // Brown-out Reset Flag
+				MCU_Control_Status_Register&=~(1<<BORF);
+				ret=2;
+				break;
+			case 8: // Watchdog Reset Flag
+				MCU_Control_Status_Register&=~(1<<WDRF);
+				ret=3;
+				break;
+			default: // clear all status
+				MCU_Control_Status_Register&=~(MCU_Control_Status_Register_Mask);
+				break;
+		}
+		return ret;
+	}
+	void INTERRUPT_set(uint8_t channel, uint8_t sense)
+	{
+		switch( channel ){
+			case 0: 
+				External_Interrupt_Mask_Register&=~(1<<INT0);
+				External_Interrupt_Control_Register_A&=~((1<<ISC01) | (1<<ISC00));
+				switch(sense){
+					case 0: // The low level of INT0 generates an interrupt request.
+					case 1: // Any logical change on INT0 generates an interrupt request.
+						break;
+					case 2: // The falling edge of INT0 generates an interrupt request.
+						External_Interrupt_Control_Register_A|=(1<<ISC01);
+						break;
+					case 3: // The rising edge of INT0 generates an interrupt request.
+						External_Interrupt_Control_Register_A|=((1<<ISC01) | (1<<ISC00));
+						break;
+					default: // The low level of INT0 generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT0);
+				break;
+			case 1:
+				External_Interrupt_Mask_Register&=~(1<<INT1);
+				External_Interrupt_Control_Register_A&=~((1<<ISC11) | (1<<ISC10));
+				switch(sense){
+					case 0: // The low level of INT1 generates an interrupt request.
+					case 1: // Any logical change on INT1 generates an interrupt request.
+						break;
+					case 2: // The falling edge of INT1 generates an interrupt request.
+						External_Interrupt_Control_Register_A|=(1<<ISC11);
+						break;
+					case 3: // The rising edge of INT1 generates an interrupt request.
+						External_Interrupt_Control_Register_A|=((1<<ISC11) | (1<<ISC10));
+						break;
+					default: // The low level of INT1 generates an interrupt request.
+						break;
+				}
+				External_Interrupt_Mask_Register|=(1<<INT1);
+				break;
+			default:
+				External_Interrupt_Mask_Register=0X00;
+				break;
+		}
+	}
+	void INTERRUPT_off(uint8_t channel)
+	{
+		switch( channel ){
+			case 0: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT0);
+				break;
+			case 1: // desable
+				External_Interrupt_Mask_Register&=~(1<<INT1);
+				break;
+			default: // all disable
+				External_Interrupt_Mask_Register=0X00;
+				break;
+		}
+	}
+#endif
 /*
 ** interrupt
 */
