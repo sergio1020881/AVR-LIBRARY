@@ -2,14 +2,8 @@
 Title:    TIMER
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: timer.h,v 0.1 2014/04/09 14:30:00 sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: AVR ATmega128 at 16 Mhz, 
-License:  GNU General Public License 
-DESCRIPTION:
-	Atmega 128 at 16MHZ
-USAGE:
-NOTES:
-    Based on Atmega128 Datasheet
+Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher 
+License:  GNU General Public License
 LICENSE:
     Copyright (C) 2014
     This program is free software; you can redistribute it and/or modify
@@ -63,7 +57,11 @@ typedef struct TIMER_COUNTER1 TIMER_COUNTER1;
 struct TIMER_COUNTER2{
 	// prototype pointers
 	void (*compoutmode)(unsigned char compoutmode);
+	void (*compoutmodeA)(unsigned char compoutmode);
+	void (*compoutmodeB)(unsigned char compoutmode);
 	void (*compare)(unsigned char compare);
+	void (*compareA)(unsigned char compare);
+	void (*compareB)(unsigned char compare);
 	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
