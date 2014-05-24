@@ -87,6 +87,7 @@ long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max);
 unsigned char FUNCbcd2bin(unsigned char val);
 unsigned char FUNCbin2bcd(unsigned val);
 long FUNCgcd1(long a, long b);
+uint8_t FUNCpincheck(uint8_t port, uint8_t pin);
 /***pc use***
 char* FUNCfltos(FILE* stream);
 char* FUNCftos(FILE* stream);
@@ -137,6 +138,7 @@ FUNC FUNCenable( void )
 	func.bcd2bin=FUNCbcd2bin;
 	func.bin2bcd=FUNCbin2bcd;
 	func.gcd1=FUNCgcd1;
+	func.pincheck=FUNCpincheck;
 	/***pc use***
 	func.fltos=FUNCfltos;
 	func.ftos=FUNCftos;
@@ -440,6 +442,15 @@ long FUNCgcd1(long a, long b)
 		}
 	}	
 	return b;
+}
+uint8_t FUNCpincheck(uint8_t port, uint8_t pin)
+{
+	uint8_t lh;
+	if(port & (1<<pin))
+		lh=1;
+	else
+		lh=0;
+	return lh;
 }
 /*
 int gcd( int a, int b ) {
