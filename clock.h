@@ -17,7 +17,7 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	in progress
+	Very Stable
 ************************************************************************/
 #ifndef CLOCK_H_
 	#define CLOCK_H_
@@ -41,7 +41,11 @@ struct CLOCK{
 	void (*increment)(void);
 	void (*decrement)(void);
 	uint8_t (*alarm)(uint8_t hour, uint8_t minute, uint8_t second);
+	uint8_t (*second_count)(uint16_t second);
+	void (*second_count_reset)(void);
+	void (*second_count_stop)(void);
 	void (*alarm_reset)(void);
+	void (*alarm_stop)(void);
 	char* (*show)(void);
 };
 typedef struct CLOCK CLOCK;
