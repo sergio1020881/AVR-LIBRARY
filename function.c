@@ -61,6 +61,7 @@ int StringLength (const char string[]);
 void Reverse(char s[]);
 /******/
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits);
+uint8_t FUNCpinmatch(uint8_t match, uint8_t pin, uint8_t HL);
 uint8_t FUNChmerge(uint8_t X, uint8_t Y);
 uint8_t FUNClmerge(uint8_t X, uint8_t Y);
 uint8_t FUNClh(uint8_t xi, uint8_t xf);
@@ -112,6 +113,7 @@ FUNC FUNCenable( void )
 	func.stringlength=StringLength;
 	func.reverse=Reverse;
 	func.mayia=FUNCmayia;
+	func.pinmatch=FUNCpinmatch;
 	func.hmerge=FUNChmerge;
 	func.lmerge=FUNClmerge;
 	func.lh=FUNClh;
@@ -164,6 +166,23 @@ unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
 	diff=xf^xi;
 	trans=diff&xf;
 	return (trans<<nbits)|diff;
+}
+//pinmatch
+uint8_t FUNCpinmatch(uint8_t match, uint8_t pin, uint8_t HL)
+{
+	uint8_t result;
+	result=match&pin;
+	if(HL){
+		if(result==match);
+		else
+			result=0;
+	}else{
+		if(result)
+			result=0;
+		else
+			result=match;
+	}
+	return result;
 }
 // hmerge
 uint8_t FUNChmerge(uint8_t X, uint8_t Y)
