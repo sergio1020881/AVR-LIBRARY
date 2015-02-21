@@ -89,6 +89,7 @@ unsigned char FUNCbcd2bin(unsigned char val);
 unsigned char FUNCbin2bcd(unsigned val);
 long FUNCgcd1(long a, long b);
 uint8_t FUNCpincheck(uint8_t port, uint8_t pin);
+char* FUNCprint_binary(int number);
 /***pc use***
 char* FUNCfltos(FILE* stream);
 char* FUNCftos(FILE* stream);
@@ -141,6 +142,7 @@ FUNC FUNCenable( void )
 	func.bin2bcd=FUNCbin2bcd;
 	func.gcd1=FUNCgcd1;
 	func.pincheck=FUNCpincheck;
+	func.print_binary=FUNCprint_binary;
 	/***pc use***
 	func.fltos=FUNCfltos;
 	func.ftos=FUNCftos;
@@ -471,6 +473,14 @@ uint8_t FUNCpincheck(uint8_t port, uint8_t pin)
 		lh=0;
 	return lh;
 }
+char* FUNCprint_binary(int number)
+{
+	int i,c;
+    for(i=128,c=0;i;i>>=1,c++){
+	(number & i) ? (FUNCstr[c]='1') : (FUNCstr[c]='0');
+	}
+	FUNCstr[c]='\0';
+	return FUNCstr;
 /*
 int gcd( int a, int b ) {
     int result ;
