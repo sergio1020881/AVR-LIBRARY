@@ -61,6 +61,7 @@ struct FUNC{
 	unsigned char (*bin2bcd)(unsigned val);
 	long (*gcd1)(long a, long b);
 	uint8_t (*pincheck)(uint8_t port, uint8_t pin);
+	char* (*print_binary)(int number);
 	/***pc use***
 	char* (*fltos)(FILE* stream);
 	char* (*ftos)(FILE* stream);
