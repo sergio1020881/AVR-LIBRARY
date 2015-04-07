@@ -42,28 +42,32 @@ COMMENT:
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
-#define MM74C923_STR_SIZE 5
+#define MM74C923_STR_SIZE 16
 /*
 ** variable
 */
+FUNC func;
 volatile uint8_t *mm74c923_DDR;
 volatile uint8_t *mm74c923_PIN;
 volatile uint8_t *mm74c923_PORT;
+uint8_t mm74c923_tmp;
 uint8_t mm74c923_getchmem;
-uint8_t mm74c923_getch_oneshotmem;
+//uint8_t mm74c923_getch_oneshotmem;
 char MM74C923_KEY_CODE[]={
 	'A','B','C','E','G','H','I','J','M','N','O','P','Q','R','S','T','V','X','Y','Z',
 	'0','0','0','0','0','0','0','0','0','0','0','0','L','-','+','F','7','8','9','#',
 	'4','5','6','U','1','2','3','D','0','/','.','*','\0'
 };
 uint8_t mm74c923_i;
-char MM74C923_string[MM74C923_STR_SIZE];
+char MM74C923_string_tmp[MM74C923_STR_SIZE];
+char MM74C923_strings[MM74C923_STR_SIZE];
 /*
 ** procedure and function header
 */
-//char MM74C923_getch_oneshot(void);
+uint8_t MM74C923_activate(void);
 char MM74C923_getch(void);
 char* MM74C923_gets(void);
+char* MM74C923_string(void);
 /*
 ** procedure and function
 */
@@ -74,6 +78,7 @@ MM74C923 MM74C923enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile u
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	//ALLOCAÇÂO MEMORIA Para Estrutura
+	func=FUNCenable();
 	MM74C923 mm74c923;
 	//import parametros
 	mm74c923_DDR=ddr;
@@ -82,52 +87,29 @@ MM74C923 MM74C923enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile u
 	//inic variables
 	*mm74c923_DDR=(1<<MM74C923_OUTPUT_ENABLE);
 	*mm74c923_PORT=0xFF;
-	mm74c923_getchmem=0;
-	mm74c923_getch_oneshotmem=0;
+	mm74c923_tmp&=~(1<<MM74C923_DATA_AVAILABLE);
+	mm74c923_getchmem&=~(1<<MM74C923_DATA_AVAILABLE);
 	mm74c923_i=0;
 	//Direccionar apontadores para PROTOTIPOS
-	//mm74c923.getch_oneshot=MM74C923_getch_oneshot;
+	mm74c923.activate=MM74C923_activate;
 	mm74c923.getch=MM74C923_getch;
 	mm74c923.gets=MM74C923_gets;
+	mm74c923.string=MM74C923_string;
 	SREG=tSREG;
 	//
 	return mm74c923;
 }
-char MM74C923_getch_oneshot(void)
-{
-	uint8_t c,index,lh,hl;
-	c=*mm74c923_PIN;
-	index=0;
-	FUNC func=FUNCenable();
-	lh=func.lh(mm74c923_getch_oneshotmem,c); // one shot low to high
-	hl=func.hl(mm74c923_getch_oneshotmem,c);
-	mm74c923_getch_oneshotmem=c;
-	if(lh&(1<<MM74C923_DATA_AVAILABLE)){
-		*mm74c923_PORT&=~(1<<MM74C923_OUTPUT_ENABLE);
-		c=*mm74c923_PIN;
-		if(c&1<<MM74C923_DATA_OUT_A) index|=1; else index&=~1;
-		if(c&1<<MM74C923_DATA_OUT_B) index|=2; else index&=~2;
-		if(c&1<<MM74C923_DATA_OUT_C) index|=4; else index&=~4;
-		if(c&1<<MM74C923_DATA_OUT_D) index|=8; else index&=~8;
-		if(c&1<<MM74C923_DATA_OUT_E) index|=16; else index&=~16;
-		if(c&1<<MM74C923_EXTRA_DATA_OUT_PIN) index|=32; else index&=~32;
-	}else if(hl&(1<<MM74C923_DATA_AVAILABLE)){
-		*mm74c923_PORT|=(1<<MM74C923_OUTPUT_ENABLE);
-		index=52;
-	}else{
-		index=52;
-	}
-	return MM74C923_KEY_CODE[index];
+uint8_t MM74C923_activate(void){
+	mm74c923_getchmem=mm74c923_tmp;
+	mm74c923_tmp=*mm74c923_PIN;
+	return 0;
 }
 char MM74C923_getch(void)
 {
 	uint8_t c,index,lh,hl;
-	c=*mm74c923_PIN;
 	index=0;
-	FUNC func=FUNCenable();
-	lh=func.lh(mm74c923_getchmem,c); // one shot low to high
-	hl=func.hl(mm74c923_getchmem,c);
-	mm74c923_getchmem=c;
+	lh=func.lh(mm74c923_getchmem,mm74c923_tmp); // one shot low to high
+	hl=func.hl(mm74c923_getchmem,mm74c923_tmp);
 	if(lh&(1<<MM74C923_DATA_AVAILABLE)){
 		*mm74c923_PORT&=~(1<<MM74C923_OUTPUT_ENABLE);
 		c=*mm74c923_PIN;
@@ -148,17 +130,22 @@ char MM74C923_getch(void)
 char* MM74C923_gets(void)
 {
 	char c;
-	c=MM74C923_getch_oneshot();
-	if(c=='*')
+	c=MM74C923_getch();
+	if(c=='*'){
 		mm74c923_i=0;
-	else if(c!='\0'){
+		func.copy(MM74C923_strings,MM74C923_string_tmp);
+	}else if(c!='\0'){
 		if(mm74c923_i==MM74C923_STR_SIZE)
 			mm74c923_i=0;
-		MM74C923_string[mm74c923_i]=c;
+		MM74C923_string_tmp[mm74c923_i]=c;
 		mm74c923_i++;
-		MM74C923_string[mm74c923_i]='\0';
+		MM74C923_string_tmp[mm74c923_i]='\0';
 	}
-	return MM74C923_string;
+	return MM74C923_string_tmp;
+}
+char* MM74C923_string(void)
+{
+	return MM74C923_strings;
 }
 /*
 ** interrupt
