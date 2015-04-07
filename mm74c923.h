@@ -39,9 +39,10 @@ COMMENT:
 ** variable
 */
 struct mm74c923{
-	//char (*getch_oneshot)(void);
+	uint8_t (*activate)(void);
 	char (*getch)(void);
 	char* (*gets)(void);
+	char* (*string)(void);
 };
 typedef struct mm74c923 MM74C923;
 /*
