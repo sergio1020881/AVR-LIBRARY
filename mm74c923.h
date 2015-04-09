@@ -20,7 +20,7 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	  working on it
+	  stable
 ************************************************************************/
 #ifndef _MM74C923_H_
 	#define _MM74C9232_H_
@@ -39,10 +39,10 @@ COMMENT:
 ** variable
 */
 struct mm74c923{
-	uint8_t (*activate)(void);
+	void (*activate)(void);
 	char (*getch)(void);
 	char* (*gets)(void);
-	char* (*string)(void);
+	char* (*data)(void);
 };
 typedef struct mm74c923 MM74C923;
 /*
