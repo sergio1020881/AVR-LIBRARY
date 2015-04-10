@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    LCD
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: lcd.c,v 0.2 2014/4/12 00:00:00 sergio Exp $
+File:     $Id: lcd.c,v 0.2 2015/4/09 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
@@ -22,7 +22,8 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	  tested atemga 128 16Mhz, Very Stable                    
+	tested Atemga128 16Mhz and Atmega328 8Mhz
+	reviewed 09/04/2015, stable                    
 *************************************************************************/
 #ifndef F_CPU
 	#define F_CPU 16000000UL
@@ -65,7 +66,7 @@ char LCD0_read(unsigned short D_I);
 void LCD0_BF(void);
 void LCD0_putch(char c);
 char LCD0_getch(void);
-void LCD0_string(const char* s);
+void LCD0_string(const char* s); // RAW
 void LCD0_clear(void);
 void LCD0_gotoxy(unsigned int x, unsigned int y);
 void LCD0_strobe(unsigned int num);
@@ -149,7 +150,7 @@ void LCD0_inic(void)
 void LCD0_write(char c, unsigned short D_I)
 {
 	*lcd0_PORT&=~(1<<RW);//lcd as input WRITE INSTRUCTION
-	if(D_I==0) *lcd0_PORT&=~(1<<D_I); else *lcd0_PORT|=(1<<RS);
+	if(D_I) *lcd0_PORT|=(1<<RS); else *lcd0_PORT&=~(1<<RS);
 	*lcd0_DDR|=(1<<DB0)|(1<<DB1)|(1<<DB2)|(1<<DB3);//mcu as output
 	*lcd0_PORT|=(1<<EN);
 	if(c & 0x80) *lcd0_PORT|=1<<DB3; else *lcd0_PORT&=~(1<<DB3);
@@ -172,7 +173,7 @@ char LCD0_read(unsigned short D_I)
 	*lcd0_DDR&=~((1<<DB0)|(1<<DB1)|(1<<DB2)|(1<<DB3));//mcu as input
 	*lcd0_PORT|=(1<<DB0)|(1<<DB1)|(1<<DB2)|(1<<DB3);//pullup resistors
 	*lcd0_PORT|=(1<<RW);//lcd as output READ INSTRUCTION
-	if(D_I==0) *lcd0_PORT&=~(1<<D_I); else *lcd0_PORT|=(1<<RS);
+	if(D_I) *lcd0_PORT|=(1<<RS); else *lcd0_PORT&=~(1<<RS);
 	*lcd0_PORT|=(1<<EN);
 	if(*lcd0_PIN & (1<<DB3)) c|=1<<7; else c&=~(1<<7);
 	if(*lcd0_PIN & (1<<DB2)) c|=1<<6; else c&=~(1<<6);
@@ -324,7 +325,7 @@ void LCD1_inic(void)
 void LCD1_write(char c, unsigned short D_I)
 {
 	*lcd1_PORT&=~(1<<RW);//lcd as input WRITE INSTRUCTION
-	if(D_I==0) *lcd1_PORT&=~(1<<D_I); else *lcd1_PORT|=(1<<RS);
+	if(D_I) *lcd1_PORT|=(1<<RS); else *lcd1_PORT&=~(1<<D_I);
 	*lcd1_DDR|=(1<<DB0)|(1<<DB1)|(1<<DB2)|(1<<DB3);//mcu as output
 	*lcd1_PORT|=(1<<EN);
 	if(c & 0x80) *lcd1_PORT|=1<<DB3; else *lcd1_PORT&=~(1<<DB3);
@@ -347,7 +348,7 @@ char LCD1_read(unsigned short D_I)
 	*lcd1_DDR&=~((1<<DB0)|(1<<DB1)|(1<<DB2)|(1<<DB3));//mcu as input
 	*lcd1_PORT|=(1<<DB0)|(1<<DB1)|(1<<DB2)|(1<<DB3);//pullup resistors
 	*lcd1_PORT|=(1<<RW);//lcd as output READ INSTRUCTION
-	if(D_I==0) *lcd1_PORT&=~(1<<D_I); else *lcd1_PORT|=(1<<RS);
+	if(D_I) *lcd1_PORT|=(1<<RS); else *lcd1_PORT&=~(1<<D_I);
 	*lcd1_PORT|=(1<<EN);
 	if(*lcd1_PIN & (1<<DB3)) c|=1<<7; else c&=~(1<<7);
 	if(*lcd1_PIN & (1<<DB2)) c|=1<<6; else c&=~(1<<6);
