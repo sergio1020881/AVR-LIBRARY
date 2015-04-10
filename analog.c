@@ -105,7 +105,7 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 	ADC_SELECTOR=0;
 	adc_n_sample=0;
 	//PROTOTIPOS
-	int ANALOG_read(int channel);
+	//int ANALOG_read(int channel);
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
 	ANALOG analog;
 	//import parametros
