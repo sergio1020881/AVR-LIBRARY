@@ -22,7 +22,7 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	stable          
+	stable
 *************************************************************************/
 #ifndef F_CPU
 	#define F_CPU 16000000UL
