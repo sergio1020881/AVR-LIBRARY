@@ -17,7 +17,8 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	Very Stable
+	Stable
+	review 09042015
 ************************************************************************/
 #ifndef ANALOG_H
 	#define ANALOG_H
