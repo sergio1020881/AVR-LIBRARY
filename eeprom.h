@@ -1,11 +1,12 @@
 /*************************************************************************
 Title:    eeprom wrapper
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: eeprom.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
+File:     $Id: eeprom.h,v 0.2 2015/04/09 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: ATmega128 at 16 Mhz 
 License:  GNU General Public License        
 DESCRIPTION:
+	Wrapper for Object Oriented Approach
 USAGE:
 NOTES:
 LICENSE:
