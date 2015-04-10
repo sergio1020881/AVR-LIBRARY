@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    LCD
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: lcd.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
+File:     $Id: lcd.h,v 0.2 2015/04/09 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License
@@ -20,7 +20,8 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	  tested atemga 128 16Mhz, Very Stable
+	tested Atemga128 16Mhz and Atmega328 8Mhz
+	reviewed 09/04/2015, stable
 ************************************************************************/
 #ifndef _LCD_H_
 	#define _LCD_H_
