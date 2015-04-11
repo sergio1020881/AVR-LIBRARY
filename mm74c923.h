@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    MM74C923
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: mm74c923.h,v 0.1 2015/04/09 14:00:00 sergio Exp $
+File:     $Id: mm74c923.h,v 0.1 2015/04/11 14:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License
