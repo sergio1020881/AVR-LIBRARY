@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    clock.h
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: clock.h,v 0.2 2014/05/10 17:00:00 sergio Exp $
+File:     $Id: clock.h,v 0.2 2015/04/11 17:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: ATmega128 at 16 Mhz
 License:  GNU General Public License 
