@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    LCD
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: lcd.h,v 0.2 2015/04/09 00:00:00 sergio Exp $
+File:     $Id: lcd.h,v 0.2 2015/04/11 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License
@@ -48,6 +48,8 @@ struct display{
 	void (*putch)(char c);
 	char (*getch)(void);
 	void (*string)(const char *s);
+	void (*string_size)(const char* s, uint8_t size); // RAW
+	void (*hspace)(uint8_t n);
 	void (*clear)(void);
 	void (*gotoxy)(unsigned int x, unsigned int y);
 	void (*reboot)(void);
