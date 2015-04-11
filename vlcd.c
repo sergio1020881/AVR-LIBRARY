@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    VLCD
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: vlcd.c,v 0.2 2014/4/12 00:00:00 sergio Exp $
+File:     $Id: vlcd.c,v 0.2 2015/4/11 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
@@ -255,3 +255,6 @@ unsigned int VLCD_ticks(unsigned int num)
 ** interrupt
 */
 /***EOF***/
+/***COMMENT
+
+***/
