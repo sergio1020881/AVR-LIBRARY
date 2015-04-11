@@ -45,6 +45,7 @@ COMMENT:
 //CMD RS
 #define INST 0
 #define DATA 1
+#define LCD_N_TICKS 1
 /*
 ** variable
 */
@@ -158,14 +159,14 @@ void LCD0_write(char c, unsigned short D_I)
 	if(c & 0x20) *lcd0_PORT|=1<<DB1; else *lcd0_PORT&=~(1<<DB1);
 	if(c & 0x10) *lcd0_PORT|=1<<DB0; else *lcd0_PORT&=~(1<<DB0);
 	*lcd0_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 	*lcd0_PORT|=(1<<EN);
 	if(c & 0x08) *lcd0_PORT|=1<<DB3; else *lcd0_PORT&=~(1<<DB3);
 	if(c & 0x04) *lcd0_PORT|=1<<DB2; else *lcd0_PORT&=~(1<<DB2);
 	if(c & 0x02) *lcd0_PORT|=1<<DB1; else *lcd0_PORT&=~(1<<DB1);
 	if(c & 0x01) *lcd0_PORT|=1<<DB0; else *lcd0_PORT&=~(1<<DB0);
 	*lcd0_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 }
 char LCD0_read(unsigned short D_I)
 {
@@ -180,14 +181,14 @@ char LCD0_read(unsigned short D_I)
 	if(*lcd0_PIN & (1<<DB1)) c|=1<<5; else c&=~(1<<5);
 	if(*lcd0_PIN & (1<<DB0)) c|=1<<4; else c&=~(1<<4);
 	*lcd0_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 	*lcd0_PORT|=(1<<EN);
 	if(*lcd0_PIN & (1<<DB3)) c|=1<<3; else c&=~(1<<3);
 	if(*lcd0_PIN & (1<<DB2)) c|=1<<2; else c&=~(1<<2);
 	if(*lcd0_PIN & (1<<DB1)) c|=1<<1; else c&=~(1<<1);
 	if(*lcd0_PIN & (1<<DB0)) c|=1<<0; else c&=~(1<<0);
 	*lcd0_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 	return c;
 }
 void LCD0_BF(void)
@@ -196,7 +197,7 @@ void LCD0_BF(void)
 	char inst=0x80;
 	for(i=0;0x80&inst;i++){
 		inst=LCD0_read(INST);
-		LCD_ticks(1);
+		LCD_ticks(LCD_N_TICKS);
 		if(i>10)// if something goes wrong
 			break;
 	}
@@ -333,14 +334,14 @@ void LCD1_write(char c, unsigned short D_I)
 	if(c & 0x20) *lcd1_PORT|=1<<DB1; else *lcd1_PORT&=~(1<<DB1);
 	if(c & 0x10) *lcd1_PORT|=1<<DB0; else *lcd1_PORT&=~(1<<DB0);
 	*lcd1_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 	*lcd1_PORT|=(1<<EN);
 	if(c & 0x08) *lcd1_PORT|=1<<DB3; else *lcd1_PORT&=~(1<<DB3);
 	if(c & 0x04) *lcd1_PORT|=1<<DB2; else *lcd1_PORT&=~(1<<DB2);
 	if(c & 0x02) *lcd1_PORT|=1<<DB1; else *lcd1_PORT&=~(1<<DB1);
 	if(c & 0x01) *lcd1_PORT|=1<<DB0; else *lcd1_PORT&=~(1<<DB0);
 	*lcd1_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 }
 char LCD1_read(unsigned short D_I)
 {
@@ -355,14 +356,14 @@ char LCD1_read(unsigned short D_I)
 	if(*lcd1_PIN & (1<<DB1)) c|=1<<5; else c&=~(1<<5);
 	if(*lcd1_PIN & (1<<DB0)) c|=1<<4; else c&=~(1<<4);
 	*lcd1_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 	*lcd1_PORT|=(1<<EN);
 	if(*lcd1_PIN & (1<<DB3)) c|=1<<3; else c&=~(1<<3);
 	if(*lcd1_PIN & (1<<DB2)) c|=1<<2; else c&=~(1<<2);
 	if(*lcd1_PIN & (1<<DB1)) c|=1<<1; else c&=~(1<<1);
 	if(*lcd1_PIN & (1<<DB0)) c|=1<<0; else c&=~(1<<0);
 	*lcd1_PORT&=~(1<<EN);
-	LCD_ticks(1);
+	LCD_ticks(LCD_N_TICKS);
 	return c;
 }
 void LCD1_BF(void)
@@ -371,7 +372,7 @@ void LCD1_BF(void)
 	char inst=0x80;
 	for(i=0;0x80&inst;i++){
 		inst=LCD1_read(INST);
-		LCD_ticks(1);
+		LCD_ticks(LCD_N_TICKS);
 		if(i>10)// if something goes wrong
 			break;
 	}
