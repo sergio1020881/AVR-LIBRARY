@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    LCD
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: lcd.c,v 0.2 2015/4/09 00:00:00 sergio Exp $
+File:     $Id: lcd.c,v 0.2 2015/4/11 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
@@ -68,6 +68,8 @@ void LCD0_BF(void);
 void LCD0_putch(char c);
 char LCD0_getch(void);
 void LCD0_string(const char* s); // RAW
+void LCD0_string_size(const char* s, uint8_t size); // RAW
+void LCD0_hspace(uint8_t n);
 void LCD0_clear(void);
 void LCD0_gotoxy(unsigned int x, unsigned int y);
 void LCD0_strobe(unsigned int num);
@@ -79,6 +81,8 @@ void LCD1_BF(void);
 void LCD1_putch(char c);
 char LCD1_getch(void);
 void LCD1_string(const char* s);
+void LCD1_string_size(const char* s, uint8_t size); // RAW
+void LCD1_hspace(uint8_t n);
 void LCD1_clear(void);
 void LCD1_gotoxy(unsigned int x, unsigned int y);
 void LCD1_strobe(unsigned int num);
@@ -110,6 +114,8 @@ LCD0 LCD0enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *
 	lcd0.putch=LCD0_putch;
 	lcd0.getch=LCD0_getch;
 	lcd0.string=LCD0_string;
+	lcd0.string_size=LCD0_string_size; // RAW
+	lcd0.hspace=LCD0_hspace;
 	lcd0.clear=LCD0_clear;
 	lcd0.gotoxy=LCD0_gotoxy;
 	lcd0.reboot=LCD0_reboot;
@@ -223,6 +229,31 @@ void LCD0_string(const char* s)
 		LCD0_BF();
 	}
 }
+void LCD0_string_size(const char* s, uint8_t size)
+{
+	char tmp;
+	uint8_t pos=0;
+	while(*s){
+		tmp=*(s++);
+		pos++;
+		if(pos>size) // 1 TO SIZE+1
+			break;
+		LCD0_write(tmp,DATA);
+		LCD0_BF();
+	}
+	while(pos<size){ // TO SIZE
+		pos++;
+		LCD0_write(' ',DATA);
+		LCD0_BF();
+	}
+}
+void LCD0_hspace(uint8_t n)
+{
+	for(;n;n--){
+		LCD0_write(' ',DATA);
+		LCD0_BF();
+	}
+}
 void LCD0_clear(void)
 {
 	LCD0_write(0x01,INST);
@@ -285,6 +316,8 @@ LCD1 LCD1enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *
 	lcd1.putch=LCD1_putch;
 	lcd1.getch=LCD1_getch;
 	lcd1.string=LCD1_string;
+	lcd1.string_size=LCD1_string_size; // RAW
+	lcd1.hspace=LCD1_hspace;
 	lcd1.clear=LCD1_clear;
 	lcd1.gotoxy=LCD1_gotoxy;
 	lcd1.reboot=LCD1_reboot;
@@ -398,6 +431,31 @@ void LCD1_string(const char* s)
 		LCD1_BF();
 	}
 }
+void LCD1_string_size(const char* s, uint8_t size)
+{
+	char tmp;
+	uint8_t pos=0;
+	while(*s){
+		tmp=*(s++);
+		pos++;
+		if(pos>size)
+			break;
+		LCD1_write(tmp,DATA);
+		LCD1_BF();
+	}
+	while(pos<size){
+		pos++;
+		LCD1_write(' ',DATA);
+		LCD1_BF();
+	}
+}
+void LCD1_hspace(uint8_t n)
+{
+	for(;n;n--){
+		LCD1_write(' ',DATA);
+		LCD1_BF();
+	}
+}
 void LCD1_clear(void)
 {
 	LCD1_write(0x01,INST);
@@ -447,3 +505,6 @@ unsigned int LCD_ticks(unsigned int num)
 ** interrupt
 */
 /***EOF***/
+/***COMMENTS
+DO NOT BOTHER SAYING THERE IS REPEATED CODE, I KNOW.
+***/
