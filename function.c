@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    FUNCTION
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: function.c,v 0.1 2013/12/30 15:00:00 sergio Exp $
+File:     $Id: function.c,v 0.1 2015/04/11 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
@@ -481,6 +481,7 @@ char* FUNCprint_binary(int number)
 	}
 	FUNCstr[c]='\0';
 	return FUNCstr;
+}
 /*
 int gcd( int a, int b ) {
     int result ;
@@ -653,3 +654,6 @@ int FUNCreadint(int nmin, int nmax)
 ** interrupt
 */
 /***EOF***/
+/***COMMENTS
+
+***/
