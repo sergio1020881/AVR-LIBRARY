@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    VFSM
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: vfsm.c,v 0.1 2014/04/09 14:30:00 sergio Exp $
+File:     $Id: vfsm.c,v 0.1 2015/04/11 14:30:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR ATmega128 at 16 Mhz, 
 License:  GNU General Public License 
@@ -135,3 +135,6 @@ uint8_t VLOGIC_read(struct VLOGIC *l, uint8_t mask, uint8_t input, uint8_t outpu
 ** interrupt
 */
 /***EOF***/
+/***COMMENT
+
+***/
