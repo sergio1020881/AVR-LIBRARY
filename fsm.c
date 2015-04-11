@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    FSM
 Author:   Sergio Manuel Santos <sergio1020881@gmail.com>
-File:     $Id: fsm.c,v 0.1 2013/12/30 15:00:00 sergio Exp $
+File:     $Id: fsm.c,v 0.1 2015/04/11 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
@@ -347,3 +347,6 @@ char EFSM_typeget(struct EFSM *r)
 ** interrupt
 */
 /***EOF***/
+/***COMMENTS
+
+***/
