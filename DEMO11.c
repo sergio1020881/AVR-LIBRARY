@@ -153,7 +153,7 @@ int main(void)
 		lcd0.gotoxy(0,1);
 		//lcd0.string(function.resizestr(uart.read(),12));
 		if(relogio.second_count(210)==1)
-			lcd0.string("BOOM");
+			lcd0.string("WALA");
 		else
 			lcd0.string(function.resizestr(uart.read(),12));
 		//eeprom.read_block((char*)tmp, (uint8_t*)NonVolatileString, 16);
