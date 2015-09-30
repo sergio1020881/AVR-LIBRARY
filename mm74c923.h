@@ -43,6 +43,7 @@ struct mm74c923{
 	char (*getch)(void);
 	char* (*gets)(void);
 	char* (*data)(void);
+	void (*data_clear)(void);
 };
 typedef struct mm74c923 MM74C923;
 /*

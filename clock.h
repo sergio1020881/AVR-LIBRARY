@@ -38,6 +38,7 @@ struct TIME{
 	int8_t second;
 };
 struct CLOCK{
+	void (*set)(uint8_t hour, uint8_t minute, uint8_t second);
 	void (*increment)(void);
 	void (*decrement)(void);
 	uint8_t (*alarm)(uint8_t hour, uint8_t minute, uint8_t second);

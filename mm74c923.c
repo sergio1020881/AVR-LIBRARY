@@ -55,7 +55,7 @@ uint8_t mm74c923_mem;
 uint8_t MM74C923_KEY_CODE_INDEX;
 char MM74C923_KEY_CODE[]={
 	'A','B','C','E','G','H','I','J','M','N','O','P','Q','R','S','T','V','X','Y','Z',
-	'0','0','0','0','0','0','0','0','0','0','0','0','L','-','+','F','7','8','9','#',
+	'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','L','-','+','F','7','8','9','#',
 	'4','5','6','U','1','2','3','D','0','/','.','*','\0'
 };
 uint8_t MM74C923_KEY_BUFFER_INDEX;
@@ -69,6 +69,7 @@ void MM74C923_activate(void);
 char MM74C923_getch(void);
 char* MM74C923_gets(void);
 char* MM74C923_data(void);
+void MM74C923_data_clear(void);
 /*
 ** procedure and function
 */
@@ -96,6 +97,7 @@ MM74C923 MM74C923enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile u
 	mm74c923.getch=MM74C923_getch;
 	mm74c923.gets=MM74C923_gets;
 	mm74c923.data=MM74C923_data;
+	mm74c923.data_clear=MM74C923_data_clear;
 	SREG=tSREG;
 	//
 	return mm74c923;
@@ -148,6 +150,11 @@ char* MM74C923_data(void){
 		MM74C923_pointer=MM74C923_KEY_BUFFER;
 	return MM74C923_pointer;
 }
+void MM74C923_data_clear(void){
+	MM74C923_KEY_BUFFER_INDEX=0;
+	MM74C923_KEY_BUFFER[MM74C923_KEY_BUFFER_INDEX]='\0';
+}
+
 /*
 ** interrupt
 */

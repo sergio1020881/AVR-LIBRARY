@@ -46,6 +46,7 @@ uint8_t CLOCK_compare_active;
 /*
 ** procedure and function header
 */
+void CLOCK_set(uint8_t hour, uint8_t minute, uint8_t second);
 void CLOCK_increment(void);
 void CLOCK_decrement(void);
 uint8_t CLOCK_alarm(uint8_t hour, uint8_t minute, uint8_t second);
@@ -66,6 +67,7 @@ CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second)
 	time.second=second;
 	CLOCK_alarm_flag=0X0F;
 	CLOCK_compare_active=0X0F;
+	clock.set=CLOCK_set;
 	clock.increment=CLOCK_increment;
 	clock.decrement=CLOCK_decrement;
 	clock.alarm=CLOCK_alarm;
@@ -76,6 +78,12 @@ CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second)
 	clock.alarm_stop=CLOCK_alarm_stop;
 	clock.show=CLOCK_show;
 	return clock;
+}
+void CLOCK_set(uint8_t hour, uint8_t minute, uint8_t second)
+{
+	time.hour=hour;
+	time.minute=minute;
+	time.second=second;
 }
 void CLOCK_increment(void)
 {

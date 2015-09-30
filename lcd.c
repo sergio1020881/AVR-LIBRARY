@@ -45,11 +45,11 @@ COMMENT:
 //CMD RS
 #define INST 0
 #define DATA 1
+//ticks depends on CPU frequency this case 16Mhz
 #define LCD_N_TICKS 1
 /*
 ** variable
 */
-//ticks depends on CPU frequency this case 16Mhz
 volatile uint8_t *lcd0_DDR;
 volatile uint8_t *lcd0_PIN;
 volatile uint8_t *lcd0_PORT;

@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    Interrupt
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: interrupt.c,v 0.2 2015/04/11 00:00:00 sergio Exp $
+File:     $Id: interrupt.c,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
@@ -416,6 +416,3 @@ INTERRUPT INTERRUPTenable(void)
 ** interrupt
 */
 /***EOF***/
-/***COMMENTS
-
-***/

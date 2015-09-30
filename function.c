@@ -482,6 +482,18 @@ char* FUNCprint_binary(int number)
 	FUNCstr[c]='\0';
 	return FUNCstr;
 }
+uint8_t leap_year_check(uint16_t year){
+	uint8_t i;
+	if ( !(year%400))
+    	i=1;
+  	else if ( !(year%100))
+    	i=0;
+  	else if ( !(year%4) )
+    	i=1;
+  	else
+    	i=0;
+	return i;
+}
 /*
 int gcd( int a, int b ) {
     int result ;

@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    Interrupt UART library with receive/transmit circular buffers
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: uart.c,v 1.6.2.1 2015/04/11 13:00:00 sergio Exp $
+File:     $Id: uart.c,v 1.6.2.1 2014/04/21 13:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: any AVR with built-in UART,
 License:  GNU General Public License       
@@ -19,7 +19,7 @@ USAGE:
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
-    Copyright (C) 2014
+    Copyright (C) 2014 Peter Fleury
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -992,6 +992,3 @@ Purpose:  called when the UART1 is ready to transmit the next byte
 }
 #endif
 /***EOF***/
-/***COMMENT
-LOTS OF WORK PUT IN THIS, AND RESEARCH.
-***/
