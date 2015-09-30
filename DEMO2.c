@@ -84,12 +84,12 @@ int main(void)
 	PORTINIT();
 	/***INICIALIZE OBJECTS***/
 	FUNC function= FUNCenable();
-	LCD lcd = LCDenable(&DDRA,&PINA,&PORTA);
+	LCD0 lcd = LCD0enable(&DDRA,&PINA,&PORTA);
 	UART1 uart= UART1enable(103,8,1,NONE);//103 para 9600, 68 para 14400
 	VLOGIC timer_0 = VLOGICenable(memoria_1,3*vector_size);
 	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	TIMER0 timer0 = TIMER0enable(0,2);
+	TIMER_COUNTER0 timer0 = TIMER_COUNTER0enable(0,2);
 	SPI spi = SPIenable(SPI_MASTER_MODE, SPI_MSB_DATA_ORDER, 0, 8);
 	uart.puts("OLA SERGIO !!");
 	/******/
@@ -99,7 +99,8 @@ int main(void)
 	char tmp[16];
 	int entrada;
 	uint8_t vmfsm[4];
-	timer0.start(255, 8);
+	timer0.start(8);
+	timer0.compare(255);
 	/**********/
 	while(TRUE){
 		lcd.reboot();
