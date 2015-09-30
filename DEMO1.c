@@ -104,7 +104,7 @@ int main(void)
 	PORTINIT();
 	/***INICIALIZE OBJECTS***/
 	FUNC function= FUNCenable();
-	LCD lcd = LCDenable(&DDRA,&PINA,&PORTA);
+	LCD0 lcd = LCD0enable(&DDRA,&PINA,&PORTA);
 	UART1 uart= UART1enable(103,8,1,NONE);//103 para 9600, 68 para 14400
 	VFSM button_1 = VFSMenable(memoria_1,18);
 	VFSM button_2 = VFSMenable(memoria_2,3);
@@ -115,7 +115,7 @@ int main(void)
 	VFSM button_7 = VFSMenable(memoria_7,9);
 	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
-	TIMER0 timer0 = TIMER0enable(0,2);
+	TIMER_COUNTER0 timer0 = TIMER_COUNTER0enable(0,2);
 	SPI spi = SPIenable(SPI_MASTER_MODE, SPI_MSB_DATA_ORDER, 0, 8);
 	uart.puts("OLA SERGIO !!");
 	/******/
@@ -153,7 +153,7 @@ int main(void)
 		//trigger(analog_value)
 		/***TIMER***/
 		if(vmfsm[6]==10 || vmfsm[6]==9 || vmfsm[6]==0){
-			timer0.start(255, 1024);
+			timer0.start(1024);
 		}else{
 			TIMER0_COMPARE_MATCH=0;
 			timer0.stop();
@@ -162,8 +162,8 @@ int main(void)
 		lcd.string(function.resizestr(uart.read(),12));
 		/***/
 		i2c.start(TWI_MASTER_MODE);
-		i2c.connect(10,TWI_WRITE);
-		i2c.write('h');
+		i2c.master_connect(10,TWI_WRITE);
+		i2c.master_write('h');
 		i2c.stop();
 	} 
 }
