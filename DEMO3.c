@@ -68,7 +68,7 @@ int main(void)
 	PORTINIT();
 	/***INICIALIZE OBJECTS***/
 	FUNC function= FUNCenable();
-	LCD lcd = LCDenable(&DDRA,&PINA,&PORTA);
+	LCD0 lcd = LCD0enable(&DDRA,&PINA,&PORTA);
 	UART1 uart= UART1enable(103,8,1,NONE);//103 para 9600, 68 para 14400
 	I2C i2c = I2Cenable(85, 1);
 	ANALOG analog = ANALOGenable(1, 128, 3, 0, 4, 7);
