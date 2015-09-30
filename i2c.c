@@ -1,7 +1,7 @@
 /************************************************************************
 Title:    I2C library
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: i2c.c,v 0.2 2015/04/11 00:00:00 sergio Exp $
+File:     $Id: i2c.c,v 0.2 2014/04/12 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: ATmega128 at 16 Mhz
 License:  GNU General Public License
@@ -490,6 +490,3 @@ SIGNAL(SIG_2WIRE_SERIAL)
 }
 */
 /***EOF***/
-/***COMMENT
-THOUGH IT IS WORKING, THIS LIBRARY IS NOT YET COMPLETED, STILL NECESSARY MORE CODE.
-***/
