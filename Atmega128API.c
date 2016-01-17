@@ -38,7 +38,6 @@ COMMENT:
 #include <avr/pgmspace.h>
 #include <util/delay.h>
 #include <stdarg.h>
-
 /*
 ** constant and macro
 */
@@ -46,7 +45,22 @@ COMMENT:
 #ifndef GLOBAL_INTERRUPT_ENABLE
     #define GLOBAL_INTERRUPT_ENABLE 7
 #endif
+#define A 0
+#define B 1
+#define C 2
+#define D 3
+#define E 4
+#define F 5
+#define G 6
+#define H 7
+/*
+** library
+*/
 #include "Atmega128API.h"
+/*
+** VAR
+*/
+uint8_t PORT[8];
 /***/
 /*************************************************************************
 ANALOG API START
@@ -890,7 +904,6 @@ INTERRUPT API START
 /*
 ** constant and macro
 */
-/***TYPE 1***/
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
 	/******/
 	#define ATMEGA_INTERRUPT
@@ -3525,7 +3538,6 @@ Purpose:  called when the UART is ready to transmit the next byte
 /*
 ** these functions are only for ATmegas with two USART
 */
-#if defined( ATMEGA_USART1 )
 /*************************************************************************
 Function: UART1enable() 2
 Purpose:  initialize UART1 and set baudrate
@@ -3807,7 +3819,7 @@ Purpose:  called when the UART1 is ready to transmit the next byte
 		UART1_DATA = UART1_TxBuf[UART1_TxTail];  /* start transmission */
 	}	
 }
-#endif
+
 /***EOF***/
 /*************************************************************************
 UART API END
@@ -3917,7 +3929,7 @@ uint8_t VLOGIC_read(struct VLOGIC *l, uint8_t mask, uint8_t input, uint8_t outpu
 */
 /***EOF***/
 /*************************************************************************
-VFSM API START
+VFSM API END
 *************************************************************************/
 /*************************************************************************
 FSM API START
