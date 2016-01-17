@@ -164,7 +164,7 @@ typedef struct INTERRUPT INTERRUPT;
 INTERRUPT INTERRUPTenable(void);
 /***EOF***/
 /************************************************************************
-INTERRUPT API START
+INTERRUPT API END
 ************************************************************************/
 /************************************************************************
 LCD API START
@@ -207,7 +207,7 @@ LCD0 LCD0enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *
 LCD1 LCD1enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
 /***EOF***/
 /************************************************************************
-LCD API START
+LCD API END
 ************************************************************************/
 /*************************************************************************
 SPI API START
@@ -235,7 +235,7 @@ typedef struct SPI SPI;
 SPI SPIenable(uint8_t master_slave_select, uint8_t data_order,  uint8_t data_modes, uint8_t prescaler);
 /***EOF***/
 /*************************************************************************
-SPI API START
+SPI API END
 *************************************************************************/
 /*************************************************************************
 TIMER API START
@@ -349,7 +349,7 @@ typedef struct I2C I2C;
 I2C I2Cenable(unsigned char device_id, unsigned char prescaler);
 /***EOF***/
 /************************************************************************
-I2C API START
+I2C API END
 testing phase
 ************************************************************************/
 /************************************************************************
@@ -557,7 +557,7 @@ VFSM VFSMenable(uint8_t *veeprom, unsigned int sizeeeprom );
 VLOGIC VLOGICenable(uint8_t *veeprom, unsigned int sizeeeprom );
 /***EOF***/
 /************************************************************************
-VFSM API START
+VFSM API END
 ************************************************************************/
 /************************************************************************
 FSM API START
@@ -613,7 +613,7 @@ uint8_t sfsm_read(uint8_t input, uint8_t feedback, uint8_t page);
 uint8_t sfsm_state(uint8_t page);
 /***EOF***/
 /************************************************************************
-FSM API START
+FSM API END
 ************************************************************************/
 /************************************************************************
 CLOCK API START
