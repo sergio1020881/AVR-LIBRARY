@@ -177,10 +177,10 @@ LCD API START
 #define RW 1
 #define EN 2
 #define NC 3
-#define DB0 4
-#define DB1 5
-#define DB2 6
-#define DB3 7
+#define DB4 4
+#define DB5 5
+#define DB6 6
+#define DB7 7
 /*
 ** variable
 */
