@@ -263,11 +263,19 @@ void LCD0_gotoxy(unsigned int x, unsigned int y)
 {
 	switch(y){
 		case 0:
-			LCD0_write((0x80+x),INST);
+			LCD0_write((0x80+x),INST);//0x80
 			LCD0_BF();
 			break;
 		case 1:
-			LCD0_write((0xC0+x),INST);
+			LCD0_write((0xC0+x),INST);//0xC0
+			LCD0_BF();
+			break;
+		case 2:
+			LCD0_write((0x94+x),INST);
+			LCD0_BF();
+			break;
+		case 3:
+			LCD0_write((0xD4+x),INST);
 			LCD0_BF();
 			break;
 		default:
