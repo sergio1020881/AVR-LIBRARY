@@ -33,7 +33,8 @@ struct TRAN{
 	uint8_t hl;
 	uint8_t lh;
 	/***PROTOTYPES VTABLE***/
-	uint8_t (*update)(struct TRAN *tr, uint8_t idata);
+	uint8_t (*update)(struct TRAN *tran, uint8_t idata);
+	uint8_t (*oneshot)(struct TRAN *tran, uint8_t idata);
 };
 typedef struct TRAN TRAN;
 /*
