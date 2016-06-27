@@ -57,7 +57,8 @@ COMMENT:
 */
 uint8_t TRANlh(uint8_t xi, uint8_t xf);
 uint8_t TRANhl(uint8_t xi, uint8_t xf);
-uint8_t TRANupdate(struct TRAN *tr, uint8_t idata);
+uint8_t TRANupdate(struct TRAN *tran, uint8_t idata);
+uint8_t TRANoneshot(struct TRAN *tran, uint8_t idata);
 /*
 ** procedure and function
 */
@@ -74,6 +75,7 @@ TRAN TRANenable( void )
 	tran.lh=0;
 	// function pointers
 	tran.update=TRANupdate;
+	tran.oneshot=TRANoneshot;
 	SREG=tSREG;
 	/******/
 	return tran;
@@ -99,13 +101,26 @@ uint8_t TRANupdate(struct TRAN *tran, uint8_t idata)
 {
 	uint8_t r;
 	if(tran->data == idata)
-		r=0;
+	r=0;
 	else{
 		tran->lh = TRANlh(tran->data, idata);
 		tran->hl = TRANhl(tran->data, idata);
 		tran->data=idata;
 		r=1;
 	}
+	return r;
+}
+// TRANoneshot
+uint8_t TRANoneshot(struct TRAN *tran, uint8_t idata)
+{
+	uint8_t r;
+	if(tran->data == idata)
+		r=0;
+	else
+		r=1;
+	tran->lh = TRANlh(tran->data, idata);
+	tran->hl = TRANhl(tran->data, idata);
+	tran->data=idata;
 	return r;
 }
 /*
