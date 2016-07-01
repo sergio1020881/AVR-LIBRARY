@@ -43,7 +43,8 @@ struct FUNC{
 	void (*copy)(char to[], char from[]);
 	void (*squeeze)(char s[], int c);
 	void (*shellsort)(int v[], int n);
-	void (*itoa)(int32_t n, char s[]);
+	void (*i16toa)(int16_t n, char s[]);
+	void (*i32toa)(int32_t n, char s[]);
 	int (*trim)(char s[]);
 	int (*pmax)(int a1, int a2);
 	int (*gcd)(int u, int v);
@@ -72,10 +73,22 @@ struct FUNC{
 	int (*readint)(int nmin, int nmax);
 	*/
 };
+/*
+struct TRAN{
+	//Variables
+	uint8_t data;
+	uint8_t hl;
+	uint8_t lh;
+	//PROTOTYPES VTABLE
+	uint8_t (*update)(struct TRAN *tr, uint8_t idata);
+};
+*/
 typedef struct FUNC FUNC;
+//typedef struct TRAN TRAN;
 /*
 ** procedure and function header
 */
+//TRAN TRANenable(void);
 FUNC FUNCenable(void);
 #endif
 /***EOF***/
