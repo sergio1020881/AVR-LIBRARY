@@ -6,7 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
 DESCRIPTION:
-	Atmega 128 at 16MHZ
+	Atmega 8535 at 8MHZ
 USAGE:
     Refere to the header file function.h for a description of the routines. 
 NOTES:
@@ -25,7 +25,7 @@ COMMENT:
 	Very Stable
 *************************************************************************/
 #ifndef F_CPU
-	#define F_CPU 16000000UL
+	#define F_CPU 8000000UL
 #endif
 /*
 ** library
@@ -71,7 +71,8 @@ void FUNCswap(long *px, long *py);
 void FUNCcopy(char to[], char from[]);
 void FUNCsqueeze(char s[], int c);
 void FUNCshellsort(int v[], int n);
-void FUNCitoa(int32_t n, char s[]);
+void FUNCi16toa(int16_t n, char s[]);
+void FUNCi32toa(int32_t n, char s[]);
 int FUNCtrim(char s[]);
 int FUNCpmax(int a1, int a2);
 int FUNCgcd (int u, int v);
@@ -99,6 +100,7 @@ int FUNCgetnum(char* x);
 unsigned int FUNCgetnumv2(char* x);
 int FUNCreadint(int nmin, int nmax);
 */
+// uint8_t TRANupdate(struct TRAN *tr, uint8_t idata);
 /*
 ** procedure and function
 */
@@ -124,7 +126,8 @@ FUNC FUNCenable( void )
 	func.copy=FUNCcopy;
 	func.squeeze=FUNCsqueeze;
 	func.shellsort=FUNCshellsort;
-	func.itoa=FUNCitoa;
+	func.i16toa=FUNCi16toa;
+	func.i32toa=FUNCi32toa;
 	func.trim=FUNCtrim;
 	func.pmax=FUNCpmax;
 	func.gcd=FUNCgcd;
@@ -156,6 +159,24 @@ FUNC FUNCenable( void )
 	/******/
 	return func;
 }
+/*
+TRAN TRANenable( void )
+{
+	uint8_t tSREG;
+	tSREG=SREG;
+	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
+	// struct object
+	TRAN tran;
+	// local var
+	tran.data=0;
+	tran.hl=0;
+	tran.lh=0;
+	// function pointers
+	tran.update=TRANupdate;
+	SREG=tSREG;
+	return tran;
+}
+*/
 // mayia
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
 {//magic formula
@@ -254,10 +275,27 @@ void FUNCshellsort(int v[], int n)
 				v[j+gap] = temp;
 			}
 }
-// itoa: convert n to characters in s
-void FUNCitoa(int32_t n, char s[])
+// i32toa: convert n to characters in s
+void FUNCi32toa(int32_t n, char s[])
 {
-	int i, sign;
+	uint8_t i;
+	int32_t sign;
+	if ((sign = n) < 0) // record sign
+	n = -n; // make n positive
+	i = 0;
+	do { // generate digits in reverse order
+		s[i++] = n % 10 + '0'; // get next digit
+	}while ((n /= 10) > 0); // delete it
+	if (sign < 0)
+	s[i++] = '-';
+	s[i] = '\0';
+	Reverse(s);
+}
+// i16toa: convert n to characters in s
+void FUNCi16toa(int16_t n, char s[])
+{
+	uint8_t i;
+	int16_t sign;
 	if ((sign = n) < 0) // record sign
 		n = -n; // make n positive
 	i = 0;
@@ -660,6 +698,20 @@ int FUNCreadint(int nmin, int nmax)
 		flag=0;
 	}
 		return num;
+}
+*/
+/*
+uint8_t TRANupdate(struct TRAN *tran, uint8_t idata)
+{
+	uint8_t r;
+	if(tran->data == idata)
+		r=0;
+	else{
+		tran->lh = FUNClh(tran->data, idata);
+		tran->hl = FUNChl(tran->data, idata);
+		r=1;
+	}
+	return r;
 }
 */
 /*
