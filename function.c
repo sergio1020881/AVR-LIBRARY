@@ -6,7 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License        
 DESCRIPTION:
-	Atmega 8535 at 8MHZ
+	Atmega 8535 at 8MHZ; Atmega 328 at 16Mhz; Atmega 128 at 16Mhz
 USAGE:
     Refere to the header file function.h for a description of the routines. 
 NOTES:
@@ -90,7 +90,7 @@ unsigned char FUNCbcd2bin(unsigned char val);
 unsigned char FUNCbin2bcd(unsigned val);
 long FUNCgcd1(long a, long b);
 uint8_t FUNCpincheck(uint8_t port, uint8_t pin);
-char* FUNCprint_binary(int number);
+char* FUNCprint_binary(uint8_t number);
 /***pc use***
 char* FUNCfltos(FILE* stream);
 char* FUNCftos(FILE* stream);
@@ -159,24 +159,6 @@ FUNC FUNCenable( void )
 	/******/
 	return func;
 }
-/*
-TRAN TRANenable( void )
-{
-	uint8_t tSREG;
-	tSREG=SREG;
-	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
-	// struct object
-	TRAN tran;
-	// local var
-	tran.data=0;
-	tran.hl=0;
-	tran.lh=0;
-	// function pointers
-	tran.update=TRANupdate;
-	SREG=tSREG;
-	return tran;
-}
-*/
 // mayia
 unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
 {//magic formula
@@ -511,9 +493,9 @@ uint8_t FUNCpincheck(uint8_t port, uint8_t pin)
 		lh=0;
 	return lh;
 }
-char* FUNCprint_binary(int number)
+char* FUNCprint_binary(uint8_t number)
 {
-	int i,c;
+	uint8_t i,c;
     for(i=128,c=0;i;i>>=1,c++){
 	(number & i) ? (FUNCstr[c]='1') : (FUNCstr[c]='0');
 	}
@@ -698,20 +680,6 @@ int FUNCreadint(int nmin, int nmax)
 		flag=0;
 	}
 		return num;
-}
-*/
-/*
-uint8_t TRANupdate(struct TRAN *tran, uint8_t idata)
-{
-	uint8_t r;
-	if(tran->data == idata)
-		r=0;
-	else{
-		tran->lh = FUNClh(tran->data, idata);
-		tran->hl = FUNChl(tran->data, idata);
-		r=1;
-	}
-	return r;
 }
 */
 /*
