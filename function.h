@@ -62,7 +62,7 @@ struct FUNC{
 	unsigned char (*bin2bcd)(unsigned val);
 	long (*gcd1)(long a, long b);
 	uint8_t (*pincheck)(uint8_t port, uint8_t pin);
-	char* (*print_binary)(int number);
+	char* (*print_binary)(uint8_t number);
 	/***pc use***
 	char* (*fltos)(FILE* stream);
 	char* (*ftos)(FILE* stream);
@@ -73,22 +73,10 @@ struct FUNC{
 	int (*readint)(int nmin, int nmax);
 	*/
 };
-/*
-struct TRAN{
-	//Variables
-	uint8_t data;
-	uint8_t hl;
-	uint8_t lh;
-	//PROTOTYPES VTABLE
-	uint8_t (*update)(struct TRAN *tr, uint8_t idata);
-};
-*/
 typedef struct FUNC FUNC;
-//typedef struct TRAN TRAN;
 /*
 ** procedure and function header
 */
-//TRAN TRANenable(void);
 FUNC FUNCenable(void);
 #endif
 /***EOF***/
