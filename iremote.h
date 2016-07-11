@@ -11,8 +11,8 @@
 ** constant and macro
 */
 #define IR_PIN 2
-#define IR_F_DIV 8
-#define IR_CTC_VALUE 255
+#define IR_F_DIV 256
+#define IR_CTC_VALUE 70
 #define IR_BYTE 3
 #define IR_BIT 7
 /*
@@ -31,5 +31,5 @@ typedef struct iremote IR;
 /*
 ** procedure and function header
 */
-IR IRenable(void);
+IR IRenable(uint8_t ir_ctc_value);
 #endif /* IREMOTE_H_ */
