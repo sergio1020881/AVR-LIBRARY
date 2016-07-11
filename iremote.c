@@ -22,7 +22,7 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <inttypes.h>
-#include "IREMOTE.h"
+#include "iremote.h"
 /*
 ** constant and macro
 */
@@ -36,11 +36,11 @@
 	#define MCU_Control_Status_Register_Mask 0X0F
 	/***0***/
 	#define ATMEGA_TIMER_COUNTER_85XX
-	#define TIMER_COUNTER0_CONTROL_REGISTER TCCR0
-	#define TIMER_COUNTER0_REGISTER TCNT0
-	#define TIMER_COUNTER0_COMPARE_REGISTER OCR0
-	#define TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT TIMER0_COMP_vect
-	#define TIMER_COUNTER0_OVERFLOW_INTERRUPT TIMER0_OVF_vect
+	#define TIMER_COUNTER0_CONTROL_REGISTER TCCR2
+	#define TIMER_COUNTER0_REGISTER TCNT2
+	#define TIMER_COUNTER0_COMPARE_REGISTER OCR2
+	#define TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT TIMER2_COMP_vect
+	#define TIMER_COUNTER0_OVERFLOW_INTERRUPT TIMER2_OVF_vect
 	/***COMMON***/
 	#define TIMER_COUNTER_STATUS_REGISTER ASSR
 	#define TIMER_COUNTER_INTERRUPT_MASK_REGISTER TIMSK
@@ -66,7 +66,7 @@ void IR_INT0_stop(void);
 /*
 ** procedure and function
 */
-IR IRenable(void)
+IR IRenable(uint8_t ir_ctc_value)
 /*
 	PARAMETER SETTING
 	wavegen mode: Normal; PWM phase correct; Fast PWM; default-Normasl;
@@ -85,13 +85,11 @@ IR IRenable(void)
 		General_Interrupt_Control_Register|=(1<<INT0);
 		MCU_Control_Register|=(1<<ISC01);
 		// TIMER
-		TIMER_COUNTER0_CONTROL_REGISTER&=~((1<<COM00) | (1<<COM01) | (1<<WGM00) | (1<<WGM01));
+		TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER|=1;
+		TIMER_COUNTER0_COMPARE_REGISTER=ir_ctc_value;
 		// CTC
-		TIMER_COUNTER0_CONTROL_REGISTER|=(1<<WGM01);
-		TIMER_COUNTER_INTERRUPT_MASK_REGISTER&=~((1<<OCIE0) | (1<<TOIE0));
-		TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<TOIE0);
-		TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE0);
-		TIMER_COUNTER0_COMPARE_REGISTER=IR_CTC_VALUE;
+		TIMER_COUNTER0_CONTROL_REGISTER|=((1<<COM20) | (1<<WGM21));
+		TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE2);
 		ir.key=IR_KEY;
 		ir.start=IR_COUNTER_start;
 		ir.stop=IR_COUNTER_stop;
@@ -124,7 +122,6 @@ IR IRenable(void)
 	*/
 	{
 		if(ir_state==0){ // oneshot
-			TIMER_COUNTER0_COMPARE_REGISTER=0XFF;
 			TIMER_COUNTER0_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
 			switch(IR_F_DIV){
 				case 1: // clk T0S /(No prescaling)
@@ -162,9 +159,16 @@ IR IRenable(void)
 /*
 ** interrupt
 */
-ISR(TIMER0_COMP_vect)
+ISR(TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT)
+//ISR(SIG_OUTPUT_COMPARE0) 
 {
-	(PIND & (1<<IR_PIN)) ? (IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT)) : (IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT));
+	uint8_t entry;
+	entry=PIND;
+	if (entry & (1<<IR_PIN))
+		IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT);
+	else
+		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
+		
 	switch(ir_delay_flag){
 		case 0:
 			if(IR_N_BIT<IR_BIT)
@@ -189,6 +193,7 @@ ISR(TIMER0_COMP_vect)
 			}
 			break;
 	}
+	TIMER_COUNTER_INTERRUPT_FLAG_REGISTER|=(1<<OCF0);
 }
 ISR(INT0_vect)
 {
