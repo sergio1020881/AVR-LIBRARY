@@ -52,9 +52,11 @@
 /*
 ** variable
 */
-unsigned char ir_state;
+uint8_t ir_state;
 uint8_t ir_delay_flag;
 uint8_t ir_delay_count;
+volatile uint8_t IR_N_BYTE;
+volatile uint8_t IR_N_BIT;
 /*
 ** procedure and function header
 */
@@ -86,6 +88,26 @@ IR IRenable(uint8_t ir_ctc_value)
 		MCU_Control_Register|=(1<<ISC01);
 		// TIMER
 		TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER|=1;
+		switch(IR_F_DIV){
+			case 1: // clk T0S /(No prescaling)
+			ir_prescaler|=(1<<CS00);
+			break;
+			case 8: // clk T0S /8 (From prescaler)
+			ir_prescaler|=(1<<CS01);
+			break;
+			case 64: // clk T0S /64 (From prescaler)
+			ir_prescaler|=(3<<CS00);
+			break;
+			case 256: // clk T 0 S /256 (From prescaler)
+			ir_prescaler|=(1<<CS02);
+			break;
+			case 1024: // clk T 0 S /1024 (From prescaler)
+			ir_prescaler|=(5<<CS00);
+			break;
+			default:
+			ir_prescaler|=(5<<CS00);
+			break;
+		}
 		TIMER_COUNTER0_COMPARE_REGISTER=ir_ctc_value;
 		// CTC
 		TIMER_COUNTER0_CONTROL_REGISTER|=((1<<COM20) | (1<<WGM21));
@@ -122,27 +144,7 @@ IR IRenable(uint8_t ir_ctc_value)
 	*/
 	{
 		if(ir_state==0){ // oneshot
-			TIMER_COUNTER0_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
-			switch(IR_F_DIV){
-				case 1: // clk T0S /(No prescaling)
-					TIMER_COUNTER0_CONTROL_REGISTER|=(1<<CS00);
-					break;
-				case 8: // clk T0S /8 (From prescaler)
-					TIMER_COUNTER0_CONTROL_REGISTER|=(1<<CS01);
-					break;
-				case 64: // clk T0S /64 (From prescaler)
-					TIMER_COUNTER0_CONTROL_REGISTER|=(3<<CS00);
-					break;
-				case 256: // clk T 0 S /256 (From prescaler)
-					TIMER_COUNTER0_CONTROL_REGISTER|=(1<<CS02);
-					break;
-				case 1024: // clk T 0 S /1024 (From prescaler)
-					TIMER_COUNTER0_CONTROL_REGISTER|=(5<<CS00);
-					break;
-				default:
-					TIMER_COUNTER0_CONTROL_REGISTER|=(5<<CS00);
-					break;
-			}
+			TIMER_COUNTER0_CONTROL_REGISTER=ir_prescaler;
 			ir_state=1;
 		}	
 	}
@@ -151,9 +153,11 @@ IR IRenable(uint8_t ir_ctc_value)
 		stops timer by setting prescaler to zero
 	*/
 	{
-		TIMER_COUNTER0_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
-		TIMER_COUNTER0_REGISTER=0X00;
-		ir_state=0;
+		if(ir_state==1){ // oneshot
+			TIMER_COUNTER0_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
+			TIMER_COUNTER0_REGISTER=0X00;
+			ir_state=0;
+		}
 	}
 #endif
 /*
@@ -164,39 +168,40 @@ ISR(TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT)
 {
 	uint8_t entry;
 	entry=PIND;
-	if (entry & (1<<IR_PIN))
-		IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT);
-	else
-		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
-		
-	switch(ir_delay_flag){
-		case 0:
-			if(IR_N_BIT<IR_BIT)
-				IR_N_BIT++;
-			else{
-				IR_N_BIT=0;
-				if(IR_N_BYTE<IR_BYTE)
-					IR_N_BYTE++;
-				else{
-					IR_N_BYTE=0;
-					ir_delay_flag=1;
-				}
-			}
-			break;
-		default:
-			ir_delay_count++;
-			if(ir_delay_count>=255){
-				IR_COUNTER_stop();
-				IR_INT0_start();
-				ir_delay_flag=0;
-				ir_delay_count=0;
-			}
-			break;
+	if(ir_delay_flag){
+		ir_delay_count++;
+		if(ir_delay_count>=255){
+			IR_COUNTER_stop();
+			IR_INT0_start();
+			ir_delay_flag=0;
+			ir_delay_count=0;
+		}
 	}
-	TIMER_COUNTER_INTERRUPT_FLAG_REGISTER|=(1<<OCF0);
+	if(!ir_delay_flag){
+	if (entry & (1<<IR_PIN))
+		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
+	else
+		IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT);
+	/******/
+	if(IR_N_BIT<IR_BIT)
+		IR_N_BIT++;
+	else{
+		IR_N_BIT=0;
+		if(IR_N_BYTE<IR_BYTE)
+			IR_N_BYTE++;
+		else{
+			IR_N_BYTE=0;
+			ir_delay_flag=1;
+			//IR_COUNTER_stop();
+			//IR_INT0_start();
+		}
+	}
+	}
 }
 ISR(INT0_vect)
 {
+	//uint8_t i;
+	//for(i=0;i<(IR_BYTE+1);IRbyte[i]=0,i++);
 	IR_COUNTER_start();
 	IR_INT0_stop();
 }
