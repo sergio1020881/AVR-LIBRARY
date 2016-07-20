@@ -10,17 +10,20 @@
 /*
 ** constant and macro
 */
+/***CONFIG***/
 #define IR_PIN 2
-#define IR_F_DIV 256
-#define IR_CTC_VALUE 70
+/***TIMER***/
+#define IR_F_DIV 64
+#define IR_CTC_VALUE 255
+/***DATA***/
 #define IR_BYTE 3
 #define IR_BIT 7
 /*
 ** variable
 */
-uint8_t IRbyte[4];
-volatile uint8_t IR_N_BYTE;
-volatile uint8_t IR_N_BIT;
+uint8_t IRbyte[IR_BYTE+1];
+uint8_t ir_prescaler;
+
 struct iremote{
 	// prototype pointers
 	uint8_t* (*key)(void);
