@@ -68,7 +68,7 @@ void IR_INT0_stop(void);
 /*
 ** procedure and function
 */
-IR IRenable(uint8_t ir_ctc_value)
+IR IRenable()
 /*
 	PARAMETER SETTING
 	wavegen mode: Normal; PWM phase correct; Fast PWM; default-Normasl;
@@ -108,7 +108,7 @@ IR IRenable(uint8_t ir_ctc_value)
 			ir_prescaler|=(5<<CS00);
 			break;
 		}
-		TIMER_COUNTER0_COMPARE_REGISTER=ir_ctc_value;
+		TIMER_COUNTER0_COMPARE_REGISTER=IR_CTC_VALUE;
 		// CTC
 		TIMER_COUNTER0_CONTROL_REGISTER|=((1<<COM20) | (1<<WGM21));
 		TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE2);
@@ -204,6 +204,8 @@ ISR(INT0_vect)
 	//for(i=0;i<(IR_BYTE+1);IRbyte[i]=0,i++);
 	IR_COUNTER_start();
 	IR_INT0_stop();
+	IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT);
+	IR_N_BIT++;
 }
 /***EOF***/
 /***COMMENTS
