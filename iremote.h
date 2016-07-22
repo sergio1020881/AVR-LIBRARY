@@ -13,10 +13,10 @@
 /***CONFIG***/
 #define IR_PIN 2
 /***TIMER***/
-#define IR_F_DIV 64
-#define IR_CTC_VALUE 62
+#define IR_F_DIV 64 // 64
+#define IR_CTC_VALUE 62 // 62
 /***DATA***/
-#define IR_BYTE 3
+#define IR_BYTE 11
 #define IR_BIT 7
 /*
 ** variable
