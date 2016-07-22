@@ -5,7 +5,7 @@
  * Atmega8535 at 8Mhz
  *
  * Created: 27/06/2016 20:51:33
- * Author : Host
+ * Author : Sérgio Santos
  */
 #ifndef F_CPU
 	#define F_CPU 8000000UL
@@ -53,34 +53,64 @@ int main(void)
 	    func.i32toa(trB.data,number);
 	    
 	    lcd0.gotoxy(0,0);
-		
 	    lcd0.string(func.print_binary(trB.data));
 		
+		
 		lcd0.gotoxy(0,1);
-		if((ir.key()[2]==108) && (ir.key()[3]==1)){
+		if((ir.key()[2]==182) && (ir.key()[3]==0)){
 			lcd0.string_size("STOP",20);
 		}
-		if((ir.key()[2]==108) && (ir.key()[3]==2)){
+		if((ir.key()[2]==54) && (ir.key()[3]==1)){
 			lcd0.string_size("PLAY",20);
 		}
-		if((ir.key()[2]==114) && (ir.key()[3]==2)){
-			lcd0.string_size("UP",20);
+		if((ir.key()[2]==214) && (ir.key()[3]==0)){
+			lcd0.string_size("INFO",20);
 		}
-		if((ir.key()[2]==76) && (ir.key()[3]==2)){
-			lcd0.string_size("DOWN",20);
-		}
-		if((ir.key()[2]==76) && (ir.key()[3]==1)){
-			lcd0.string_size("RIGHT",20);
-		}
-		if((ir.key()[2]==178) && (ir.key()[3]==1)){
-			lcd0.string_size("LEFT",20);
-		}
-		if((ir.key()[2]==172) && (ir.key()[3]==2)){
+		if((ir.key()[2]==86) && (ir.key()[3]==1)){
 			lcd0.string_size("PAUSE",20);
 		}
-		if((ir.key()[2]==178) && (ir.key()[3]==2)){
+		if((ir.key()[2]==57) && (ir.key()[3]==1)){
+			lcd0.string_size("UP",20);
+		}
+		if((ir.key()[2]==38) && (ir.key()[3]==1)){
+			lcd0.string_size("DOWN",20);
+		}
+		if((ir.key()[2]==217) && (ir.key()[3]==0)){
+			lcd0.string_size("LEFT",20);
+		}
+		if((ir.key()[2]==166) && (ir.key()[3]==0)){
+			lcd0.string_size("RIGHT",20);
+		}
+		if((ir.key()[2]==89) && (ir.key()[3]==1)){
 			lcd0.string_size("OK",20);
 		}
+		if((ir.key()[2]==74) && (ir.key()[3]==1)){
+			lcd0.string_size("C +",20);
+		}
+		if((ir.key()[2]==186) && (ir.key()[3]==0)){
+			lcd0.string_size("C -",20);
+		}
+		if((ir.key()[2]==58) && (ir.key()[3]==1)){
+			lcd0.string_size("VOL +",20);
+		}
+		if((ir.key()[2]==218) && (ir.key()[3]==0)){
+			lcd0.string_size("VOL -",20);
+		}
+		if((ir.key()[2]==37) && (ir.key()[3]==1)){
+			lcd0.string_size("POWER",20);
+		}
+		if((ir.key()[2]==70) && (ir.key()[3]==1)){
+			lcd0.string_size("ESC",20);
+		}
+		if((ir.key()[2]==69) && (ir.key()[3]==1)){
+			lcd0.string_size("ONE",20);
+		}
+		if((ir.key()[2]==181) && (ir.key()[3]==0)){
+			lcd0.string_size("TWO",20);
+		}
+		
+		
+		
 		
 		lcd0.gotoxy(0,3);
 		func.i32toa(ir.key()[0],number);
