@@ -10,7 +10,7 @@
  * Observations:
  * In progress
  * testing and adjustments
- * Usando um commando da tv cabo, na opção TV cabo commando, funciona muito bem usar dois ultimos bytes para codigo, 
+ * Usando um commando da tv cabo, na opção TV cabo commando, funciona muito bem usar dois ultimos bytes para codigo,
  * os dois primeiros são constantes. Talvez vou alterar de forma a ser mais generico.
  */ 
 #ifndef F_CPU
@@ -55,14 +55,12 @@
 ** variable
 */
 uint8_t ir_state;
-uint8_t ir_delay_flag;
-uint8_t ir_delay_count;
 volatile uint8_t IR_N_BYTE;
 volatile uint8_t IR_N_BIT;
 /*
 ** procedure and function header
 */
-uint8_t* IR_KEY(void);
+volatile uint8_t* IR_KEY(void);
 void IR_COUNTER_start(void);
 void IR_COUNTER_stop(void);
 void IR_INT0_start(void);
@@ -81,8 +79,6 @@ IR IRenable()
 	ir_state=0;
 	IR_N_BYTE=0;
 	IR_N_BIT=0;
-	ir_delay_flag=0;
-	ir_delay_count=0;
 	/***TYPE 4***/
 	#if defined( ATMEGA_TIMER_COUNTER_85XX )
 		//INTERRUPT
@@ -132,7 +128,7 @@ IR IRenable()
 		MCU_Control_Register&=~(1<<ISC01);
 		General_Interrupt_Control_Register&=~(1<<INT0);
 	}
-	uint8_t* IR_KEY(void)
+	volatile uint8_t* IR_KEY(void)
 	{
 		return IRbyte;
 	}
@@ -166,20 +162,11 @@ IR IRenable()
 ** interrupt
 */
 ISR(TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT)
-//ISR(SIG_OUTPUT_COMPARE0) 
+ 
 {
 	uint8_t entry;
 	entry=PIND;
-	if(ir_delay_flag){
-		ir_delay_count++;
-		if(ir_delay_count>=255){
-			IR_COUNTER_stop();
-			IR_INT0_start();
-			ir_delay_flag=0;
-			ir_delay_count=0;
-		}
-	}
-	if(!ir_delay_flag){
+	
 	if (entry & (1<<IR_PIN))
 		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
 	else
@@ -193,11 +180,9 @@ ISR(TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT)
 			IR_N_BYTE++;
 		else{
 			IR_N_BYTE=0;
-			ir_delay_flag=1;
-			//IR_COUNTER_stop();
-			//IR_INT0_start();
+			IR_COUNTER_stop();
+			IR_INT0_start();
 		}
-	}
 	}
 }
 ISR(INT0_vect)
