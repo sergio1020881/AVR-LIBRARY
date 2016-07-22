@@ -78,7 +78,7 @@ int main(void)
 		if((ir.key()[2]==172) && (ir.key()[3]==2)){
 			lcd0.string_size("PAUSE",20);
 		}
-		if((ir.key()[2]==172) && (ir.key()[3]==2)){
+		if((ir.key()[2]==178) && (ir.key()[3]==2)){
 			lcd0.string_size("OK",20);
 		}
 		
