@@ -58,10 +58,10 @@ int main(void)
 		
 		lcd0.gotoxy(0,1);
 		if((ir.key()[2]==108) && (ir.key()[3]==1)){
-			lcd0.string_size("Ola Sergio",20);
+			lcd0.string_size("STOP",20);
 		}
 		if((ir.key()[2]==108) && (ir.key()[3]==2)){
-			lcd0.string_size("Ola Manuel",20);
+			lcd0.string_size("PLAY",20);
 		}
 		if((ir.key()[2]==114) && (ir.key()[3]==2)){
 			lcd0.string_size("UP",20);
@@ -78,16 +78,19 @@ int main(void)
 		if((ir.key()[2]==172) && (ir.key()[3]==2)){
 			lcd0.string_size("PAUSE",20);
 		}
-		//func.i32toa(ir.key()[0],number);
-		//func.i32toa(TCNT0,number);
-		//func.i32toa(TIMER0_COMPARE_MATCH,number);
-		//lcd0.string(number);lcd0.hspace(2);
-		//func.i32toa(ir.key()[1],number);
-		//lcd0.string(number);lcd0.hspace(2);
-		//func.i32toa(ir.key()[2],number);
-		//lcd0.string(number);lcd0.hspace(2);
-		//func.i32toa(ir.key()[3],number);
-		//lcd0.string(number);lcd0.hspace(2);
+		if((ir.key()[2]==172) && (ir.key()[3]==2)){
+			lcd0.string_size("OK",20);
+		}
+		
+		lcd0.gotoxy(0,3);
+		func.i32toa(ir.key()[0],number);
+		lcd0.string(number);lcd0.hspace(2);
+		func.i32toa(ir.key()[1],number);
+		lcd0.string(number);lcd0.hspace(2);
+		func.i32toa(ir.key()[2],number);
+		lcd0.string(number);lcd0.hspace(2);
+		func.i32toa(ir.key()[3],number);
+		lcd0.string(number);lcd0.hspace(2);
 		
 		//lcd0.gotoxy(0,2);
 		//func.i32toa(ir.key()[4],number);
