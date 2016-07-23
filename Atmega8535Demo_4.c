@@ -54,127 +54,127 @@ int main(void)
 	    lcd0.gotoxy(0,0);
 	    lcd0.string(func.print_binary(trB.data));
 		
-		code[0]=ir.key()[2];
-		code[1]=ir.key()[3];
+		code[0]=ir.key()[1];
+		code[1]=ir.key()[2];
 		
 		lcd0.gotoxy(0,1);
-		if((code[0]==182) && (code[1]==0)){
+		if((code[0]==73) && (code[1]==10)){
 			lcd0.string_size("STOP",20);
 			PORTA=10;
 		}
-		if((code[0]==54) && (code[1]==1)){
+		if((code[0]==73) && (code[1]==18)){
 			lcd0.string_size("PLAY",20);
 			PORTA=11;
 		}
-		if((code[0]==214) && (code[1]==0)){
+		if((code[0]==73) && (code[1]==14)){
 			lcd0.string_size("INFO",20);
 			PORTA=12;
 		}
-		if((code[0]==86) && (code[1]==1)){
+		if((code[0]==73) && (code[1]==22)){
 			lcd0.string_size("PAUSE",20);
 			PORTA=13;
 		}
-		if((code[0]==57) && (code[1]==1)){
+		if((code[0]==169) && (code[1]==18)){
 			lcd0.string_size("UP",20);
 			PORTA=14;
 		}
-		if((code[0]==38) && (code[1]==1)){
+		if((code[0]==73) && (code[1]==17)){
 			lcd0.string_size("DOWN",20);
 			PORTA=15;
 		}
-		if((code[0]==217) && (code[1]==0)){
+		if((code[0]==169) && (code[1]==14)){
 			lcd0.string_size("LEFT",20);
 			PORTA=16;
 		}
-		if((code[0]==166) && (code[1]==0)){
+		if((code[0]==73) && (code[1]==9)){
 			lcd0.string_size("RIGHT",20);
 			PORTA=17;
 		}
-		if((code[0]==89) && (code[1]==1)){
+		if((code[0]==169) && (code[1]==22)){
 			lcd0.string_size("OK",20);
 			PORTA=18;
 		}
-		if((code[0]==74) && (code[1]==1)){
+		if((code[0]==201) && (code[1]==21)){
 			lcd0.string_size("C +",20);
 			PORTA=19;
 		}
-		if((code[0]==186) && (code[1]==0)){
+		if((code[0]==201) && (code[1]==10)){
 			lcd0.string_size("C -",20);
 			PORTA=20;
 		}
-		if((code[0]==58) && (code[1]==1)){
+		if((code[0]==201) && (code[1]==18)){
 			lcd0.string_size("VOL +",20);
 			PORTA=21;
 		}
-		if((code[0]==218) && (code[1]==0)){
+		if((code[0]==201) && (code[1]==14)){
 			lcd0.string_size("VOL -",20);
 			PORTA=22;
 		}
-		if((code[0]==37) && (code[1]==1)){
+		if((code[0]==41) && (code[1]==17)){
 			lcd0.string_size("POWER",20);
 			PORTA=23;
 		}
-		if((code[0]==70) && (code[1]==1)){
+		if((code[0]==73) && (code[1]==21)){
 			lcd0.string_size("ESC",20);
 			PORTA=24;
 		}
-		if((code[0]==197) && (code[1]==0)){
+		if((code[0]==41) && (code[1]==13)){
 			lcd0.string_size("SNOOZE",20);
 			PORTA=25;
 		}
-		if((code[0]==202) && (code[1]==0)){
+		if((code[0]==201) && (code[1]==13)){
 			lcd0.string_size("TV RAD",20);
 			PORTA=26;
 		}
-		if((code[0]==69) && (code[1]==1)){
+		if((code[0]==41) && (code[1]==21)){
 			lcd0.string_size("ONE",20);
 			PORTA=1;
 		}
-		if((code[0]==181) && (code[1]==0)){
+		if((code[0]==41) && (code[1]==10)){
 			lcd0.string_size("TWO",20);
 			PORTA=2;
 		}
-		if((code[0]==53) && (code[1]==1)){
+		if((code[0]==41) && (code[1]==18)){
 			lcd0.string_size("THREE",20);
 			PORTA=3;
 		}
-		if((code[0]==213) && (code[1]==0)){
+		if((code[0]==41) && (code[1]==14)){
 			lcd0.string_size("FOUR",20);
 			PORTA=4;
 		}
-		if((code[0]==85) && (code[1]==1)){
+		if((code[0]==41) && (code[1]==22)){
 			lcd0.string_size("FIVE",20);
 			PORTA=5;
 		}
-		if((code[0]==169) && (code[1]==0)){
+		if((code[0]==169) && (code[1]==9)){
 			lcd0.string_size("SIX",20);
 			PORTA=6;
 		}
-		if((code[0]==41) && (code[1]==1)){
+		if((code[0]==169) && (code[1]==17)){
 			lcd0.string_size("SEVEN",20);
 			PORTA=7;
 		}
-		if((code[0]==201) && (code[1]==0)){
+		if((code[0]==169) && (code[1]==13)){
 			lcd0.string_size("EIGHT",20);
 			PORTA=8;
 		}
-		if((code[0]==73) && (code[1]==1)){
+		if((code[0]==169) && (code[1]==21)){
 			lcd0.string_size("NINE",20);
 			PORTA=9;
 		}
-		if((code[0]==185) && (code[1]==0)){
+		if((code[0]==169) && (code[1]==10)){
 			lcd0.string_size("ZERO",20);
 			PORTA=0;
 		}
-		if((code[0]==42) && (code[1]==1)){
+		if((code[0]==201) && (code[1]==17)){
 			lcd0.string_size("ASTERIX",20);
 			PORTA=27;
 		}
-		if((code[0]==170) && (code[1]==0)){
-			lcd0.string_size("POUND",20);
+		if((code[0]==201) && (code[1]==9)){
+			lcd0.string_size("HASHTAG",20);
 			PORTA=28;
 		}
-		if((code[0]==198) && (code[1]==0)){
+		if((code[0]==73) && (code[1]==13)){
 			lcd0.string_size("ROTATE",20);
 			PORTA=29;
 		}
