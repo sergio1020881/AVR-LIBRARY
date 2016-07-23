@@ -38,11 +38,11 @@
 	#define MCU_Control_Status_Register_Mask 0X0F
 	/***0***/
 	#define ATMEGA_TIMER_COUNTER_85XX
-	#define TIMER_COUNTER0_CONTROL_REGISTER TCCR2
-	#define TIMER_COUNTER0_REGISTER TCNT2
-	#define TIMER_COUNTER0_COMPARE_REGISTER OCR2
-	#define TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT TIMER2_COMP_vect
-	#define TIMER_COUNTER0_OVERFLOW_INTERRUPT TIMER2_OVF_vect
+	#define TIMER_COUNTER2_CONTROL_REGISTER TCCR2
+	#define TIMER_COUNTER2_REGISTER TCNT2
+	#define TIMER_COUNTER2_COMPARE_REGISTER OCR2
+	#define TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT TIMER2_COMP_vect
+	#define TIMER_COUNTER2_OVERFLOW_INTERRUPT TIMER2_OVF_vect
 	/***COMMON***/
 	#define TIMER_COUNTER_STATUS_REGISTER ASSR
 	#define TIMER_COUNTER_INTERRUPT_MASK_REGISTER TIMSK
@@ -54,9 +54,11 @@
 /*
 ** variable
 */
+uint8_t ir_prescaler;
 uint8_t ir_state;
 volatile uint8_t IR_N_BYTE;
 volatile uint8_t IR_N_BIT;
+volatile uint8_t IRbyte[IR_BYTE+1];
 /*
 ** procedure and function header
 */
@@ -85,30 +87,30 @@ IR IRenable()
 		General_Interrupt_Control_Register|=(1<<INT0);
 		MCU_Control_Register|=(1<<ISC01);
 		// TIMER
-		TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER|=1;
+		//TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER|=(1<<PSR2);
 		switch(IR_F_DIV){
 			case 1: // clk T0S /(No prescaling)
-			ir_prescaler|=(1<<CS00);
+			ir_prescaler|=(1<<CS20);
 			break;
 			case 8: // clk T0S /8 (From prescaler)
-			ir_prescaler|=(1<<CS01);
+			ir_prescaler|=(1<<CS21);
 			break;
 			case 64: // clk T0S /64 (From prescaler)
-			ir_prescaler|=(3<<CS00);
+			ir_prescaler|=(3<<CS20);
 			break;
 			case 256: // clk T 0 S /256 (From prescaler)
-			ir_prescaler|=(1<<CS02);
+			ir_prescaler|=(1<<CS22);
 			break;
 			case 1024: // clk T 0 S /1024 (From prescaler)
-			ir_prescaler|=(5<<CS00);
+			ir_prescaler|=(5<<CS20);
 			break;
 			default:
-			ir_prescaler|=(5<<CS00);
+			ir_prescaler|=(5<<CS20);
 			break;
 		}
-		TIMER_COUNTER0_COMPARE_REGISTER=IR_CTC_VALUE;
+		TIMER_COUNTER2_COMPARE_REGISTER=IR_CTC_VALUE;
 		// CTC
-		TIMER_COUNTER0_CONTROL_REGISTER|=((1<<COM20) | (1<<WGM21));
+		TIMER_COUNTER2_CONTROL_REGISTER|=((1<<COM20) | (1<<WGM21));
 		TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE2);
 		ir.key=IR_KEY;
 		ir.start=IR_COUNTER_start;
@@ -128,9 +130,10 @@ IR IRenable()
 		MCU_Control_Register&=~(1<<ISC01);
 		General_Interrupt_Control_Register&=~(1<<INT0);
 	}
+	// return full code
 	volatile uint8_t* IR_KEY(void)
 	{
-		return IRbyte;
+			return IRbyte;
 	}
 	void IR_COUNTER_start(void)
 	/*
@@ -142,7 +145,7 @@ IR IRenable()
 	*/
 	{
 		if(ir_state==0){ // oneshot
-			TIMER_COUNTER0_CONTROL_REGISTER=ir_prescaler;
+			TIMER_COUNTER2_CONTROL_REGISTER|=ir_prescaler;
 			ir_state=1;
 		}	
 	}
@@ -152,8 +155,8 @@ IR IRenable()
 	*/
 	{
 		if(ir_state==1){ // oneshot
-			TIMER_COUNTER0_CONTROL_REGISTER&=~(7<<CS00); // No clock source. (Timer/Counter stopped)
-			TIMER_COUNTER0_REGISTER=0X00;
+			TIMER_COUNTER2_CONTROL_REGISTER&=~(7<<CS20); // No clock source. (Timer/Counter stopped)
+			TIMER_COUNTER2_REGISTER=0X00;
 			ir_state=0;
 		}
 	}
@@ -161,12 +164,10 @@ IR IRenable()
 /*
 ** interrupt
 */
-ISR(TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT)
- 
+ISR(TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT)
 {
 	uint8_t entry;
 	entry=PIND;
-	
 	if (entry & (1<<IR_PIN))
 		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
 	else
