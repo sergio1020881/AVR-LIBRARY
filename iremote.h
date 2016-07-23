@@ -13,17 +13,14 @@
 /***CONFIG***/
 #define IR_PIN 2
 /***TIMER***/
-#define IR_F_DIV 64 // 64
-#define IR_CTC_VALUE 62 // 62
+#define IR_F_DIV 128 // 64
+#define IR_CTC_VALUE 74 // 62  74
 /***DATA***/
-#define IR_BYTE 23
+#define IR_BYTE 11
 #define IR_BIT 7
 /*
 ** variable
 */
-volatile uint8_t IRbyte[IR_BYTE+1];
-uint8_t ir_prescaler;
-
 struct iremote{
 	// prototype pointers
 	volatile uint8_t* (*key)(void);
