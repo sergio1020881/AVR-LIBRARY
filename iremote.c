@@ -9,7 +9,7 @@
  * Author: Sérgio Santos
  * Observations:
  * In progress
- * good
+ * GOOD
  * Usando um commando da tv cabo, na opção TV cabo commando, funciona muito bem usar dois ultimos bytes para codigo,
  * os dois primeiros são constantes. Talvez vou alterar de forma a ser mais generico.
  */ 
@@ -167,7 +167,7 @@ IR IRenable()
 ISR(TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT)
 {
 	uint8_t entry;
-	entry=PIND;
+	entry=IR_INPORT;
 	if (entry & (1<<IR_PIN))
 		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
 	else
@@ -199,5 +199,8 @@ ISR(INT0_vect)
 /***COMMENTS
 interrupt to be defined in MAIN file
 Note if you configure to use interrupts and do not define them, program will block,
-so be carefull when enabling, make sure correct parameters for specified aplication are applied.
+so be carefully when enabling, make sure correct parameters for specified application are applied.
+The mind puts the pieces (thoughts) together and when it glimpses into the whole picture an instant 
+snap happens in the mind, to manifest it is then intuitive and extremely easy, 
+rebuilding the image in reality.
 ***/
