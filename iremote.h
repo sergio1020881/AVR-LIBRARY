@@ -16,7 +16,7 @@
 #define IR_F_DIV 128 // 64
 #define IR_CTC_VALUE 74 // 62  74
 /***DATA***/
-#define IR_BYTE 11
+#define IR_BYTE 7
 #define IR_BIT 7
 /*
 ** variable
