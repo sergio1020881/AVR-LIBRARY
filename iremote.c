@@ -201,6 +201,6 @@ interrupt to be defined in MAIN file
 Note if you configure to use interrupts and do not define them, program will block,
 so be carefully when enabling, make sure correct parameters for specified application are applied.
 The mind puts the pieces (thoughts) together and when it glimpses into the whole picture an instant 
-snap happens in the mind, to manifest it is then intuitive and extremely easy, 
+spark happens in the mind, to manifest it is then intuitive and extremely easy, 
 rebuilding the image in reality.
 ***/
