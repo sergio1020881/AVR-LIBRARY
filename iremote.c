@@ -9,7 +9,7 @@
  * Author: Sérgio Santos
  * Observations:
  * In progress
- * testing and adjustments
+ * good
  * Usando um commando da tv cabo, na opção TV cabo commando, funciona muito bem usar dois ultimos bytes para codigo,
  * os dois primeiros são constantes. Talvez vou alterar de forma a ser mais generico.
  */ 
