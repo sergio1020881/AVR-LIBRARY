@@ -81,7 +81,7 @@ IR IRenable()
 	ir_state=0;
 	IR_N_BYTE=0;
 	IR_N_BIT=0;
-	ir_prevalue='N';
+	ir_prevalue=0;
 	//INTERRUPT
 	General_Interrupt_Control_Register|=(1<<INT0);
 	MCU_Control_Register|=(1<<ISC01);
@@ -176,104 +176,77 @@ unsigned char IR_decode(void)
 	unsigned char value;
 	uint8_t code[2];
 	if(ir_state){ // FILTER
+		value=0;
 		code[0]=0;
 		code[1]=0;
-		value=ir_prevalue;
 	}else{
 		code[0]=IRbyte[1];
 		code[1]=IRbyte[2];
 	}
 	//DECODE
-	if((code[0]==73) && (code[1]==10)){
+	if((code[0]==0) && (code[1]==0))
+		value=ir_prevalue;
+	if((code[0]==73) && (code[1]==10))
 		value='S';
-	}
-	if((code[0]==73) && (code[1]==18)){
+	if((code[0]==73) && (code[1]==18))
 		value='P';
-	}
-	if((code[0]==73) && (code[1]==14)){
+	if((code[0]==73) && (code[1]==14))
 		value='I';
-	}
-	if((code[0]==73) && (code[1]==22)){
+	if((code[0]==73) && (code[1]==22))
 		value='p';
-	}
-	if((code[0]==169) && (code[1]==18)){
+	if((code[0]==169) && (code[1]==18))
 		value='U';
-	}
-	if((code[0]==73) && (code[1]==17)){
+	if((code[0]==73) && (code[1]==17))
 		value='D';
-	}
-	if((code[0]==169) && (code[1]==14)){
+	if((code[0]==169) && (code[1]==14))
 		value='L';
-	}
-	if((code[0]==73) && (code[1]==9)){
+	if((code[0]==73) && (code[1]==9))
 		value='R';
-	}
-	if((code[0]==169) && (code[1]==22)){
+	if((code[0]==169) && (code[1]==22))
 		value='O';
-	}
-	if((code[0]==201) && (code[1]==21)){
+	if((code[0]==201) && (code[1]==21))
 		value='C';
-	}
-	if((code[0]==201) && (code[1]==10)){
+	if((code[0]==201) && (code[1]==10))
 		value='c';
-	}
-	if((code[0]==201) && (code[1]==18)){
+	if((code[0]==201) && (code[1]==18))
 		value='V';
-	}
-	if((code[0]==201) && (code[1]==14)){
+	if((code[0]==201) && (code[1]==14))
 		value='v';
-	}
-	if((code[0]==41) && (code[1]==17)){
+	if((code[0]==41) && (code[1]==17))
 		value='o';
-	}
-	if((code[0]==73) && (code[1]==21)){
+	if((code[0]==73) && (code[1]==21))
 		value='E';
-	}
-	if((code[0]==41) && (code[1]==13)){
+	if((code[0]==41) && (code[1]==13))
 		value='s';
-	}
-	if((code[0]==201) && (code[1]==13)){
+	if((code[0]==201) && (code[1]==13))
 		value='T';
-	}
-	if((code[0]==41) && (code[1]==21)){
+	if((code[0]==41) && (code[1]==21))
 		value='1';
-	}
-	if((code[0]==41) && (code[1]==10)){
+	if((code[0]==41) && (code[1]==10))
 		value='2';
-	}
-	if((code[0]==41) && (code[1]==18)){
+	if((code[0]==41) && (code[1]==18))
 		value='3';
-	}
-	if((code[0]==41) && (code[1]==14)){
+	if((code[0]==41) && (code[1]==14))
 		value='4';
-	}
-	if((code[0]==41) && (code[1]==22)){
+	if((code[0]==41) && (code[1]==22))
 		value='5';
-	}
-	if((code[0]==169) && (code[1]==9)){
+	if((code[0]==169) && (code[1]==9))
 		value='6';
-	}
-	if((code[0]==169) && (code[1]==17)){
+	if((code[0]==169) && (code[1]==17))
 		value='7';
-	}
-	if((code[0]==169) && (code[1]==13)){
+	if((code[0]==169) && (code[1]==13))
 		value='8';
-	}
-	if((code[0]==169) && (code[1]==21)){
+	if((code[0]==169) && (code[1]==21))
 		value='9';
-	}
-	if((code[0]==169) && (code[1]==10)){
+	if((code[0]==169) && (code[1]==10))
 		value='0';
-	}
-	if((code[0]==201) && (code[1]==17)){
+	if((code[0]==201) && (code[1]==17))
 		value='*';
-	}
-	if((code[0]==201) && (code[1]==9)){
+	if((code[0]==201) && (code[1]==9))
 		value='#';
-	}
-	if((code[0]==73) && (code[1]==13)){
+	if((code[0]==73) && (code[1]==13))
 		value='r';
-	}
+		
 	ir_prevalue=value;
 	return value;	
 }
