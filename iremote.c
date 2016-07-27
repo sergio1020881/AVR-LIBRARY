@@ -51,6 +51,7 @@
 	#define ASYNCHRONOUS_STATUS_REGISTER ASSR
 	#define SPECIAL_FUNCTION_IO_REGISTER SFIOR
 #endif
+#define NUMBER_OF_KEYS 29
 /*
 ** variable
 */
@@ -59,6 +60,8 @@ uint8_t ir_state;
 volatile uint8_t IR_N_BYTE;
 volatile uint8_t IR_N_BIT;
 volatile uint8_t IRbyte[IR_BYTE+1];
+//DECODER
+//uint8_t decode[3][NUMBER_OF_KEYS];
 /*
 ** procedure and function header
 */
@@ -67,6 +70,7 @@ void IR_COUNTER_start(void);
 void IR_COUNTER_stop(void);
 void IR_INT0_start(void);
 void IR_INT0_stop(void);
+//uint8_t IR_decode(void);
 /*
 ** procedure and function
 */
@@ -90,23 +94,23 @@ IR IRenable()
 		//TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER|=(1<<PSR2);
 		switch(IR_F_DIV){
 			case 1: // clk T0S /(No prescaling)
-			ir_prescaler|=(1<<CS20);
-			break;
+				ir_prescaler|=(1<<CS20);
+				break;
 			case 8: // clk T0S /8 (From prescaler)
-			ir_prescaler|=(1<<CS21);
-			break;
+				ir_prescaler|=(1<<CS21);
+				break;
 			case 64: // clk T0S /64 (From prescaler)
-			ir_prescaler|=(3<<CS20);
-			break;
+				ir_prescaler|=(3<<CS20);
+				break;
 			case 256: // clk T 0 S /256 (From prescaler)
-			ir_prescaler|=(1<<CS22);
-			break;
+				ir_prescaler|=(1<<CS22);
+				break;
 			case 1024: // clk T 0 S /1024 (From prescaler)
-			ir_prescaler|=(5<<CS20);
-			break;
+				ir_prescaler|=(5<<CS20);
+				break;
 			default:
-			ir_prescaler|=(5<<CS20);
-			break;
+				ir_prescaler|=(5<<CS20);
+				break;
 		}
 		TIMER_COUNTER2_COMPARE_REGISTER=IR_CTC_VALUE;
 		// CTC
@@ -133,6 +137,9 @@ IR IRenable()
 	// return full code
 	volatile uint8_t* IR_KEY(void)
 	{
+		if(ir_state)
+			return 0;
+		else
 			return IRbyte;
 	}
 	void IR_COUNTER_start(void)
@@ -172,7 +179,7 @@ ISR(TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT)
 		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
 	else
 		IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT);
-	/******/
+	
 	if(IR_N_BIT<IR_BIT)
 		IR_N_BIT++;
 	else{
