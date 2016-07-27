@@ -485,6 +485,7 @@ void TIMER_COUNTER1_compoutmodeB(unsigned char compoutmode)
 }
 void TIMER_COUNTER1_compareA(uint16_t compare)
 {
+	// TOP VALUE
 	TIMER_COUNTER1A_COMPARE_REGISTER=compare;
 }
 void TIMER_COUNTER1_compareB(uint16_t compare)
