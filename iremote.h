@@ -27,7 +27,7 @@ struct iremote{
 	volatile uint8_t* (*key)(void);
 	void (*start)(void);
 	void (*stop)(void);
-	unsigned char (*decode)(void);
+	volatile uint8_t (*decode)(void);
 };
 typedef struct iremote IR;
 /*
