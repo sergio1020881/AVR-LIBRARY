@@ -43,21 +43,19 @@
 #define TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT TIMER2_COMP_vect
 #define TIMER_COUNTER2_OVERFLOW_INTERRUPT TIMER2_OVF_vect
 /***COMMON***/
-#define TIMER_COUNTER_STATUS_REGISTER ASSR
+#define TIMER_COUNTER_ASYNCHRONOUS_STATUS_REGISTER ASSR
 #define TIMER_COUNTER_INTERRUPT_MASK_REGISTER TIMSK
 #define TIMER_COUNTER_INTERRUPT_FLAG_REGISTER TIFR
-#define TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER SFIOR
-#define ASYNCHRONOUS_STATUS_REGISTER ASSR
-#define SPECIAL_FUNCTION_IO_REGISTER SFIOR
+#define TIMER_COUNTER_SPECIAL_IO_FUNCTION_REGISTER SFIOR
 /*
 ** variable
 */
 uint8_t ir_prescaler;
-uint8_t ir_state;
+volatile uint8_t ir_state;
 volatile uint8_t IR_N_BYTE;
 volatile uint8_t IR_N_BIT;
 volatile uint8_t IRbyte[IR_BYTE+1];
-unsigned char ir_prevalue;
+volatile uint8_t ir_prevalue;
 /*
 ** procedure and function header
 */
@@ -66,7 +64,7 @@ void IR_COUNTER_start(void);
 void IR_COUNTER_stop(void);
 void IR_INT0_start(void);
 void IR_INT0_stop(void);
-unsigned char IR_decode(void);
+volatile uint8_t IR_decode(void);
 /*
 ** procedure and function
 */
@@ -171,10 +169,10 @@ void IR_COUNTER_stop(void)
 		ir_state=0;
 	}
 }
-unsigned char IR_decode(void)
+volatile uint8_t IR_decode(void)
 {
-	unsigned char value;
-	uint8_t code[2];
+	volatile uint8_t value;
+	volatile uint8_t code[2];
 	if(ir_state){ // FILTER
 		value=0;
 		code[0]=0;
@@ -255,7 +253,7 @@ unsigned char IR_decode(void)
 */
 ISR(TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT)
 {
-	uint8_t entry;
+	volatile uint8_t entry;
 	entry=IR_INPORT;
 	if (entry & (1<<IR_PIN))
 		IRbyte[IR_N_BYTE] &= ~(1<<IR_N_BIT);
