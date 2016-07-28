@@ -73,11 +73,11 @@ COMMENT:
 /*
 ** variable
 */
-unsigned char timer0_state;
+volatile uint8_t timer0_state;
 uint8_t timer0_prescaler;
-unsigned char timer1_state;
+volatile uint8_t timer1_state;
 uint8_t timer1_prescaler;
-unsigned char timer2_state;
+volatile uint8_t timer2_state;
 uint8_t timer2_prescaler;
 /*
 ** procedure and function header
@@ -147,6 +147,7 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 	timer0.compare=TIMER_COUNTER0_compare;
 	timer0.start=TIMER_COUNTER0_start;
 	timer0.stop=TIMER_COUNTER0_stop;
+	
 	return timer0;
 }
 /*****************************************************************************************/
