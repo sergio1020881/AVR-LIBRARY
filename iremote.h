@@ -28,6 +28,7 @@ struct iremote{
 	void (*start)(void);
 	void (*stop)(void);
 	volatile uint8_t (*decode)(void);
+	void (*clear)(void);
 };
 typedef struct iremote IR;
 /*
