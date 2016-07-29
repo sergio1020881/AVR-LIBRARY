@@ -65,6 +65,7 @@ void IR_COUNTER_stop(void);
 void IR_INT0_start(void);
 void IR_INT0_stop(void);
 volatile uint8_t IR_decode(void);
+void IR_clear(void);
 /*
 ** procedure and function
 */
@@ -121,6 +122,7 @@ IR IRenable()
 	ir.start=IR_COUNTER_start;
 	ir.stop=IR_COUNTER_stop;
 	ir.decode=IR_decode;
+	ir.clear=IR_clear;
 	return ir;
 }
 /************************
@@ -174,7 +176,7 @@ volatile uint8_t IR_decode(void)
 	volatile uint8_t value;
 	volatile uint8_t code[2];
 	if(ir_state){ // FILTER
-		value=0;
+		value=ir_prevalue;
 		code[0]=0;
 		code[1]=0;
 	}else{
@@ -182,8 +184,6 @@ volatile uint8_t IR_decode(void)
 		code[1]=IRbyte[2];
 	}
 	//DECODE
-	if((code[0]==0) && (code[1]==0))
-		value=ir_prevalue;
 	if((code[0]==73) && (code[1]==10))
 		value='S';
 	if((code[0]==73) && (code[1]==18))
@@ -247,6 +247,12 @@ volatile uint8_t IR_decode(void)
 		
 	ir_prevalue=value;
 	return value;	
+}
+void IR_clear(void){
+	uint8_t index;
+	for(index=0;index<(IR_BYTE+1);index++)
+		IRbyte[index]=0;
+	ir_prevalue=0;
 }
 /*
 ** interrupt
