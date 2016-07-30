@@ -85,9 +85,13 @@ int main(void)
 				break;
 			case 'S':
 				out=255;
+				lcd0.gotoxy(0,3);
+				lcd0.string("          ");
 				break;
 			case 'P':
 				out=254;
+				lcd0.gotoxy(0,3);
+				lcd0.string("OLA SERGIO");
 				break;
 			case 'p':
 				out=255;
