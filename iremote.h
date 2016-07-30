@@ -14,8 +14,8 @@
 #define IR_INPORT PIND
 #define IR_PIN 2
 /***TIMER***/
-#define IR_F_DIV 128 // 64
-#define IR_CTC_VALUE 74 // 62  74
+#define IR_F_DIV 32 // 64
+#define IR_CTC_VALUE 237 // 235 236 237 238 239
 /***DATA***/
 #define IR_BYTE 7
 #define IR_BIT 7
