@@ -58,7 +58,8 @@ int main(void)
 		
 		lcd0.gotoxy(0,1);
 		data=ir.decode();
-		lcd0.putch(data);
+		if(data)
+			lcd0.putch(data);
 		
 		switch(data){
 			case 'U':
