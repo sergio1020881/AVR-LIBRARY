@@ -3,7 +3,7 @@
  *
  * Created: 10/07/2016 01:06:18
  *  Author: Sérgio Santos
- * testing and adjustments
+ *  Excellent
  */ 
 #ifndef IREMOTE_H_
 	#define IREMOTE_H_
@@ -14,11 +14,11 @@
 #define IR_INPORT PIND
 #define IR_PIN 2
 /***TIMER***/
-#define IR_F_DIV 32 // 64
+#define IR_F_DIV 32 // 32
 #define IR_CTC_VALUE 237 // 235 236 237 238 239
 /***DATA***/
-#define IR_BYTE 7
-#define IR_BIT 7
+#define IR_BYTE 5
+#define IR_BIT 7 // DO NOT CHANGE
 /*
 ** variable
 */
