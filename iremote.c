@@ -8,7 +8,6 @@
  * Created: 10/07/2016 01:05:53
  * Author: Sérgio Santos
  * Observations:
- * In progress
  * GOOD
  * Usando um commando da tv cabo, na opção TV cabo commando, funciona muito bem usar dois ultimos bytes para codigo,
  * os dois primeiros são constantes. Talvez vou alterar de forma a ser mais generico.
