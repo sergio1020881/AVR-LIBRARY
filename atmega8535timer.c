@@ -588,6 +588,8 @@ void TIMER_COUNTER2_stop(void)
 /*
 ** interrupt
 */
+#else
+	#error "Only Supports Atemaga 8535 Sorry!!"
 #endif
 /***EOF***/
 /***COMMENTS
