@@ -117,12 +117,6 @@ void TIMER_COUNTER2_stop(void);
 ** procedure and function
 */
 TIMER_COUNTER0 TIMER_COUNTER0enable(uint8_t wavegenmode, uint8_t interrupt)
-/*
-	No Output Compare Interrupt on timer 0.
-	PARAMETER SETTING
-	wavegen mode: Normal; PWM phase correct; Fast PWM; default-Normasl;
-	interrupt: off; overflow; output compare; both; default - non.
-*/
 {
 	TIMER_COUNTER0 timer0;
 	timer0_state=0;
@@ -191,14 +185,6 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(uint8_t wavegenmode, uint8_t interrupt)
 }
 /*****************************************************************************************/
 TIMER_COUNTER1 TIMER_COUNTER1enable(uint8_t wavegenmode, uint8_t interrupt)
-/*
-	PARAMETER SETTING
-	wavegen mode: Normal; PWM, Phase Correct, 8-bit; PWM, Phase Correct, 9-bit; PWM, Phase Correct, 10-bit;
-	CTC; Fast PWM, 8-bit; Fast PWM, 9-bit; Fast PWM, 10-bit; PWM, Phase and Frequency Correct; PWM, Phase and Frequency Correct;
-	PWM, Phase Correct; PWM, Phase Correct; CTC; (Reserved); Fast PWM; Fast PWM.
-	interrupt: off; overflow; output compare; both; default - non.
-	for more information read datasheet.
-*/
 {
 	TIMER_COUNTER1 timer1;
 	timer1_state=0;
@@ -305,11 +291,6 @@ TIMER_COUNTER1 TIMER_COUNTER1enable(uint8_t wavegenmode, uint8_t interrupt)
 }
 /*****************************************************************************************/
 TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char interrupt)
-	/*
-		PARAMETER SETTING
-		wavegen mode: Normal; PWM phase correct; Fast PWM; default-Normasl;
-		interrupt: off; overflow; output compare; both; default - non.
-	*/
 {
 	TIMER_COUNTER2 timer2;
 	timer2_state=0;
@@ -380,13 +361,6 @@ TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char int
 /******************************************************************************************************/
 /******************************************************************************************************/
 void TIMER_COUNTER0_start(uint16_t prescaler)
-/*
-	PARAMETER SETTING
-	Frequency oscillator devision factor or prescaler.
-	prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /32 (From prescaler);
-	clk T0S /64 (From prescaler); clk T0S /128 (From prescaler); clk T 0 S /256 (From prescaler);
-	clk T 0 S /1024 (From prescaler); default - clk T 0 S /1024 (From prescaler).
-*/
 {
 	if(timer0_state==0){ // oneshot
 		TIMER_COUNTER0_REGISTER=0X00;
@@ -422,13 +396,6 @@ void TIMER_COUNTER0_start(uint16_t prescaler)
 	}	
 }
 void TIMER_COUNTER0_compoutmodeA(uint8_t compoutmode)
-/*
-	// Only for NON PWM Modes
-	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
-	Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
-	Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
-	default-Normal port operation, OC0 disconnected.
-*/
 {
 	TIMER_COUNTER0A_CONTROL_REGISTER&=~((1<<COM0A1) | (1<<COM0A0));
 	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
@@ -451,13 +418,6 @@ void TIMER_COUNTER0_compoutmodeA(uint8_t compoutmode)
 	}
 }
 void TIMER_COUNTER0_compoutmodeB(uint8_t compoutmode)
-/*
-	// Only for NON PWM Modes
-	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
-	Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
-	Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
-	default-Normal port operation, OC0 disconnected.
-*/
 {
 	TIMER_COUNTER0A_CONTROL_REGISTER&=~((1<<COM0B1) | (1<<COM0B0));
 	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
@@ -488,22 +448,12 @@ void TIMER_COUNTER0_compareB(uint8_t compare)
 	TIMER_COUNTER0B_COMPARE_REGISTER=compare;
 }
 void TIMER_COUNTER0_stop(void)
-/*
-	stops timer by setting prescaler to zero
-*/
 {
 	TIMER_COUNTER0B_CONTROL_REGISTER&=~((1<<CS02) | (1<<CS01) | (1<<CS00)); // No clock source. (Timer/Counter stopped)
 	timer0_state=0;
 }
 /*****************************************************************************************/
 void TIMER_COUNTER1_start(uint16_t prescaler)
-/*
-	PARAMETER SETTING
-	Frequency oscillator devision factor or prescaler.
-	prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /64 (From prescaler);
-	clk T0S /256 (From prescaler); clk T0S /1024 (From prescaler); External clock source on Tn pin. Clock on falling edge;
-	External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024 (From prescaler).
-*/
 {
 	if(timer1_state==0){ // oneshot
 		TIMER_COUNTER1_REGISTER=0X0000;
@@ -601,13 +551,6 @@ void TIMER_COUNTER1_stop(void)
 }
 /*****************************************************************************************/
 void TIMER_COUNTER2_start(uint16_t prescaler)
-/*
-	PARAMETER SETTING
-	Frequency oscillator devision factor or prescaler.
-	prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /64 (From prescaler);
-	clk T0S /256 (From prescaler); clk T0S /1024 (From prescaler); External clock source on Tn pin. Clock on falling edge;
-	External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024 (From prescaler).
-*/
 {
 	if(timer2_state==0){ // oneshot
 		TIMER_COUNTER2_REGISTER=0X00;
@@ -643,13 +586,6 @@ void TIMER_COUNTER2_start(uint16_t prescaler)
 	}	
 }
 void TIMER_COUNTER2_compoutmodeA(uint8_t compoutmode)
-/*
-	// Only for NON PWM Modes
-	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
-	Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
-	Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
-	default-Normal port operation, OC0 disconnected.
-*/
 {
 	TIMER_COUNTER2A_CONTROL_REGISTER&=~((1<<COM2A0) | (1<<COM2A1));
 	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
@@ -672,13 +608,6 @@ void TIMER_COUNTER2_compoutmodeA(uint8_t compoutmode)
 	}
 }
 void TIMER_COUNTER2_compoutmodeB(uint8_t compoutmode)
-/*
-	// Only for NON PWM Modes
-	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
-	Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
-	Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
-	default-Normal port operation, OC0 disconnected.
-*/
 {
 	TIMER_COUNTER2A_CONTROL_REGISTER&=~((1<<COM2B0) | (1<<COM2B1));
 	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
@@ -709,9 +638,6 @@ void TIMER_COUNTER2_compareB(uint8_t compare)
 	TIMER_COUNTER2B_COMPARE_REGISTER=compare;
 }
 void TIMER_COUNTER2_stop(void)
-/*
-	stops timer by setting prescaler to zero
-*/
 {
 	TIMER_COUNTER2B_CONTROL_REGISTER&=~((1<<CS22) | (1<<CS21) | (1<<CS20)); // No clock source. (Timer/Counter stopped)
 	timer2_state=0;
@@ -720,7 +646,7 @@ void TIMER_COUNTER2_stop(void)
 ** interrupt
 */
 #else
-	#error "Only Supports Atemaga 324A Sorry!!"
+	#error "Atmega324timer only supports Atemaga 324A Sorry!!"
 #endif
 /***EOF***/
 /***COMMENTS
