@@ -23,18 +23,15 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	in progress
+	TESTED
+	Very Stable
 *************************************************************************/
-#ifndef F_CPU
-  #define F_CPU 8000000UL
-#endif
 /*
 ** library
 */
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
-#include <util/delay.h>
 #include <inttypes.h>
 /***/
 #include "atmega324timer.h"
@@ -83,10 +80,6 @@ COMMENT:
 	#define TIMER_COUNTER2_OVERFLOW_INTERRUPT TIMER2_OVF_vect
 	/***COMMON***/
 	#define TIMER_COUNTER_ASYNCHRONOUS_STATUS_REGISTER ASSR
-	
-	
-	
-	
 	#define TIMER_COUNTER_SPECIAL_FUNCTION_IO_REGISTER SFIOR
 /*
 ** variable
@@ -114,8 +107,10 @@ void TIMER_COUNTER1_compareB(uint16_t compare);
 void TIMER_COUNTER1_start(uint16_t prescaler);
 void TIMER_COUNTER1_stop(void);
 /******/
-void TIMER_COUNTER2_compoutmode(uint8_t compoutmode);
-void TIMER_COUNTER2_compare(uint8_t compare);
+void TIMER_COUNTER2_compoutmodeA(uint8_t compoutmode);
+void TIMER_COUNTER2_compoutmodeB(uint8_t compoutmode);
+void TIMER_COUNTER2_compareA(uint8_t compare);
+void TIMER_COUNTER2_compareB(uint8_t compare);
 void TIMER_COUNTER2_start(uint16_t prescaler);
 void TIMER_COUNTER2_stop(void);
 /*
@@ -138,14 +133,12 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(uint8_t wavegenmode, uint8_t interrupt)
 	TIMER_COUNTER0B_CONTROL_REGISTER&=~(1<<WGM02);
 	switch(wavegenmode){
 		case 1: // PWM, Phase Correct
-			TIMER_COUNTER0B_CONTROL_REGISTER&=~((1<<FOC0A) | (1<<FOC0B));
 			TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<WGM00);
 			break;
 		case 2: // CTC
 			TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<WGM01);
 			break;
 		case 3: // Fast PWM
-			TIMER_COUNTER0B_CONTROL_REGISTER&=~((1<<FOC0A) | (1<<FOC0B));
 			TIMER_COUNTER0A_CONTROL_REGISTER|=((1<<WGM00) | (1<<WGM01));
 			break;
 		case 5: // PWM, Phase Correct
@@ -243,7 +236,7 @@ TIMER_COUNTER1 TIMER_COUNTER1enable(uint8_t wavegenmode, uint8_t interrupt)
 			TIMER_COUNTER1B_CONTROL_REGISTER|=(1<<WGM13);
 			break;
 		case 9:	// PWM, Phase and Frequency Correct
-			TIMER_COUNTER1A_CONTROL_REGISTER&=~((1<<FOC1A) | (1<<FOC1B));
+			TIMER_COUNTER1C_CONTROL_REGISTER&=~((1<<FOC1A) | (1<<FOC1B));
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<WGM10);
 			TIMER_COUNTER1B_CONTROL_REGISTER|=(1<<WGM13);
 			break;
@@ -252,15 +245,11 @@ TIMER_COUNTER1 TIMER_COUNTER1enable(uint8_t wavegenmode, uint8_t interrupt)
 			TIMER_COUNTER1B_CONTROL_REGISTER|=(1<<WGM13);
 			break;
 		case 11: // PWM, Phase Correct
-			TIMER_COUNTER1A_CONTROL_REGISTER&=~((1<<FOC1A) | (1<<FOC1B));
+			TIMER_COUNTER1C_CONTROL_REGISTER&=~((1<<FOC1A) | (1<<FOC1B));
 			TIMER_COUNTER1A_CONTROL_REGISTER|=((1<<WGM11) | (1<<WGM10));
 			TIMER_COUNTER1B_CONTROL_REGISTER|=(1<<WGM13);
 			break;
 		case 12: // CTC
-			TIMER_COUNTER1B_CONTROL_REGISTER|=((1<<WGM13) | (1<<WGM12));
-			break;
-		case 13: // (Reserved)
-			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<WGM10);
 			TIMER_COUNTER1B_CONTROL_REGISTER|=((1<<WGM13) | (1<<WGM12));
 			break;
 		case 14: // Fast PWM
@@ -268,38 +257,38 @@ TIMER_COUNTER1 TIMER_COUNTER1enable(uint8_t wavegenmode, uint8_t interrupt)
 			TIMER_COUNTER1B_CONTROL_REGISTER|=((1<<WGM13) | (1<<WGM12));
 			break;
 		case 15: // Fast PWM
-			TIMER_COUNTER1A_CONTROL_REGISTER&=~((1<<FOC1A) | (1<<FOC1B));
+			TIMER_COUNTER1C_CONTROL_REGISTER&=~((1<<FOC1A) | (1<<FOC1B));
 			TIMER_COUNTER1A_CONTROL_REGISTER|=((1<<WGM11) | (1<<WGM10));
 			TIMER_COUNTER1B_CONTROL_REGISTER|=((1<<WGM13) | (1<<WGM12));
 			break;
 		default: // Normal
 			break;
 	}
-	TIMER_COUNTER_INTERRUPT_MASK_REGISTER&=~((1<<TICIE1) | (1<<OCIE1A) | (1<<OCIE1B) | (1<<TOIE1));
+	TIMER_COUNTER1_INTERRUPT_MASK_REGISTER&=~((1<<ICIE1) | (1<<OCIE1A) | (1<<OCIE1B) | (1<<TOIE1));
 	switch(interrupt){
 		case 1:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<TOIE1);
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=(1<<TOIE1);
 			break;
 		case 2:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE1B);
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=(1<<OCIE1B);
 			break;
 		case 3:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE1A);
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=(1<<OCIE1A);
 		break;
 			case 4:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<TICIE1);
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=(1<<ICIE1);
 		break;
 			case 6:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=((1<<OCIE1B) | (1<<TOIE1));
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=((1<<OCIE1B) | (1<<TOIE1));
 			break;
 		case 7:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=((1<<OCIE1A) | (1<<TOIE1));
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=((1<<OCIE1A) | (1<<TOIE1));
 			break;
 		case 8:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=((1<<OCIE1A) | (1<<OCIE1B));
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=((1<<OCIE1A) | (1<<OCIE1B));
 			break;
 		case 9:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=((1<<OCIE1A) | (1<<OCIE1B) | (1<<TOIE1));
+			TIMER_COUNTER1_INTERRUPT_MASK_REGISTER|=((1<<OCIE1A) | (1<<OCIE1B) | (1<<TOIE1));
 			break;
 		default:
 			break;
@@ -325,39 +314,63 @@ TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char int
 	TIMER_COUNTER2 timer2;
 	timer2_state=0;
 	
-	TIMER_COUNTER2_COMPARE_REGISTER=0XFF;
-	TIMER_COUNTER2_CONTROL_REGISTER&=~((1<<WGM20) | (1<<WGM21));
+	TIMER_COUNTER2A_COMPARE_REGISTER=0XFF;
+	TIMER_COUNTER2B_COMPARE_REGISTER=0XFF;
+	TIMER_COUNTER2A_CONTROL_REGISTER&=~((1<<WGM20) | (1<<WGM21));
+	TIMER_COUNTER2B_CONTROL_REGISTER&=~(1<<WGM22);
 	switch(wavegenmode){
 		case 1: // PWM, Phase Correct
-			TIMER_COUNTER2_CONTROL_REGISTER&=~(1<<FOC2);
-			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<WGM20);
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<WGM20);
 			break;
 		case 2: // CTC
-			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<WGM21);
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<WGM21);
 			break;
 		case 3: // Fast PWM
-			TIMER_COUNTER2_CONTROL_REGISTER&=~(1<<FOC2);
-			TIMER_COUNTER2_CONTROL_REGISTER|=((1<<WGM20) | (1<<WGM21));
+			TIMER_COUNTER2A_CONTROL_REGISTER|=((1<<WGM20) | (1<<WGM21));
+			break;
+		case 5: // PWM, Phase Correct
+			TIMER_COUNTER2B_CONTROL_REGISTER&=~((1<<FOC2A) | (1<<FOC2B));
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<WGM20);
+			TIMER_COUNTER2B_CONTROL_REGISTER|=(1<<WGM22);
+			break;
+		case 7: // Fast PWM
+			TIMER_COUNTER2B_CONTROL_REGISTER&=~((1<<FOC2A) | (1<<FOC2B));
+			TIMER_COUNTER2A_CONTROL_REGISTER|=((1<<WGM20) | (1<<WGM21));
+			TIMER_COUNTER2B_CONTROL_REGISTER|=(1<<WGM22);
 			break;
 		default: //// Normal
 			break;
 	}
-	TIMER_COUNTER_INTERRUPT_MASK_REGISTER&=~((1<<TOIE2) | (1<<OCIE2));
+	TIMER_COUNTER2_INTERRUPT_MASK_REGISTER&=~((1<<TOIE2) | (1<<OCIE2A) | (1<<OCIE2B));
 	switch(interrupt){
 		case 1:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<TOIE2);
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=(1<<TOIE2);
 			break;
 		case 2:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=(1<<OCIE2);
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=(1<<OCIE2A);
 			break;
 		case 3:
-			TIMER_COUNTER_INTERRUPT_MASK_REGISTER|=((1<<TOIE2) | (1<<OCIE2));
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=(1<<OCIE2B);
+			break;
+		case 4:
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=((1<<OCIE2A) | (1<<OCIE2B));
+			break;
+		case 5:
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=((1<<OCIE2A) | (1<<OCIE2B) | (1<<TOIE2));
+			break;
+		case 6:
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=((1<<TOIE2) | (1<<OCIE2A));
+			break;
+		case 7:
+			TIMER_COUNTER2_INTERRUPT_MASK_REGISTER|=((1<<TOIE2) | (1<<OCIE2B));
 			break;
 		default:
 			break;
 	}
-	timer2.compoutmode=TIMER_COUNTER2_compoutmode;
-	timer2.compare=TIMER_COUNTER2_compare;
+	timer2.compoutmodeA=TIMER_COUNTER2_compoutmodeA;
+	timer2.compoutmodeB=TIMER_COUNTER2_compoutmodeB;
+	timer2.compareA=TIMER_COUNTER2_compareA;
+	timer2.compareB=TIMER_COUNTER2_compareB;
 	timer2.start=TIMER_COUNTER2_start;
 	timer2.stop=TIMER_COUNTER2_stop;
 	
@@ -424,12 +437,12 @@ void TIMER_COUNTER0_compoutmodeA(uint8_t compoutmode)
 			TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A0);
 			break;
 		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Clear OC0 on compare match
 			TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0A1);
 			break;
 		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Set OC0 on compare match
 			TIMER_COUNTER0A_CONTROL_REGISTER|=((1<<COM0A0) | (1<<COM0A1));
 			break;
@@ -453,12 +466,12 @@ void TIMER_COUNTER0_compoutmodeB(uint8_t compoutmode)
 			TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B0);
 			break;
 		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Clear OC0 on compare match
 			TIMER_COUNTER0A_CONTROL_REGISTER|=(1<<COM0B1);
 			break;
 		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Set OC0 on compare match
 			TIMER_COUNTER0A_CONTROL_REGISTER|=((1<<COM0B0) | (1<<COM0B1));
 			break;
@@ -486,7 +499,7 @@ void TIMER_COUNTER0_stop(void)
 void TIMER_COUNTER1_start(uint16_t prescaler)
 /*
 	PARAMETER SETTING
-	Frequency oscilator devision factor or prescaler.
+	Frequency oscillator devision factor or prescaler.
 	prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /64 (From prescaler);
 	clk T0S /256 (From prescaler); clk T0S /1024 (From prescaler); External clock source on Tn pin. Clock on falling edge;
 	External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024 (From prescaler).
@@ -534,12 +547,12 @@ void TIMER_COUNTER1_compoutmodeA(uint8_t compoutmode)
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1A0);
 			break;
 		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Clear OC0 on compare match
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1A1);
 			break;
 		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Set OC0 on compare match
 			TIMER_COUNTER1A_CONTROL_REGISTER|=((1<<COM1A0) | (1<<COM1A1));
 			break;
@@ -549,19 +562,19 @@ void TIMER_COUNTER1_compoutmodeA(uint8_t compoutmode)
 }
 void TIMER_COUNTER1_compoutmodeB(uint8_t compoutmode)
 {
-	TIMER_COUNTER1A_CONTROL_REGISTER&=~((1<<COM1B1) | (3<<COM1B0));
+	TIMER_COUNTER1A_CONTROL_REGISTER&=~((1<<COM1B1) | (1<<COM1B0));
 	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
 		case 1: // Reserved
 			// Toggle OC0 on compare match
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1B0);
 			break;
 		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Clear OC0 on compare match
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1B1);
 			break;
 		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Set OC0 on compare match
 			TIMER_COUNTER1A_CONTROL_REGISTER|=((1<<COM1B0) | (1<<COM1B1));
 			break;
@@ -590,7 +603,7 @@ void TIMER_COUNTER1_stop(void)
 void TIMER_COUNTER2_start(uint16_t prescaler)
 /*
 	PARAMETER SETTING
-	Frequency oscilator devision factor or prescaler.
+	Frequency oscillator devision factor or prescaler.
 	prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /64 (From prescaler);
 	clk T0S /256 (From prescaler); clk T0S /1024 (From prescaler); External clock source on Tn pin. Clock on falling edge;
 	External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024 (From prescaler).
@@ -625,11 +638,11 @@ void TIMER_COUNTER2_start(uint16_t prescaler)
 				timer2_prescaler=((1<<CS22) | (1<<CS21) | (1<<CS20));
 				break;
 		}
-		TIMER_COUNTER2_CONTROL_REGISTER|=timer2_prescaler;
+		TIMER_COUNTER2B_CONTROL_REGISTER|=timer2_prescaler;
 		timer2_state=1;
 	}	
 }
-void TIMER_COUNTER2_compoutmode(uint8_t compoutmode)
+void TIMER_COUNTER2_compoutmodeA(uint8_t compoutmode)
 /*
 	// Only for NON PWM Modes
 	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
@@ -638,36 +651,69 @@ void TIMER_COUNTER2_compoutmode(uint8_t compoutmode)
 	default-Normal port operation, OC0 disconnected.
 */
 {
-	TIMER_COUNTER2_CONTROL_REGISTER&=~((1<<COM20) | (1<<COM21));
+	TIMER_COUNTER2A_CONTROL_REGISTER&=~((1<<COM2A0) | (1<<COM2A1));
 	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
 		case 1: // Reserved
 			// Toggle OC0 on compare match
-			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<COM20);
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<COM2A0);
 			break;
 		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Clear OC0 on compare match
-			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<COM21);
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<COM2A1);
 			break;
 		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
-			// match when downcounting.
+			// match when down counting.
 			// Set OC0 on compare match
-			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<COM20) | (1<<COM21);
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<COM2A0) | (1<<COM2A1);
 			break;
 		default: // Normal port operation, OC0 disconnected.
 			break;
 	}
 }
-void TIMER_COUNTER2_compare(uint8_t compare)
+void TIMER_COUNTER2_compoutmodeB(uint8_t compoutmode)
+/*
+	// Only for NON PWM Modes
+	compoutmode: Normal port operation, OC0 disconnected; Toggle OC0 on compare match; 
+	Clear OC0 on compare match when up-counting. Set OC0 on compare match when downcounting. Clear OC0 on compare match;
+	Set OC0 on compare match when up-counting. Clear OC0 on compare match when downcounting. Set OC0 on compare match ;
+	default-Normal port operation, OC0 disconnected.
+*/
 {
-	TIMER_COUNTER2_COMPARE_REGISTER=compare;
+	TIMER_COUNTER2A_CONTROL_REGISTER&=~((1<<COM2B0) | (1<<COM2B1));
+	switch(compoutmode){ // see table 53, 54, 55 in datasheet for more information
+		case 1: // Reserved
+			// Toggle OC0 on compare match
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<COM2B0);
+			break;
+		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+			// match when downcounting.
+			// Clear OC0 on compare match
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<COM2B1);
+			break;
+		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+			// match when downcounting.
+			// Set OC0 on compare match
+			TIMER_COUNTER2A_CONTROL_REGISTER|=(1<<COM2B0) | (1<<COM2B1);
+			break;
+		default: // Normal port operation, OC0 disconnected.
+			break;
+	}
+}
+void TIMER_COUNTER2_compareA(uint8_t compare)
+{
+	TIMER_COUNTER2A_COMPARE_REGISTER=compare;
+}
+void TIMER_COUNTER2_compareB(uint8_t compare)
+{
+	TIMER_COUNTER2B_COMPARE_REGISTER=compare;
 }
 void TIMER_COUNTER2_stop(void)
 /*
 	stops timer by setting prescaler to zero
 */
 {
-	TIMER_COUNTER2_CONTROL_REGISTER&=~((1<<CS22) | (1<<CS21) | (1<<CS20)); // No clock source. (Timer/Counter stopped)
+	TIMER_COUNTER2B_CONTROL_REGISTER&=~((1<<CS22) | (1<<CS21) | (1<<CS20)); // No clock source. (Timer/Counter stopped)
 	timer2_state=0;
 }
 /*
@@ -680,5 +726,5 @@ void TIMER_COUNTER2_stop(void)
 /***COMMENTS
 interrupt to be defined in MAIN file
 Note if you configure to use interrupts and do not define them, program will block,
-so be carefull when enabling, make sure correct parameters for specified aplication are applied.
+so be careful when enabling, make sure correct parameters for specified application are applied.
 ***/
