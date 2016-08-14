@@ -83,12 +83,12 @@ int main(void)
 				break;
 			case 'S':
 				out=255;
-				lcd0.gotoxy(0,3);
+				lcd0.gotoxy(0,2);
 				lcd0.string("          ");
 				break;
 			case 'P':
 				out=254;
-				lcd0.gotoxy(0,3);
+				lcd0.gotoxy(0,2);
 				lcd0.string("OLA SERGIO");
 				break;
 			case 'p':
@@ -126,7 +126,8 @@ int main(void)
 		
 		PORTB=out;
 		
-		lcd0.gotoxy(0,2);
+		/*
+		lcd0.gotoxy(0,3);
 		
 		func.i32toa(ir.key(0),number);
 		lcd0.string(number);lcd0.hspace(2);
@@ -137,7 +138,6 @@ int main(void)
 		func.i32toa(ir.key(3),number);
 		lcd0.string(number);lcd0.hspace(2);
 		
-		/*
 		lcd0.gotoxy(0,3);
 		func.i32toa(ir.key(4),number);
 		lcd0.string(number);lcd0.hspace(2);
