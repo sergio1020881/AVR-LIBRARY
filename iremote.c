@@ -20,6 +20,7 @@
 #include <avr/interrupt.h>
 #include <inttypes.h>
 #include "iremote.h"
+/***TYPE***/
 #if defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__)
 /*
 ** constant and macro
@@ -41,6 +42,7 @@
 #define TIMER_COUNTER_INTERRUPT_MASK_REGISTER TIMSK
 #define TIMER_COUNTER_INTERRUPT_FLAG_REGISTER TIFR
 #define TIMER_COUNTER_SPECIAL_IO_FUNCTION_REGISTER SFIOR
+/***TYPE***/
 #elif defined(__AVR_ATmega324A__)
 /*
 ** constant and macro
@@ -61,7 +63,6 @@
 #define TIMER_COUNTER2A_COMPARE_MATCH_INTERRUPT TIMER2_COMPA_vect
 #define TIMER_COUNTER2B_COMPARE_MATCH_INTERRUPT TIMER2_COMPB_vect
 #define TIMER_COUNTER2_OVERFLOW_INTERRUPT TIMER2_OVF_vect
-/***COMMON***/
 #endif
 /*
 ** variable
@@ -82,9 +83,7 @@ void IR_INT0_start(void);
 void IR_INT0_stop(void);
 volatile uint8_t IR_decode(void);
 void IR_clear(void);
-/*
-**
-*/
+/***TYPE***/
 #if defined(__AVR_ATmega8515__) || defined(__AVR_ATmega8535__)
 /*
 ** procedure and function
@@ -141,7 +140,6 @@ IR IRenable()
 	return ir;
 }
 /************************
-*************************
 ************************/
 volatile uint8_t IR_decode(void)
 {
@@ -229,7 +227,6 @@ void IR_INT0_stop(void)
 {
 	General_Interrupt_Control_Register&=~(1<<INT0);
 }
-// return full code
 volatile uint8_t IR_KEY(uint8_t byte)
 {
 	if(ir_state)
@@ -246,9 +243,6 @@ void IR_COUNTER_start(void)
 	}	
 }
 void IR_COUNTER_stop(void)
-/*
-	stops timer by setting prescaler to zero
-*/
 {
 	if(ir_state==1){ // oneshot
 		// No clock source. (Timer/Counter stopped)
@@ -294,9 +288,7 @@ ISR(INT0_vect)
 	IRbyte[IR_N_BYTE] |= (1<<IR_N_BIT);
 	IR_N_BIT++;
 }
-/**********************************************************************************************
-***********************************************************************************************
-***********************************************************************************************/
+/***TYPE***/
 #elif defined(__AVR_ATmega324A__)
 /*
 ** procedure and function
@@ -354,7 +346,6 @@ IR IRenable()
 	return ir;
 }
 /************************
-*************************
 ************************/
 volatile uint8_t IR_decode(void)
 {
@@ -442,7 +433,6 @@ void IR_INT0_stop(void)
 {
 	External_Interrupt_Mask_Register&=~(1<<INT0);
 }
-// return full code
 volatile uint8_t IR_KEY(uint8_t byte)
 {
 	if(ir_state)
