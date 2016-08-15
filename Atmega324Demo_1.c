@@ -20,7 +20,6 @@
 #include "atmega324timer.h"
 #include "iremote.h"
 
-
 void PORTINIT(void);
 
 int main(void)
@@ -164,7 +163,6 @@ void PORTINIT(void){
 /*
 ** interrupt
 */
-ISR(TIMER1_COMPA_vect){
-	
+ISR(TIMER1_COMPA_vect){	
 }
 /***EOF***/
