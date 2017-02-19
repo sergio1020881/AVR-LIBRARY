@@ -80,8 +80,8 @@ struct routine ROUTINEenable(unsigned int N)
 	struct routine r;
 	//Inicialize variables
 	r.N=N;
-	r.Y=0;
 	r.index=0;
+	r.Y=0;
 	//Function Vtable
 	r.routine=ROUTINEroutine;
 	r.search=ROUTINEsearch;
@@ -108,7 +108,7 @@ unsigned int ROUTINEroutine(struct routine* this, unsigned int entry)
 		index=y*n+(i+1);
 		if(entry==index){
 			y=i;
-			this->Y=i;
+			this->Y=y;
 			break;
 		}
 	}
@@ -120,23 +120,23 @@ unsigned int ROUTINEsearch(struct routine* this, unsigned int entry, unsigned in
 	unsigned int i;
 	unsigned int j;
 	unsigned int n;
-	unsigned int p;
 	unsigned int y;
-	unsigned int z;
+	unsigned int position;
+	unsigned int index;
 	n=this->N+1;
-	p=0;
+	position=0;
 	y=this->Y;
 	for(i=0;i<n;i++){
-		z=y*n+(i+1);
+		index=y*n+(i+1);
 		for(j=0;j<size;j+=2){
-			if(z==data[j] && entry==data[j+1]){
-				p=data[j];
-				this->index=p;
+			if(index==data[j] && entry==data[j+1]){
+				position=index;
+				this->index=position;
 				break;
 			}
 		}
 	}
-	return p;
+	return position;
 }
 //number
 unsigned int ROUTINEnumber(struct routine* this)
@@ -158,4 +158,5 @@ unsigned int ROUTINEpos(struct routine* this)
 
 /***Comments***/
 // Y*(N+1)+(X+1)=Z
-
+//n=N+1
+//Y*n+(X+1)=Z
