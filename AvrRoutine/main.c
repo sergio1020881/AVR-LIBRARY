@@ -35,14 +35,7 @@ unsigned int mem[SIZE]={
 45,1
 };
 
-unsigned int N=8;
-unsigned int Y=0;
-
-
 void PORTINIT(void);
-
-unsigned int routine(unsigned int entry);
-unsigned int search(unsigned int entry, unsigned int data[], unsigned int size);
 
 int main(void)
 {
@@ -88,49 +81,6 @@ void PORTINIT(void)
 	DDRA=0X00;
 	PORTA=0XFF;
 }
-
-unsigned int routine(unsigned int entry)
-{
-	unsigned int i;
-	unsigned int index;
-	unsigned int n;
-	unsigned int y;
-	n=N+1;
-	y=Y;
-	for(i=0;i<n;i++){
-		index=y*n+(i+1);
-		if(entry==index){
-			y=i;
-			break;
-		}
-	}
-	return y;
-}
-unsigned int search(unsigned int entry, unsigned int data[], unsigned int size)
-{
-	unsigned int i;
-	unsigned int j;
-	unsigned int n;
-	unsigned int p;
-	unsigned int y;
-	unsigned int z;
-	n=N+1;
-	p=0;
-	y=Y;
-	for(i=0;i<n;i++){
-		z=y*n+(i+1);
-		for(j=0;j<size;j+=2){
-			if(z==data[j] && entry==data[j+1]){
-				p=data[j];
-				break;
-			}
-		}
-	}
-	return p;
-}
-
-
-
 
 /*
 ** Interrupt
