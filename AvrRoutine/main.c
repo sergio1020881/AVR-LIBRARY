@@ -21,15 +21,18 @@
 //#include "iremote.h"
 #include "AVRoutine.h"
 
-#define SIZE 10 
+#define SIZE 16 
 
-unsigned int mem[SIZE]=
-{
+//See matrix table 8 X 8
+unsigned int mem[SIZE]={
 9,1,
+9,4,
 73,1,
 6,2,
 50,2,
-37,2
+50,4,
+37,2,
+45,1
 };
 
 unsigned int N=8;
@@ -62,7 +65,7 @@ int main(void)
 		leitura=PINA;
 		
 		
-		func.i16toa(func.hl(pleitura,leitura),Buffer);
+		func.i16toa(leitura,Buffer);
 		lcd.string_size(Buffer,4);
 		
 		func.i16toa(run.routine(&run,run.search(&run,func.hl(pleitura,leitura),mem,SIZE)),Buffer);
