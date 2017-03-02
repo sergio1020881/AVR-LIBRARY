@@ -63,7 +63,7 @@ COMMENT:
 ** procedure and function header
 */
 
-unsigned int ROUTINEroutine(struct routine* this, unsigned int entry);
+unsigned int ROUTINEroutine(struct routine* this, unsigned int position);
 unsigned int ROUTINEsearch(struct routine* this, unsigned int entry, unsigned int data[], unsigned int size);
 unsigned int ROUTINEnumber(struct routine* this);
 unsigned int ROUTINEpos(struct routine* this);
@@ -96,7 +96,7 @@ struct routine ROUTINEenable(unsigned int N)
 */
 
 //routine
-unsigned int ROUTINEroutine(struct routine* this, unsigned int entry)
+unsigned int ROUTINEroutine(struct routine* this, unsigned int position)
 {
 	unsigned int i;
 	unsigned int index;
@@ -106,7 +106,7 @@ unsigned int ROUTINEroutine(struct routine* this, unsigned int entry)
 	y=this->Y;
 	for(i=0;i<n;i++){
 		index=y*n+(i+1);
-		if(entry==index){
+		if(position==index){
 			y=i;
 			this->Y=y;
 			break;
