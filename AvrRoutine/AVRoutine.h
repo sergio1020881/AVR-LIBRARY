@@ -35,7 +35,7 @@ struct routine{
 	unsigned int Y;
 	unsigned int index;
 	//Function Pointers
-	unsigned int (*routine)(struct routine* this, unsigned int entry);
+	unsigned int (*routine)(struct routine* this, unsigned int position);
 	unsigned int (*search)(struct routine* this, unsigned int entry, unsigned int data[], unsigned int size);
 	unsigned int (*number)(struct routine* this);
 	unsigned int (*pos)(struct routine* this);
