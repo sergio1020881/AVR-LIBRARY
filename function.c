@@ -64,6 +64,8 @@ unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits);
 uint8_t FUNCpinmatch(uint8_t match, uint8_t pin, uint8_t HL);
 uint8_t FUNChmerge(uint8_t X, uint8_t Y);
 uint8_t FUNClmerge(uint8_t X, uint8_t Y);
+uint8_t FUNChh(uint8_t xi, uint8_t xf);
+uint8_t FUNCll(uint8_t xi, uint8_t xf);
 uint8_t FUNClh(uint8_t xi, uint8_t xf);
 uint8_t FUNChl(uint8_t xi, uint8_t xf);
 uint8_t FUNCdiff(uint8_t xi, uint8_t xf);
@@ -119,6 +121,8 @@ FUNC FUNCenable( void )
 	func.pinmatch=FUNCpinmatch;
 	func.hmerge=FUNChmerge;
 	func.lmerge=FUNClmerge;
+	func.hh=FUNChh;
+	func.ll=FUNCll;
 	func.lh=FUNClh;
 	func.hl=FUNChl;
 	func.diff=FUNCdiff;
@@ -198,6 +202,20 @@ uint8_t FUNChmerge(uint8_t X, uint8_t Y)
 uint8_t FUNClmerge(uint8_t X, uint8_t Y)
 {
 	return (X & Y);
+}
+// hh
+uint8_t FUNChh(uint8_t xi, uint8_t xf)
+{
+	uint8_t i;
+	i=xi&xf;
+	return i;
+}
+// ll
+uint8_t FUNCll(uint8_t xi, uint8_t xf)
+{
+	uint8_t i;
+	i=xi|xf;
+	return ~i;
 }
 // lh
 uint8_t FUNClh(uint8_t xi, uint8_t xf)
