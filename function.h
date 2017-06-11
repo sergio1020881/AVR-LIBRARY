@@ -34,6 +34,8 @@ struct FUNC{
 	void (*reverse)(char s[]);
 	unsigned int (*mayia)(unsigned int xi, unsigned int xf, uint8_t nbits);
 	uint8_t (*pinmatch)(uint8_t match, uint8_t pin, uint8_t HL);
+	uint8_t (*hh)(uint8_t xi, uint8_t xf);
+	uint8_t (*ll)(uint8_t xi, uint8_t xf);
 	uint8_t (*lh)(uint8_t xi, uint8_t xf);
 	uint8_t (*hl)(uint8_t xi, uint8_t xf);
 	uint8_t (*diff)(uint8_t xi, uint8_t xf);
