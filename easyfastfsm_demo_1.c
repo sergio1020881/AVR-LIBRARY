@@ -45,12 +45,20 @@ while (1)
 					STATE=1;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
 					STATE=7;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=1;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
+					STATE=7;
 				break;
 			case 1:
 				PORTB=0b11111101;
 				if(func.hl(PORT[0][A],PORT[1][A])&1)
 					STATE=2;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
+					STATE=0;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=2;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
 					STATE=0;
 				break;
 			case 2:
@@ -59,12 +67,20 @@ while (1)
 					STATE=3;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
 					STATE=1;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=3;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
+					STATE=1;
 				break;
 			case 3:
 				PORTB=0b11110111;
 				if(func.hl(PORT[0][A],PORT[1][A])&1)
 					STATE=4;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
+					STATE=2;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=4;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
 					STATE=2;
 				break;
 			case 4:
@@ -73,12 +89,20 @@ while (1)
 					STATE=5;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
 					STATE=3;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=5;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
+					STATE=3;
 				break;
 			case 5:
 				PORTB=0b11011111;
 				if(func.hl(PORT[0][A],PORT[1][A])&1)
 					STATE=6;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
+					STATE=4;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=6;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
 					STATE=4;
 				break;
 			case 6:
@@ -87,6 +111,10 @@ while (1)
 					STATE=7;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
 					STATE=5;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=7;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
+					STATE=5;
 				break;
 			case 7:
 				PORTB=0b01111111;
@@ -94,13 +122,15 @@ while (1)
 					STATE=0;
 				if(func.hl(PORT[0][A],PORT[1][A])&2)
 					STATE=6;
+				if(func.lh(PORT[0][A],PORT[1][A])&4)
+					STATE=0;
+				if(func.lh(PORT[0][A],PORT[1][A])&8)
+					STATE=6;
 				break;
 			default:
 				break;
 		}		
 		/*LOGIC*/
-		if(!(PORT[1][A]&8))
-			STATE=2;
 		
 		UpdatePORT();
     }
