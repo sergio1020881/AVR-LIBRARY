@@ -436,6 +436,7 @@ void TIMER_COUNTER1_start(unsigned int prescaler)
 				TIMER_COUNTER1B_CONTROL_REGISTER|=(5<<CS10);
 				break;
 		}
+		SYSTEM_REGISTER|=(1<<GLOBAL_INTERRUPT_ENABLE);
 		timer1_state=1;
 	}	
 }
@@ -620,6 +621,7 @@ void TIMER_COUNTER2_start(unsigned int prescaler)
 				TIMER_COUNTER2_CONTROL_REGISTER|=(5<<CS20);
 				break;
 		}
+		SYSTEM_REGISTER|=(1<<GLOBAL_INTERRUPT_ENABLE);
 		timer2_state=1;
 	}	
 }
@@ -835,6 +837,7 @@ void TIMER_COUNTER3_start(unsigned int prescaler)
 				TIMER_COUNTER3B_CONTROL_REGISTER|=(5<<CS30);
 				break;
 		}
+		SYSTEM_REGISTER|=(1<<GLOBAL_INTERRUPT_ENABLE);
 		timer3_state=1;
 	}	
 }
