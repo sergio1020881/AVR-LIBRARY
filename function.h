@@ -1,11 +1,11 @@
 /************************************************************************
 Title:    FUNCTION
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: function.h,v 0.1 2015/04/11 15:00:00 sergio Exp $
+File:     $Id: function.h,v 0.1 2017/05/15 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License 
-Usage:    
+Usage:
 LICENSE:
     Copyright (C) 2014
     This program is free software; you can redistribute it and/or modify
