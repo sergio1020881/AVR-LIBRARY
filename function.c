@@ -1,14 +1,14 @@
 /*************************************************************************
 Title:    FUNCTION
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: function.c,v 0.1 2015/04/11 15:00:00 sergio Exp $
+File:     $Id: function.c,v 0.1 2017/05/15 15:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License        
+License:  GNU General Public License     
 DESCRIPTION:
 	Atmega 8535 at 8MHZ; Atmega 328 at 16Mhz; Atmega 128 at 16Mhz
 USAGE:
-    Refere to the header file function.h for a description of the routines. 
+    Refer to the header file function.h for a description of the routines. 
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -24,15 +24,11 @@ LICENSE:
 COMMENT:
 	Very Stable
 *************************************************************************/
-#ifndef F_CPU
-	#define F_CPU 8000000UL
-#endif
 /*
 ** library
 */
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#include <util/delay.h>
 #include <stdarg.h>
 #include <inttypes.h>
 /***pc use***
