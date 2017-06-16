@@ -8,7 +8,7 @@ License:  GNU General Public License
 DESCRIPTION:
 	Atemga 128 at 16Mhz
 USAGE:
-    Refere to the header file lcd.h for a description of the routines.
+    Refer to the header file lcd.h for a description of the routines.
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -26,7 +26,8 @@ COMMENT:
 	reviewed 09/04/2015, stable                    
 *************************************************************************/
 #ifndef F_CPU
-	#define F_CPU 16000000UL
+/***put value corresponding to CPU speed***/
+	#define F_CPU 8000000UL
 #endif
 /*
 ** Library
@@ -46,18 +47,18 @@ COMMENT:
 #define INST 0
 #define DATA 1
 //ticks depends on CPU frequency this case 16Mhz
-#define LCD_N_TICKS 1
+#define LCD_N_TICKS 2
 /*
 ** variable
 */
 volatile uint8_t *lcd0_DDR;
 volatile uint8_t *lcd0_PIN;
 volatile uint8_t *lcd0_PORT;
-uint8_t lcd0_detect;
+static uint8_t lcd0_detect;
 volatile uint8_t *lcd1_DDR;
 volatile uint8_t *lcd1_PIN;
 volatile uint8_t *lcd1_PORT;
-uint8_t lcd1_detect;
+static uint8_t lcd1_detect;
 /*
 ** procedure and function header
 */
@@ -133,14 +134,10 @@ void LCD0_inic(void)
 	/***INICIALIZACAO LCD**datasheet*/
 	_delay_ms(40);
 	LCD0_write(0x33,INST); //function set
-	//_delay_ms(40);
-	//lcd->write(lcd,0x33,INST); //function set
 	_delay_us(39);
 	LCD0_write(0x2B,INST); //function set
 	_delay_us(39);
 	LCD0_write(0x2B,INST); //function set
-	//_delay_us(39);
-	//lcd->write(0x2B,INST); //function set
 	_delay_us(37);
 	LCD0_write(0x0C,INST);// display on/off control
 	_delay_us(37);
@@ -204,7 +201,7 @@ void LCD0_BF(void)
 	for(i=0;0x80&inst;i++){
 		inst=LCD0_read(INST);
 		LCD_ticks(LCD_N_TICKS);
-		if(i>10)// if something goes wrong
+		if(i>20)// if something goes wrong
 			break;
 	}
 }
@@ -271,11 +268,11 @@ void LCD0_gotoxy(unsigned int x, unsigned int y)
 			LCD0_BF();
 			break;
 		case 2:
-			LCD0_write((0x94+x),INST);
+			LCD0_write((0x94+x),INST);//0x94
 			LCD0_BF();
 			break;
 		case 3:
-			LCD0_write((0xD4+x),INST);
+			LCD0_write((0xD4+x),INST);//0xD4
 			LCD0_BF();
 			break;
 		default:
