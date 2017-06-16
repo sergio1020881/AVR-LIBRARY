@@ -6,7 +6,6 @@ Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
 License:  GNU General Public License
 DESCRIPTION:
-	Atemga 128 16Mhz
 USAGE:
 	Supports two LCD display
 LICENSE:
