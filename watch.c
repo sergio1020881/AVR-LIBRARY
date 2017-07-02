@@ -43,6 +43,8 @@ char WATCH_vector[9];
 */
 uint16_t WATCH_seconds(void);
 void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second);
+void WATCH_setminute(void);
+void WATCH_sethour(void);
 void WATCH_increment(void);
 void WATCH_decrement(void);
 void WATCH_result(void);
@@ -55,6 +57,8 @@ WATCH WATCHenable(void)
 	WATCH watch;
 	watch.seconds=WATCH_seconds;
 	watch.set=WATCH_set;
+	watch.setminute=WATCH_setminute;
+	watch.sethour=WATCH_sethour;
 	watch.increment=WATCH_increment;
 	watch.decrement=WATCH_decrement;
 	watch.show=WATCH_show;
@@ -81,6 +85,24 @@ void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second)
 	else
 		time.second=0;
 	time.seconds=hour*3600+minute*60+second;
+}
+void WATCH_setminute(void){
+	uint16_t segundos;
+	segundos=time.seconds;
+	segundos+=60;
+	if(segundos>43199)
+		time.seconds=segundos-43200;
+	else
+		time.seconds=segundos;
+}
+void WATCH_sethour(void){
+	uint16_t segundos;
+	segundos=time.seconds;
+	segundos+=3600;
+	if(segundos>43199)
+		time.seconds=segundos-43200;
+	else
+		time.seconds=segundos;
 }
 void WATCH_increment(void)
 {
