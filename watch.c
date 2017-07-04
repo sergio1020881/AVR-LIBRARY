@@ -1,13 +1,13 @@
 /*************************************************************************
 Title:    watch.c
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: watch.c,v 0.2 2017/07/01 17:00:00 sergio Exp $
+File:     $Id: watch.c,v 0.2 2017/07/01 17:00:00 Sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware:  
-License:  GNU General Public License        
+Hardware:
+License:  GNU General Public License
 DESCRIPTION:
 USAGE:
-    Refer to the header file clock.h for a description of the routines. 
+    Refer to the header file watch.h for a description of the routines.
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -38,11 +38,12 @@ COMMENT:
 */
 struct TIME time;
 char WATCH_vector[9];
+uint16_t countdown;
 /*
 ** procedure and function header
 */
 uint16_t WATCH_seconds(void);
-void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second);
+void WATCH_preset(uint8_t hour, uint8_t minute, uint8_t second);
 void WATCH_setminute(void);
 void WATCH_sethour(void);
 void WATCH_increment(void);
@@ -56,7 +57,7 @@ WATCH WATCHenable(void)
 {
 	WATCH watch;
 	watch.seconds=WATCH_seconds;
-	watch.set=WATCH_set;
+	watch.preset=WATCH_preset;
 	watch.setminute=WATCH_setminute;
 	watch.sethour=WATCH_sethour;
 	watch.increment=WATCH_increment;
@@ -68,7 +69,7 @@ uint16_t WATCH_seconds(void)
 {
 	return time.seconds;
 }
-void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second)
+void WATCH_preset(uint8_t hour, uint8_t minute, uint8_t second)
 {
 	if( hour>=0 && hour<13 ){
 		if(hour>0 && hour<12)
@@ -116,7 +117,7 @@ void WATCH_decrement(void)
 	if(time.seconds)
 		time.seconds--;
 	else
-		time.seconds=43199;
+		time.seconds=43200;
 }
 void WATCH_result(void)
 {
