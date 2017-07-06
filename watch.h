@@ -38,8 +38,11 @@ struct TIME{
 	uint16_t seconds;
 };
 struct WATCH{
+	uint8_t (*hour)(void);
+	uint8_t (*minute)(void);
+	uint8_t (*second)(void);
 	uint16_t (*seconds)(void);
-	void (*preset)(uint8_t hour, uint8_t minute, uint8_t second);
+	void (*set)(uint8_t hour, uint8_t minute, uint8_t second);
 	void (*setminute)(void);
 	void (*sethour)(void);
 	void (*increment)(void);
