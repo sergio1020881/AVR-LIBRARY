@@ -1,7 +1,7 @@
 /*************************************************************************
 Title:    watch.c
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: watch.c,v 0.2 2017/07/01 17:00:00 sergio Exp $
+File:     $Id: watch.c,v 0.2 2017/07/01 17:00:00 Sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware:  
 License:  GNU General Public License        
@@ -45,7 +45,7 @@ uint8_t WATCH_hour(void);
 uint8_t WATCH_minute(void);
 uint8_t WATCH_second(void);
 uint16_t WATCH_seconds(void);
-void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second);
+void WATCH_preset(uint8_t hour, uint8_t minute, uint8_t second);
 void WATCH_setminute(void);
 void WATCH_sethour(void);
 void WATCH_increment(void);
@@ -62,7 +62,7 @@ WATCH WATCHenable(void)
 	watch.minute=WATCH_minute;
 	watch.second=WATCH_second;
 	watch.seconds=WATCH_seconds;
-	watch.set=WATCH_set;
+	watch.preset=WATCH_preset;
 	watch.setminute=WATCH_setminute;
 	watch.sethour=WATCH_sethour;
 	watch.increment=WATCH_increment;
@@ -86,7 +86,7 @@ uint16_t WATCH_seconds(void)
 {
 	return time.seconds;
 }
-void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second)
+void WATCH_preset(uint8_t hour, uint8_t minute, uint8_t second)
 {
 	if( hour>=0 && hour<13 ){
 		if(hour>0 && hour<12)
