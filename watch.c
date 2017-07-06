@@ -1,13 +1,13 @@
 /*************************************************************************
 Title:    watch.c
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: watch.c,v 0.2 2017/07/01 17:00:00 Sergio Exp $
+File:     $Id: watch.c,v 0.2 2017/07/01 17:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware:
-License:  GNU General Public License
+Hardware:  
+License:  GNU General Public License        
 DESCRIPTION:
 USAGE:
-    Refer to the header file watch.h for a description of the routines.
+    Refer to the header file clock.h for a description of the routines. 
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -38,12 +38,14 @@ COMMENT:
 */
 struct TIME time;
 char WATCH_vector[9];
-uint16_t countdown;
 /*
 ** procedure and function header
 */
+uint8_t WATCH_hour(void);
+uint8_t WATCH_minute(void);
+uint8_t WATCH_second(void);
 uint16_t WATCH_seconds(void);
-void WATCH_preset(uint8_t hour, uint8_t minute, uint8_t second);
+void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second);
 void WATCH_setminute(void);
 void WATCH_sethour(void);
 void WATCH_increment(void);
@@ -56,8 +58,11 @@ char* WATCH_show(void);
 WATCH WATCHenable(void)
 {
 	WATCH watch;
+	watch.hour=WATCH_hour;
+	watch.minute=WATCH_minute;
+	watch.second=WATCH_second;
 	watch.seconds=WATCH_seconds;
-	watch.preset=WATCH_preset;
+	watch.set=WATCH_set;
 	watch.setminute=WATCH_setminute;
 	watch.sethour=WATCH_sethour;
 	watch.increment=WATCH_increment;
@@ -65,11 +70,23 @@ WATCH WATCHenable(void)
 	watch.show=WATCH_show;
 	return watch;
 }
+uint8_t WATCH_hour(void)
+{
+	return time.hour;
+}
+uint8_t WATCH_minute(void)
+{
+	return time.minute;
+}
+uint8_t WATCH_second(void)
+{
+	return time.second;
+}
 uint16_t WATCH_seconds(void)
 {
 	return time.seconds;
 }
-void WATCH_preset(uint8_t hour, uint8_t minute, uint8_t second)
+void WATCH_set(uint8_t hour, uint8_t minute, uint8_t second)
 {
 	if( hour>=0 && hour<13 ){
 		if(hour>0 && hour<12)
@@ -117,7 +134,7 @@ void WATCH_decrement(void)
 	if(time.seconds)
 		time.seconds--;
 	else
-		time.seconds=43200;
+		time.seconds=43199;
 }
 void WATCH_result(void)
 {
