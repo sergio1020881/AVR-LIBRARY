@@ -57,6 +57,10 @@ char* WATCH_show(void);
 */
 WATCH WATCHenable(void)
 {
+	time.hour=0;
+	time.minute=0;
+	time.second=0;
+	time.seconds=0;
 	WATCH watch;
 	watch.hour=WATCH_hour;
 	watch.minute=WATCH_minute;
