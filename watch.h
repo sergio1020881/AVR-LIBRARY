@@ -38,6 +38,7 @@ struct TIME{
 	uint16_t seconds;
 };
 struct WATCH{
+	uint8_t (*start_delay)(uint16_t seconds);
 	uint8_t (*hour)(void);
 	uint8_t (*minute)(void);
 	uint8_t (*second)(void);
