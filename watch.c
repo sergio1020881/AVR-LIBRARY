@@ -33,17 +33,20 @@ COMMENT:
 /*
 ** constant and macro
 */
+#define N_DELAY_MASK 0X0F
+#define N_DELAY 16
 /*
 ** variable
 */
 struct TIME time;
 char WATCH_vector[9];
-uint16_t WATCH_trigger;
-uint8_t WATCH_delay_flag;
+uint16_t WATCH_trigger[N_DELAY];
+uint8_t WATCH_delay_flag[N_DELAY];
 /*
 ** procedure and function header
 */
-uint8_t WATCH_start_delay(uint16_t seconds);
+uint8_t WATCH_start_delay(uint8_t n_delay, uint16_t seconds);
+void WATCH_reset_delay(uint8_t n_delay);
 uint8_t WATCH_hour(void);
 uint8_t WATCH_minute(void);
 uint8_t WATCH_second(void);
@@ -60,13 +63,16 @@ char* WATCH_show(void);
 */
 WATCH WATCHenable(void)
 {
+	uint8_t i;
 	time.hour=0;
 	time.minute=0;
 	time.second=0;
 	time.seconds=0;
-	WATCH_delay_flag=0;
+	for(i=0;i>N_DELAY_MASK;i++)
+		WATCH_delay_flag[i]=0;
 	WATCH watch;
 	watch.start_delay=WATCH_start_delay;
+	watch.reset_delay=WATCH_reset_delay;
 	watch.hour=WATCH_hour;
 	watch.minute=WATCH_minute;
 	watch.second=WATCH_second;
@@ -79,25 +85,29 @@ WATCH WATCHenable(void)
 	watch.show=WATCH_show;
 	return watch;
 }
-uint8_t WATCH_start_delay(uint16_t seconds){ //One shot repeat
+uint8_t WATCH_start_delay(uint8_t n_delay, uint16_t seconds){ //One shot
 	uint16_t segundos;
 	uint8_t ret;
 	ret=0;
+	n_delay&=N_DELAY_MASK;
 	segundos=time.seconds;
-	if(WATCH_delay_flag){
-		if(segundos==WATCH_trigger){ //trigger condition
+	if(WATCH_delay_flag[n_delay]){
+		if(segundos==WATCH_trigger[n_delay]){ //trigger condition
 			ret=1;
-			WATCH_delay_flag=0;
 		}
 	}else{
 		segundos+=seconds;
 		if(segundos>43199)
-			WATCH_trigger=segundos-43200;
+			WATCH_trigger[n_delay]=segundos-43200;
 		else
-			WATCH_trigger=segundos;
-		WATCH_delay_flag=1;
+			WATCH_trigger[n_delay]=segundos;
+		WATCH_delay_flag[n_delay]=1;
 	}
 	return ret;
+}
+void WATCH_reset_delay(uint8_t n_delay)
+{
+	WATCH_delay_flag[n_delay]=0;
 }
 uint8_t WATCH_hour(void)
 {
