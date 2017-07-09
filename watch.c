@@ -38,9 +38,12 @@ COMMENT:
 */
 struct TIME time;
 char WATCH_vector[9];
+uint16_t WATCH_trigger;
+uint8_t WATCH_delay_flag;
 /*
 ** procedure and function header
 */
+uint8_t WATCH_start_delay(uint16_t seconds);
 uint8_t WATCH_hour(void);
 uint8_t WATCH_minute(void);
 uint8_t WATCH_second(void);
@@ -61,7 +64,9 @@ WATCH WATCHenable(void)
 	time.minute=0;
 	time.second=0;
 	time.seconds=0;
+	WATCH_delay_flag=0;
 	WATCH watch;
+	watch.start_delay=WATCH_start_delay;
 	watch.hour=WATCH_hour;
 	watch.minute=WATCH_minute;
 	watch.second=WATCH_second;
@@ -73,6 +78,26 @@ WATCH WATCHenable(void)
 	watch.decrement=WATCH_decrement;
 	watch.show=WATCH_show;
 	return watch;
+}
+uint8_t WATCH_start_delay(uint16_t seconds){ //One shot repeat
+	uint16_t segundos;
+	uint8_t ret;
+	ret=0;
+	segundos=time.seconds;
+	if(WATCH_delay_flag){
+		if(segundos==WATCH_trigger){ //trigger condition
+			ret=1;
+			WATCH_delay_flag=0;
+		}
+	}else{
+		segundos+=seconds;
+		if(segundos>43199)
+			WATCH_trigger=segundos-43200;
+		else
+			WATCH_trigger=segundos;
+		WATCH_delay_flag=1;
+	}
+	return ret;
 }
 uint8_t WATCH_hour(void)
 {
