@@ -19,8 +19,8 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	tested Atemga128 16Mhz and Atmega328 8Mhz
-	reviewed 09/04/2015, stable
+	tested Atemga128 16Mhz and Atmega328 8Mhz and Atmega324A 8Mhz
+	reviewed 25/03/2018, very stable
 ************************************************************************/
 #ifndef _LCD_H_
 	#define _LCD_H_
@@ -50,7 +50,7 @@ struct display{
 	void (*string_size)(const char* s, uint8_t size); // RAW
 	void (*hspace)(uint8_t n);
 	void (*clear)(void);
-	void (*gotoxy)(unsigned int x, unsigned int y);
+	void (*gotoxy)(unsigned int y, unsigned int x);
 	void (*reboot)(void);
 };
 typedef struct display LCD0;
