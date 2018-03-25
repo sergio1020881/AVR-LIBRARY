@@ -3,10 +3,10 @@ Title:    LCD
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: lcd.c,v 0.2 2015/4/11 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License        
+Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz,
+License:  GNU General Public License
 DESCRIPTION:
-	Atemga 128 at 16Mhz
+	Atemga128 at 16Mhz
 USAGE:
     Refer to the header file lcd.h for a description of the routines.
 NOTES:
@@ -22,8 +22,8 @@ LICENSE:
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 COMMENT:
-	tested Atemga128 16Mhz and Atmega328 8Mhz
-	reviewed 09/04/2015, stable                    
+	tested Atemga128 16Mhz and Atmega328 8Mhz and Atmega324A 8Mhz
+	reviewed 25/03/2018, very stable
 *************************************************************************/
 #ifndef F_CPU
 /***put value corresponding to CPU speed***/
@@ -46,8 +46,8 @@ COMMENT:
 //CMD RS
 #define INST 0
 #define DATA 1
-//ticks depends on CPU frequency this case 16Mhz
-#define LCD_N_TICKS 2
+//ticks depends on CPU frequency  16Mhz - 2 8Mhz - 1
+#define LCD_N_TICKS 1
 /*
 ** variable
 */
@@ -72,7 +72,7 @@ void LCD0_string(const char* s); // RAW
 void LCD0_string_size(const char* s, uint8_t size); // RAW
 void LCD0_hspace(uint8_t n);
 void LCD0_clear(void);
-void LCD0_gotoxy(unsigned int x, unsigned int y);
+void LCD0_gotoxy(unsigned int y, unsigned int x);
 void LCD0_strobe(unsigned int num);
 void LCD0_reboot(void);
 void LCD1_inic(void);
@@ -85,7 +85,7 @@ void LCD1_string(const char* s);
 void LCD1_string_size(const char* s, uint8_t size); // RAW
 void LCD1_hspace(uint8_t n);
 void LCD1_clear(void);
-void LCD1_gotoxy(unsigned int x, unsigned int y);
+void LCD1_gotoxy(unsigned int y, unsigned int x);
 void LCD1_strobe(unsigned int num);
 void LCD1_reboot(void);
 unsigned int LCD_ticks(unsigned int num);
@@ -149,7 +149,7 @@ void LCD0_inic(void)
 	LCD0_write(0x1F,INST);// cursor or display shift
 	LCD0_BF();
 	LCD0_write(0x03,INST);// return home
-	LCD0_BF();
+	_delay_us(37);
 }
 void LCD0_write(char c, unsigned short D_I)
 {
@@ -201,20 +201,20 @@ void LCD0_BF(void)
 	for(i=0;0x80&inst;i++){
 		inst=LCD0_read(INST);
 		LCD_ticks(LCD_N_TICKS);
-		if(i>20)// if something goes wrong
+		if(i>80)// if something goes wrong
 			break;
 	}
 }
 void LCD0_putch(char c)
 {
-	LCD0_write(c,DATA);
 	LCD0_BF();
+	LCD0_write(c,DATA);
 }
 char LCD0_getch(void)
 {
 	char c;
-	c=LCD0_read(DATA);
 	LCD0_BF();
+	c=LCD0_read(DATA);
 	return c;
 }
 void LCD0_string(const char* s)
@@ -222,8 +222,8 @@ void LCD0_string(const char* s)
 	char tmp;
 	while(*s){
 		tmp=*(s++);
-		LCD0_write(tmp,DATA);
 		LCD0_BF();
+		LCD0_write(tmp,DATA);
 	}
 }
 void LCD0_string_size(const char* s, uint8_t size)
@@ -235,45 +235,45 @@ void LCD0_string_size(const char* s, uint8_t size)
 		pos++;
 		if(pos>size) // 1 TO SIZE+1
 			break;
-		LCD0_write(tmp,DATA);
 		LCD0_BF();
+		LCD0_write(tmp,DATA);
 	}
 	while(pos<size){ // TO SIZE
 		pos++;
-		LCD0_write(' ',DATA);
 		LCD0_BF();
+		LCD0_write(' ',DATA);
 	}
 }
 void LCD0_hspace(uint8_t n)
 {
 	for(;n;n--){
-		LCD0_write(' ',DATA);
 		LCD0_BF();
+		LCD0_write(' ',DATA);
 	}
 }
 void LCD0_clear(void)
 {
-	LCD0_write(0x01,INST);
 	LCD0_BF();
+	LCD0_write(0x01,INST);
 }
-void LCD0_gotoxy(unsigned int x, unsigned int y)
+void LCD0_gotoxy(unsigned int y, unsigned int x)
 {
 	switch(y){
 		case 0:
-			LCD0_write((0x80+x),INST);//0x80
 			LCD0_BF();
+			LCD0_write((0x80+x),INST);//0x80
 			break;
 		case 1:
-			LCD0_write((0xC0+x),INST);//0xC0
 			LCD0_BF();
+			LCD0_write((0xC0+x),INST);//0xC0
 			break;
 		case 2:
-			LCD0_write((0x94+x),INST);//0x94
 			LCD0_BF();
+			LCD0_write((0x94+x),INST);//0x94
 			break;
 		case 3:
-			LCD0_write((0xD4+x),INST);//0xD4
 			LCD0_BF();
+			LCD0_write((0xD4+x),INST);//0xD4
 			break;
 		default:
 			break;
@@ -359,7 +359,7 @@ void LCD1_inic(void)
 	LCD1_write(0x1F,INST);// cursor or display shift
 	LCD1_BF();
 	LCD1_write(0x03,INST);// return home
-	LCD1_BF();
+	_delay_us(37);
 }
 void LCD1_write(char c, unsigned short D_I)
 {
@@ -411,20 +411,20 @@ void LCD1_BF(void)
 	for(i=0;0x80&inst;i++){
 		inst=LCD1_read(INST);
 		LCD_ticks(LCD_N_TICKS);
-		if(i>10)// if something goes wrong
+		if(i>80)// if something goes wrong
 			break;
 	}
 }
 void LCD1_putch(char c)
 {
-	LCD1_write(c,DATA);
 	LCD1_BF();
+	LCD1_write(c,DATA);
 }
 char LCD1_getch(void)
 {
 	char c;
-	c=LCD1_read(DATA);
 	LCD1_BF();
+	c=LCD1_read(DATA);
 	return c;
 }
 void LCD1_string(const char* s)
@@ -432,8 +432,8 @@ void LCD1_string(const char* s)
 	char tmp;
 	while(*s){
 		tmp=*(s++);
-		LCD1_write(tmp,DATA);
 		LCD1_BF();
+		LCD1_write(tmp,DATA);
 	}
 }
 void LCD1_string_size(const char* s, uint8_t size)
@@ -445,37 +445,37 @@ void LCD1_string_size(const char* s, uint8_t size)
 		pos++;
 		if(pos>size)
 			break;
-		LCD1_write(tmp,DATA);
 		LCD1_BF();
+		LCD1_write(tmp,DATA);
 	}
 	while(pos<size){
 		pos++;
-		LCD1_write(' ',DATA);
 		LCD1_BF();
+		LCD1_write(' ',DATA);
 	}
 }
 void LCD1_hspace(uint8_t n)
 {
 	for(;n;n--){
-		LCD1_write(' ',DATA);
 		LCD1_BF();
+		LCD1_write(' ',DATA);
 	}
 }
 void LCD1_clear(void)
 {
-	LCD1_write(0x01,INST);
 	LCD1_BF();
+	LCD1_write(0x01,INST);
 }
-void LCD1_gotoxy(unsigned int x, unsigned int y)
+void LCD1_gotoxy(unsigned int y, unsigned int x)
 {
 	switch(y){
 		case 0:
-			LCD1_write((0x80+x),INST);
 			LCD1_BF();
+			LCD1_write((0x80+x),INST);
 			break;
 		case 1:
-			LCD1_write((0xC0+x),INST);
 			LCD1_BF();
+			LCD1_write((0xC0+x),INST);
 			break;
 		default:
 			break;
