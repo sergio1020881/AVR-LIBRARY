@@ -1,14 +1,14 @@
 /*************************************************************************
 Title:    FUNCTION
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: function.c,v 0.1 2017/05/15 15:00:00 sergio Exp $
+File:     $Id: function.c,v 0.1 2017/05/15 15:00:00 Sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
 License:  GNU General Public License     
 DESCRIPTION:
 	Atmega 8535 at 8MHZ; Atmega 328 at 16Mhz; Atmega 128 at 16Mhz
 USAGE:
-    Refer to the header file function.h for a description of the routines. 
+    Refer to the header file function.h for a description of the routines.
 NOTES:
     Based on Atmel Application Note AVR306
 LICENSE:
@@ -70,6 +70,7 @@ void FUNCcopy(char to[], char from[]);
 void FUNCsqueeze(char s[], int c);
 void FUNCshellsort(int v[], int n);
 void FUNCi16toa(int16_t n, char s[]);
+void FUNCui16toa(uint16_t n, char s[]);
 void FUNCi32toa(int32_t n, char s[]);
 int FUNCtrim(char s[]);
 int FUNCpmax(int a1, int a2);
@@ -127,6 +128,7 @@ FUNC FUNCenable( void )
 	func.squeeze=FUNCsqueeze;
 	func.shellsort=FUNCshellsort;
 	func.i16toa=FUNCi16toa;
+	func.ui16toa=FUNCui16toa;
 	func.i32toa=FUNCi32toa;
 	func.trim=FUNCtrim;
 	func.pmax=FUNCpmax;
@@ -300,6 +302,17 @@ void FUNCi16toa(int16_t n, char s[])
 	}while ((n /= 10) > 0); // delete it
 	if (sign < 0)
 		s[i++] = '-';
+	s[i] = '\0';
+	Reverse(s);
+}
+// ui16toa: convert n to characters in s
+void FUNCui16toa(uint16_t n, char s[])
+{
+	uint8_t i;
+	i = 0;
+	do { // generate digits in reverse order
+		s[i++] = n % 10 + '0'; // get next digit
+	}while ((n /= 10) > 0); // delete it
 	s[i] = '\0';
 	Reverse(s);
 }
