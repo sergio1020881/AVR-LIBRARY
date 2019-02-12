@@ -1,13 +1,19 @@
+/************************************************************************
+KEYPAD API START
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+************************************************************************/
+/***preamble inic***/
+#ifndef _KEYPAD_H_
+	#define _KEYPAD_H_
+/**@{*/
+#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
+	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
+#endif
 /*
- * keypad.h
- *
- * Created: 08/03/2018 20:36:39
- * Author: Sergio Santos
- *
- * perfection at its best
- */
-#ifndef KEYPAD_H_
-	#define KEYPAD_H_
+** Library
+*/
+#include <inttypes.h>
+/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -41,8 +47,13 @@ typedef struct keypad KEYPAD;
 ** procedure and function header
 */
 KEYPAD KEYPADenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
-#endif /* KEYPAD_H_ */
+/***preamble inic***/
+#endif
+/***preamble inic***/
 /************************************************************************
 The matrix buttons should have a diode in series so each button would only let current flow in one direction not allowing
 feedbacks. Little defect of keypads !
+************************************************************************/
+/************************************************************************
+KEYPAD API END
 ************************************************************************/

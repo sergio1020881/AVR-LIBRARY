@@ -1,29 +1,8 @@
 /*************************************************************************
-Title:    FUNCTION
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: function.c,v 0.1 2017/05/15 15:00:00 Sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License     
-DESCRIPTION:
-	Atmega 8535 at 8MHZ; Atmega 328 at 16Mhz; Atmega 128 at 16Mhz
-USAGE:
-    Refer to the header file function.h for a description of the routines.
-NOTES:
-    Based on Atmel Application Note AVR306
-LICENSE:
-    Copyright (C) 2013
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
-	Very Stable
+FUNCTION API START
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 *************************************************************************/
+/***preamble inic***/
 /*
 ** library
 */
@@ -37,13 +16,13 @@ COMMENT:
 #include<string.h>
 #include<errno.h>
 */
-/***/
 #include"function.h"
+/***preamble inic***/
 /*
 ** constant and macro
 */
 #ifndef GLOBAL_INTERRUPT_ENABLE
- #define GLOBAL_INTERRUPT_ENABLE 7
+	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
 /*
 ** variable
@@ -712,7 +691,6 @@ int FUNCreadint(int nmin, int nmax)
 /*
 ** interrupt
 */
-/***EOF***/
-/***COMMENTS
-
-***/
+/*************************************************************************
+FUNCTION API START
+*************************************************************************/

@@ -1,13 +1,8 @@
-/*
- * keypad.c
- *
- * Created: 08/03/2018 20:36:01
- * Author: Sergio Santos
- *
- * library for  keypad 4 X 4
- * perfection at its best
- *
- */
+/*************************************************************************
+KEYPAD API START
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+*************************************************************************/
+/***preamble inic***/
 /*
 ** Library
 */
@@ -15,6 +10,7 @@
 #include <inttypes.h>
 /***/
 #include "keypad.h"
+/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -233,7 +229,9 @@ uint8_t KEYPADhl(uint8_t xi, uint8_t xf)
 	i&=xi;
 	return i;
 }
-/***EOF***/
+/*
+** interrupt
+*/
 /************************************************************************
 The matrix buttons should have a diode em series so each button would only let current flow in one direction not allowing
 feedbacks. Little defect of keypads !
@@ -242,3 +240,6 @@ making the 256 possible addresses for data storage. In a string of length 256 in
 is always the "\0" character has an indicator of end of string.
 should try doing circular buffer just for fun, or maybe nor, who knows.
 ************************************************************************/
+/*************************************************************************
+KEYPAD API END
+*************************************************************************/

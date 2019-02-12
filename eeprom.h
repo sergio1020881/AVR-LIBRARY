@@ -1,36 +1,19 @@
 /*************************************************************************
-Title:    eeprom wrapper
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: eeprom.h,v 0.2 2014/04/12 00:00:00 sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: ATmega128 at 16 Mhz 
-License:  GNU General Public License        
-DESCRIPTION:
-USAGE:
-NOTES:
-LICENSE:
-    Copyright (C) 2014
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
-	Very Stable
+EEPROM API START
 *************************************************************************/
-#ifndef EEPROM_H
-	#define EEPROM_H
+/***preamble inic***/
+#ifndef _EEPROM_H_
+	#define _EEPROM_H_
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
 /*
-** library
+** Library
 */
+#include <inttypes.h>
 #include <avr/eeprom.h>
+/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -60,5 +43,9 @@ typedef struct EEPROM EEPROM;
 ** procedure and function header
 */
 EEPROM EEPROMenable(void);
+/***preamble inic***/
 #endif
-/***EOF***/
+/***preamble inic***/
+/*************************************************************************
+EEPROM API END
+*************************************************************************/

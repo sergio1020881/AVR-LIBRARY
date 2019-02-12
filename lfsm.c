@@ -1,87 +1,70 @@
 /*************************************************************************
-Title:    LFSM
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: lfsm.c, v 0.1 2018/02/24 11:00:00 Sergio Exp $
-Software: GCC
-Hardware:
-License:  GNU General Public License
-DESCRIPTION:
-	PC emulation
-USAGE:
-NOTES:
-LICENSE:
-    Copyright (C) 2015
-    This program is free software; you can redistribute it and/or modify
-    it under the consent of the code developer, in case of commercial use
-    need license.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
-	working pretty good, trial more.
-	page=1 is dedicated for global logic, page=2 local logic, if page>2 is sequencial program.
-	purpose is for machine programming, and encoders. General purpose algorithm.
+LFSM API START
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+page = 1 => Global Logic
+page > 1 => Local Logic
 *************************************************************************/
+/***preamble inic***/
 /*
 ** library
 */
-#include"lfsm.h"
+#include "lfsm.h"
+/***preamble inic***/
 /*
 ** constant and macro
 */
-#define EMPTY 0
+#define EMPTY 0 //0
+#define ZERO 0 //0
+#define NPAGES 255 //1 to 254 possible pages
+#define BYTEL 0
+#define BYTEH 255
 /*
 ** variable
 */
-struct lfsmdata data;
-struct	lfsmreport report;
-/*
-unsigned int mem[]=
-{pin state, feedback, pin mask, output}
-*/
+struct lfsmdata data, tmp1, tmp2;
+const uint8_t tmask = 0XFF;
 /*
 ** procedure and function header
 */
-struct	lfsmreport LFSMread(struct lfsm *r, unsigned int input);
-unsigned int LFSMlearn(struct lfsm *r, unsigned int input, unsigned int next, unsigned int page);
-unsigned int LFSMquant(struct lfsm *r);
-unsigned int LFSMremove(struct lfsm *r, unsigned int input);
-unsigned int LFSMdeleteall(struct lfsm *r);
+uint8_t LFSMread(struct lfsm *r, uint8_t input);
+uint8_t LFSMlearn(struct lfsm *r, const uint8_t input, const uint8_t next, const uint8_t mask, const uint8_t page);
+uint8_t LFSMquant(struct lfsm *r);
+uint8_t LFSMremove(struct lfsm *r, uint8_t input);
+uint8_t LFSMdeleteall(struct lfsm *r);
+uint8_t LFSMgetoutput(struct lfsm *r);
+uint8_t LFSMgetstatus(struct lfsm *r);
+void LFSMsetoutput(struct lfsm *r, uint8_t output);
+uint8_t LFSMgetpage(struct lfsm *r);
+void LFSMsetpage(struct lfsm *r, uint8_t page);
+uint8_t LFSMlh(uint8_t xi, uint8_t xf);
+uint8_t LFSMhl(uint8_t xi, uint8_t xf);
+uint8_t LFSMoutputcalc(uint8_t feedback, uint8_t hl, uint8_t lh, uint8_t mask);
 /*
 ** Object Initialize
 */
-LFSM LFSMenable(struct lfsmdata* eeprom, unsigned int sizeeeprom)
+LFSM LFSMenable(EEPROM* eeprom, const uint8_t sizeeeprom)
 {
 	/***Local Variable***/
-	//printf("\tLFSMenable\n");
-	/***Local Function Header***/
-	unsigned int LFSMgetoutput(struct lfsm *r);
-	void LFSMsetoutput(struct lfsm *r, unsigned int output);
-	unsigned int LFSMlh(unsigned int xi, unsigned int xf);
-	unsigned int LFSMhl(unsigned int xi, unsigned int xf);
-	unsigned int LFSMoutputcalc(unsigned int feedback, unsigned int hl, unsigned int lh);
-	unsigned int LFSMdiff(unsigned int xi, unsigned int xf);
+	const uint8_t sizeblock=sizeof(struct lfsmdata);
 	/***Create Object***/
 	LFSM r;
 	//Initialize variables
-	r.mem=eeprom;
+	r.eeprom=eeprom;
 	r.sizeeeprom=sizeeeprom;
-	r.page=0;//page
-	r.input=0;//input
-	r.output=0;//output
-	//Function Vtable
+	r.sizeblock=sizeblock;
+	r.page=ZERO;
+	r.output=255;//Output
+	//Function V table
 	r.read=LFSMread;
 	r.learn=LFSMlearn;
 	r.quant=LFSMquant;
 	r.remove=LFSMremove;
 	r.deleteall=LFSMdeleteall;
-	r.get=LFSMgetoutput;
-	r.set=LFSMsetoutput;
-	r.lh=LFSMlh;
-	r.hl=LFSMhl;
-	r.outputcalc=LFSMoutputcalc;
-	r.diff=LFSMdiff;
+	r.getoutput=LFSMgetoutput;
+	r.getstatus=LFSMgetstatus;
+	r.setoutput=LFSMsetoutput;
+	r.getpage=LFSMgetpage;
+	r.setpage=LFSMsetpage;
 	/******/
 	return r;
 }
@@ -89,308 +72,346 @@ LFSM LFSMenable(struct lfsmdata* eeprom, unsigned int sizeeeprom)
 ** procedure and function
 */
 /***read***/
-struct	lfsmreport LFSMread(struct lfsm *r, unsigned int input)
+uint8_t LFSMread(struct lfsm *r, uint8_t input)
 {
-	unsigned int i1;
-	unsigned int status=0;
-	unsigned int keyfound;
-	unsigned int HL,LH;
-	//printf("\tLFSMread\n");
-	HL=r->hl(r->input,input);
-	LH=r->lh(r->input,input);
-	if(HL || LH){ //to not waste time
-		for(i1=0;i1<r->sizeeeprom;i1++){
-			data=r->mem[i1];//upload eeprom data
-			if(data.page){
-				/******/
-				switch(r->mem[i1].page){
-					case 1:
-						keyfound=(
-							data.inhl==HL &&
-							data.inlh==LH
-							);//bool
-						break;
-					case 2:
-						keyfound=(
-							data.feedback==r->output &&
-							data.inhl==HL &&
-							data.inlh==LH
-							);//bool
-						break;
-					default:
-						keyfound=(
-							data.feedback==r->output &&
-							data.input==r->input &&
-							data.inhl==HL &&
-							data.inlh==LH
-							);//bool
-						break;
-				};
-				/******/
-				if(keyfound){
-					status=1; //exist
+	uint8_t i1;
+	uint8_t status=ZERO;
+	uint8_t sizeblock=r->sizeblock;
+	struct lfsmdata* pdata=&data;
+	int16_t n=ZERO;
+	uint8_t n1=NPAGES,n2=NPAGES;
+	uint8_t page=r->page;
+	uint8_t HL,LH;
+	HL=LFSMhl(r->input,input);
+	LH=LFSMlh(r->input,input);
+	if(HL || LH){ //To not waste time
+		status=1; //New entry
+		for(i1=ZERO;i1<r->sizeeeprom;i1++){
+			r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+			switch(pdata->page){
+				case 0:
+					//Do nothing, continue search in status=1.
 					break;
-				}else status=2; //learning mode
-			}
+				case 1: //Global logic
+					if( pdata->inhl==HL && pdata->inlh==LH ){
+							i1=r->sizeeeprom;
+							status=2; //Global logic exist
+					}
+					break;
+				default: //Local logic
+					if( (pdata->feedback & pdata->mask)==(r->output & pdata->mask) && pdata->inhl==HL && pdata->inlh==LH ){
+						n=pdata->page - page;	
+						if(!n){
+							i1=r->sizeeeprom;
+							status=3; //Local logic exist in present page
+							break;
+						}
+						if(n>ZERO){
+							if(n < n1){
+								tmp1=*pdata;
+								n1=n;
+								status=4; //Local logic exist in page above
+							}
+						}
+						if(n<ZERO){
+							if(n > -n2){
+								tmp2=*pdata;
+								n2=-n;
+								status=4; //Local logic exist in page bellow
+							}
+						}
+					}
+					break;
+			}//End switch
 		}
-	}else status=3; //repeat
+	}
+/***status confirmation***/
 	switch (status){
-		case 0:
-			//printf("LFSMread MEM empty\n");
-			r->input=input;//detailed capture
+		case ZERO: //No entry
 			break;
-		case 1:
-			r->page=data.page;
-			r->input=input;//detailed capture
-			r->output=r->outputcalc(data.feedback,data.outhl,data.outlh);
+		case 1: //New entry
+			//Give warning and pause waiting for decision (very important).
+			//Serves has flag to main function.
+			r->input=input; //Update
 			break;
-		case 2:
-			//printf("LFSMread not existent\n");
-			//send signal if in learning mode
-			r->input=input;//detailed capture
+		case 2: //Global logic exist
+			r->page=pdata->page;
+			r->input=input; //Update
+			r->output=LFSMoutputcalc(r->output,pdata->outhl,pdata->outlh,pdata->mask);
+			r->status=2;
 			break;
-		case 3:
-			//printf("LFSMread repeat\n");
-			//r->input=input;//detailed capture
+		case 3: //Local logic exist in present page
+			r->page=pdata->page;
+			r->input=input; //Update
+			r->output=LFSMoutputcalc(r->output,pdata->outhl,pdata->outlh,pdata->mask);
+			r->status=3;
+			break;
+		case 4: //Local logic exist in page above versus local logic exist in page bellow
+			//Choose closest page above otherwise closest bellow.
+			r->input=input; //update
+			if(n1>ZERO && n1<NPAGES){
+				r->page = tmp1.page;
+				r->output=LFSMoutputcalc(r->output,tmp1.outhl,tmp1.outlh,tmp1.mask);
+				r->status=41;
+			}
+			else if(n2>ZERO && n2<NPAGES){
+				r->page=tmp2.page;
+				r->output=LFSMoutputcalc(r->output,tmp2.outhl,tmp2.outlh,tmp2.mask);
+				r->status=42;
+			}
 			break;
 		default:
-			//impossible situation
 			break;
-	}
-	//printf("input: %d\n",r->input);
-	report.output=r->output;
-	report.status=status;
-	return report;
+	}//End switch
+	return r->status;
 }
 /***learn***/
-unsigned int LFSMlearn(struct lfsm *r, unsigned int input, unsigned int next, unsigned int page)
+uint8_t LFSMlearn(struct lfsm *r, const uint8_t input, const uint8_t next, const uint8_t mask, const uint8_t page)
 {
-	unsigned int i1;
-	unsigned int keyfound;
-	unsigned int status=0;
-	unsigned int HL,LH;
-	//printf("\tLFSMlearn\n");
-	HL=r->hl(r->input,input);
-	LH=r->lh(r->input,input);
-	if(page>0){//enable
-		if(HL || LH){//there is a change ?
-			for(i1=0;i1<r->sizeeeprom;i1++){
-				data=r->mem[i1];//upload eeprom data one by one
-				if(data.page){//find if it exists already
-					/******/
-					keyfound=(
-						(
-						data.page==1 &&
-						data.inhl==HL &&
-						data.inlh==LH
-						)
-							||
-						(
-						data.page==2 &&
-						data.feedback==r->output &&
-						data.inhl==HL &&
-						data.inlh==LH
-						)
-							||
-						(
-						data.feedback==r->output &&
-						data.input==r->input &&
-						data.inhl==HL &&
-						data.inlh==LH
-						)
-					);//bool
-					//if there is any logic entry, that entry is taken out from lfsm input options
-					/******/
-					if(keyfound){
-						status=1;//not permitted
+	uint8_t i1;
+	uint8_t status=ZERO;
+	uint8_t sizeblock=r->sizeblock;
+	struct lfsmdata* pdata=&data;
+	struct lfsmdata* ptmp1=&tmp1;
+	uint8_t HL,LH;
+	HL=LFSMhl(r->input,input);
+	LH=LFSMlh(r->input,input);
+	if(page>ZERO){ //Enable
+		if(HL || LH){ //There is a change ?
+			for(i1=ZERO;i1<r->sizeeeprom;i1++){
+				r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+				if(pdata->page){ //Find if it exists already
+					if( (pdata->page==1 && pdata->inhl==HL && pdata->inlh==LH)
+					|| (pdata->page==page && (pdata->feedback & mask)==(r->output & mask) && pdata->inhl==HL && pdata->inlh==LH) ){
 						break;
 					}
 				}
-				status=2;//not existent
+				status=1; //Record
 			}
 		}
 	}
 	switch (status){
-		case 0://not enabled
-			//printf("LFSMlearn No Operation.\n");
+		case ZERO: //Not enabled
 			break;
-		case 1:
-			//printf("LFSMlearn not permitted.\n");
-			break;
-		case 2://get ready to record
-			//printf("LFSMlearn going to try add new program.\n");
-			//prepare data to write to eeprom
-			data.page=page;
-			data.feedback=r->output;
-			data.input=r->input;
-			data.inhl=HL;
-			data.inlh=LH;
-			data.outhl=r->hl(r->output,next);
-			data.outlh=r->lh(r->output,next);
-			//printf("%d  %d  %d  %d  %d  %d  %d\n",data.page,data.feedback,data.input,data.inhl,data.inlh,data.outhl,data.outlh);
-			for(i1=0;i1<r->sizeeeprom;i1++){
-				//search empty space in memory
-				if(r->mem[i1].page==EMPTY){
-					//write data to eeprom
-					r->mem[i1]=data;
-					status=3;//created
+		case 1: //Record
+			ptmp1->page=page;
+			ptmp1->feedback=r->output;
+			ptmp1->inhl=HL;
+			ptmp1->inlh=LH;
+			ptmp1->mask=mask;
+			if(page>1){ //Local logic
+				ptmp1->outhl=LFSMhl(r->output,next) & mask;
+				ptmp1->outlh=LFSMlh(r->output,next) & mask;
+			}else{ //Global logic
+				ptmp1->outhl=LFSMhl(BYTEH,next) & mask;
+				ptmp1->outlh=LFSMlh(BYTEL,next) & mask;
+			}
+			for(i1=ZERO;i1<r->sizeeeprom;i1++){
+				r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+				if(pdata->page==EMPTY){
+					r->eeprom->update_block(ptmp1, (void*) (i1*sizeblock), sizeblock);
+					status=2; //Created
 					break;
 				}
-				status=4;//not possible memory full
+				status=3; //Memory full
 			}
-		case 3:
-			//printf("LFSMlearn successfully added.\n");
+		case 2: //Created
 			break;
-		case 4:
-			//printf("LFSMlearn memory full.\n");
+		case 3: //Memory full
 			break;
 		default:
 			break;
-	}
+	}//End switch
 	return status;
 }
 /***quant***/
-unsigned int LFSMquant(struct lfsm *r)
+uint8_t LFSMquant(struct lfsm *r)
 {
-	unsigned int i1;
-	unsigned int programmed;
-	//printf("\tLFSMquant\n");
-	for(i1=0,programmed=0;i1<r->sizeeeprom;i1++){
-		data=r->mem[i1];//upload data from eeprom
-		if(data.page!=EMPTY){//count memory used
-			//printf("page:%d feedback:%d  input:%d  inhl:%d  inlh:%d  outhl:%d  outlh:%d\n",data.page,data.feedback,data.input,data.inhl,data.inlh,data.outhl,data.outlh);
+	uint8_t i1;
+	uint8_t sizeblock=r->sizeblock;
+	struct lfsmdata* pdata=&data;
+	uint8_t programmed;
+	for(i1=ZERO,programmed=ZERO;i1<r->sizeeeprom;i1++){
+		r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+		if(pdata->page!=EMPTY){ //Count memory used
 			programmed++;
 		}
 	}
 	return programmed;
 }
 /***remove***/
-unsigned int LFSMremove(struct lfsm *r, unsigned int input)
+uint8_t LFSMremove(struct lfsm *r, uint8_t input)
 {
-	unsigned int i1;
-	unsigned int keyfound;
-	unsigned int status=0;
-	unsigned int HL,LH;
-	//printf("\tLFSMremove\n");
-	HL=r->hl(r->input,input);
-	LH=r->lh(r->input,input);
-	for(i1=0;i1<r->sizeeeprom;i1++){
-		data=r->mem[i1];//upload data from eeprom
-		if(data.page){
-			/******/
-			switch(data.page){
-				case 1:
-					keyfound=(
-						data.inhl==HL &&
-						data.inlh==LH
-						);//bool
+	uint8_t k,k1,k2,i1;
+	k=k1=k2=ZERO;
+	uint8_t status=ZERO;
+	uint8_t sizeblock=r->sizeblock;
+	struct lfsmdata* pdata=&data;
+	struct lfsmdata* ptmp1=&tmp1;
+	ptmp1->page=EMPTY;
+	int16_t n=ZERO;
+	uint8_t n1=NPAGES,n2=NPAGES;
+	uint8_t page=r->page;
+	uint8_t HL,LH;
+	HL=LFSMhl(r->input,input);
+	LH=LFSMlh(r->input,input);
+	if(HL || LH){ //To not waste time
+		status=1; //New entry
+		for(i1=ZERO;i1<r->sizeeeprom;i1++){
+			r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+			switch(pdata->page){
+				case 0:
+					//Do nothing, continue search in status=1.
 					break;
-				case 2:
-					keyfound=(
-						data.feedback==r->output &&
-						data.inhl==HL &&
-						data.inlh==LH
-						);//bool
+				case 1: //Global logic
+					if( pdata->inhl==HL && pdata->inlh==LH ){
+						k=i1;
+						i1=r->sizeeeprom;
+						status=2; //Global logic exist
+					}
 					break;
-				default:
-					keyfound=(
-						data.feedback==r->output &&
-						data.input==r->input &&
-						data.inhl==HL &&
-						data.inlh==LH
-						);//bool
-					break;
-			};
-			/******/
-			if(keyfound){
-				status=1;//remove
+				default: //Local logic
+					if( (pdata->feedback & pdata->mask)==(r->output & pdata->mask) && pdata->inhl==HL && pdata->inlh==LH ){
+						n=pdata->page - page;
+						if(!n){
+							k=i1;
+							i1=r->sizeeeprom;
+							status=3; //Local logic exist in present page
+							break;
+						}
+						if(n>ZERO){
+							if(n < n1){
+								k1=i1;
+								n1=n;
+								status=4; //Local logic exist in page above
+							}
+						}
+						if(n<ZERO){
+							if(n > -n2){
+								k2=i1;
+								n2=-n;
+								status=4; //Local logic exist in page bellow
+							}
+						}
+					}
 				break;
-			}
-		}
-		status=2;//does not exist
-	}
+			}//End switch
+		}//End for
+	}//End if
+	/***status confirmation***/
 	switch (status){
-		case 0:
-			//printf("LFSMremove -> No operation\n");
+		case ZERO: //No entry
 			break;
-		case 1:
-			//printf("LFSMremove removed: %d\n",status);
-			//descativate memory space, write to eeprom empty space.
-			r->mem[i1].page=EMPTY;
+		case 1: //New entry
 			break;
-		case 2:
-			//printf("LFSMremove not existent: %d\n",status);
+		case 2: //Global logic exist
+			r->eeprom->update_block(ptmp1, (void*) (k*sizeblock), sizeblock);
+			break;
+		case 3: //Local logic exist in present page
+			r->eeprom->update_block(ptmp1, (void*) (k*sizeblock), sizeblock);
+			break;
+		case 4: //Local logic exist in page above versus local logic exist in page bellow
+			//choose closest page above otherwise closest bellow.
+			if(n1>ZERO && n1<NPAGES){
+				r->eeprom->update_block(ptmp1, (void*) (k1*sizeblock), sizeblock);
+				status=41;
+			}
+			else if(n2>ZERO && n2<NPAGES){
+				r->eeprom->update_block(ptmp1, (void*) (k2*sizeblock), sizeblock);
+				status=42;
+			}
 			break;
 		default:
 			break;
-	}
+	}//End switch
 	return status;
-}
+}//End main
 /***deleteall***/
-unsigned int LFSMdeleteall(struct lfsm *r)
+uint8_t LFSMdeleteall(struct lfsm *r)
 {
-	unsigned int i1;
-	unsigned int status=0;
-	//printf("\tLFSMdeleteall\n");
-	if(!status){//not removed
-		for(i1=0;i1<r->sizeeeprom;i1++){
-			//read eeprom check if memory space has data
-			if(r->mem[i1].page){
-				//deactivate memory space to empty
-				r->mem[i1].page=EMPTY;
-				status=1;//all deleted
-			}
+	uint8_t i1;
+	uint8_t status=ZERO;
+	uint8_t sizeblock=r->sizeblock;
+	struct lfsmdata* pdata=&data;
+	for(i1=ZERO;i1<r->sizeeeprom;i1++){
+		r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+		if(pdata->page){
+			pdata->page=EMPTY;
+			r->eeprom->update_block(pdata, (void*) (i1*sizeblock), sizeblock);
+			status=1; //All deleted
 		}
 	}
-	r->output=0;
-	//printf("Done\n");
+	r->output=ZERO;
+	r->status=ZERO;
 	return status;
 }
 /***get***/
-unsigned int LFSMgetoutput(struct lfsm *r)
+uint8_t LFSMgetoutput(struct lfsm *r)
 {
-	//printf("LFSMgetoutput\n");
 	return r->output;
 }
-/***set***/
-void LFSMsetoutput(struct lfsm *r, unsigned int output)
+/***get***/
+uint8_t LFSMgetstatus(struct lfsm *r)
 {
-	//printf("LFSMsetoutput\n");
+	return r->status;
+}
+/***set***/
+void LFSMsetoutput(struct lfsm *r, uint8_t output)
+{
 	r->output=output;
+	r->status=ZERO;
+}
+/***get***/
+uint8_t LFSMgetpage(struct lfsm *r)
+{
+	return r->page;
+}
+/***set***/
+void LFSMsetpage(struct lfsm *r, uint8_t page)
+{
+	r->page=page;
 }
 /***lh***/
-unsigned int LFSMlh(unsigned int xi, unsigned int xf)
+uint8_t LFSMlh(uint8_t xi, uint8_t xf)
 {
-	unsigned int i;
-	//printf("LFSMlh\n");
+	uint8_t i;
 	i=xf^xi;
 	i&=xf;
 	return i;
 }
 /***hl***/
-unsigned int LFSMhl(unsigned int xi, unsigned int xf)
+uint8_t LFSMhl(uint8_t xi, uint8_t xf)
 {
-	unsigned int i;
-	//printf("LFSMhl\n");
+	uint8_t i;
 	i=xf^xi;
 	i&=xi;
 	return i;
 }
-/***output***/
-unsigned int LFSMoutputcalc(unsigned int feedback, unsigned int hl, unsigned int lh)
+/***output***
+uint8_t LFSMoutputcalc(uint8_t feedback, uint8_t hl, uint8_t lh)
 {
-	//printf("LFSMoutputcalc\n");
 	feedback|=lh;
 	feedback&=~hl;
 	return feedback;
 }
-/***diff***/
-unsigned int LFSMdiff(unsigned int xi, unsigned int xf)
+*/
+/***output***/
+uint8_t LFSMoutputcalc(uint8_t feedback, uint8_t hl, uint8_t lh, uint8_t mask)
 {
-	//printf("LFSMdiff\n");
-	return xi^xf;
+	feedback|=(lh & mask);
+	feedback&=~(hl & mask);
+	return feedback;
 }
 /*
 ** interrupt
 */
-/***EOF***/
+/***   NOTES
+Noticed if using to many pointers in MCU programming may cause defective code due to the mcu not being able to
+jump to the specified address returning NULL as result. Can really make you waste time in troubleshooting if is
+the case, better do code step by step with intermediary testes so it is easier to fall back.
+Near perfection just minor fixes and small add ons, maybe will stop as is for testing various situations to determine
+the necessary and desired changes.
+***/
+/*************************************************************************
+LFSM API END
+*************************************************************************/
