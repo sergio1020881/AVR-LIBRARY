@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /************************************************************************
 Title:    clock.h
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
@@ -56,3 +57,56 @@ typedef struct CLOCK CLOCK;
 CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second);
 #endif /* CLOCK_H_ */
 /***EOF***/
+=======
+/************************************************************************
+CLOCK API START
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+************************************************************************/
+/***preamble inic***/
+#ifndef _CLOCK_H_
+	#define _CLOCK_H_
+/**@{*/
+#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
+	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
+#endif
+/*
+** Library
+*/
+#include <inttypes.h>
+/***preamble inic***/
+/*
+** constant and macro
+*/
+#define HORA 24
+/*
+** variable
+*/
+struct TIME{
+	int8_t hour;
+	int8_t minute;
+	int8_t second;
+};
+struct CLOCK{
+	void (*set)(uint8_t hour, uint8_t minute, uint8_t second);
+	void (*increment)(void);
+	void (*decrement)(void);
+	uint8_t (*alarm)(uint8_t hour, uint8_t minute, uint8_t second);
+	uint8_t (*second_count)(uint16_t second);
+	void (*second_count_reset)(void);
+	void (*second_count_stop)(void);
+	void (*alarm_reset)(void);
+	void (*alarm_stop)(void);
+	char* (*show)(void);
+};
+typedef struct CLOCK CLOCK;
+/*
+** procedure and function header
+*/
+CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second);
+/***preamble inic***/
+#endif
+/***preamble inic***/
+/************************************************************************
+CLOCK API END
+************************************************************************/
+>>>>>>> de2a0e3c69d79501f78d6430c9d7ca8dab5fd5c2
