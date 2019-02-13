@@ -1,29 +1,19 @@
 /************************************************************************
-Title:    LCD
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: lcd.h,v 0.2 2015/04/11 00:00:00 sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
-License:  GNU General Public License
-DESCRIPTION:
-USAGE:
-	Supports two LCD display
-LICENSE:
-    Copyright (C) 2014
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
-	tested Atemga128 16Mhz and Atmega328 8Mhz and Atmega324A 8Mhz
-	reviewed 25/03/2018, very stable
+LCD API START
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 ************************************************************************/
+/***preamble inic***/
 #ifndef _LCD_H_
 	#define _LCD_H_
+/**@{*/
+#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
+	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
+#endif
+/*
+** Library
+*/
+#include <inttypes.h>
+/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -32,10 +22,10 @@ COMMENT:
 #define RW 1
 #define EN 2
 #define NC 3
-#define DB0 4
-#define DB1 5
-#define DB2 6
-#define DB3 7
+#define DB4 4
+#define DB5 5
+#define DB6 6
+#define DB7 7
 /*
 ** variable
 */
@@ -50,7 +40,7 @@ struct display{
 	void (*string_size)(const char* s, uint8_t size); // RAW
 	void (*hspace)(uint8_t n);
 	void (*clear)(void);
-	void (*gotoxy)(unsigned int y, unsigned int x);
+	void (*gotoxy)(unsigned int x, unsigned int y);
 	void (*reboot)(void);
 };
 typedef struct display LCD0;
@@ -60,5 +50,9 @@ typedef struct display LCD1;
 */
 LCD0 LCD0enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
 LCD1 LCD1enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
+/***preamble inic***/
 #endif
-/***EOF***/
+/***preamble inic***/
+/************************************************************************
+LCD API END
+************************************************************************/
