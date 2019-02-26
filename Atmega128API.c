@@ -38,7 +38,7 @@ Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 /*
 ** constant and macro
 */
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
+#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
 // if using differential channels this value has to be greater than one
 #define MAX_CHANNEL 8
 /***TYPE 1***/

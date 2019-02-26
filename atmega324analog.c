@@ -36,19 +36,19 @@ COMMENT:
 /*
 ** constant and macro
 */
-// if using differential channels this value has to be greater than one
-#define MAX_CHANNEL 8
 #if defined(__AVR_ATmega164A__) || defined(__AVR_ATmega164PA__) || defined(__AVR_ATmega324A__) ||\
 	defined(__AVR_ATmega324PA__) || defined(__AVR_ATmega644A__) || defined(__AVR_ATmega644PA__) ||\
 	defined(__AVR_ATmega1284__) || defined(__AVR_ATmega1284P__)
-	/******/
-	#define GLOBAL_INTERRUPT_ENABLE 7
-	#define ADC_SELECT ADMUX
-	#define ADC_CONTROL ADCSRA
-	#define ADC_TRIGGER ADCSRB
-	#define DIGITAL_INPUT_DISABLE_REGISTER DIDR0
-	#define MUX_MASK 31
-	#define ANALOG_INTERRUPT ADC_vect
+// if using differential channels this value has to be greater than one
+#define MAX_CHANNEL 8
+/******/
+#define GLOBAL_INTERRUPT_ENABLE 7
+#define ADC_SELECT ADMUX
+#define ADC_CONTROL ADCSRA
+#define ADC_TRIGGER ADCSRB
+#define DIGITAL_INPUT_DISABLE_REGISTER DIDR0
+#define MUX_MASK 31
+#define ANALOG_INTERRUPT ADC_vect
 /*
 ** variable
 */
