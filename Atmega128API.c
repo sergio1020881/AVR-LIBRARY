@@ -7,7 +7,12 @@ ATMEGA128 API START
 		4-TIMER
 		5-TWI (still in progress)
 		6-UART
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Author: Sergio Santos 
+	<sergio.salazar.santos@gmail.com>
+Date:
+   28092020
+Comment:
+   Stable
 *************************************************************************/
 /***preamble inic***/
 #ifndef F_CPU
@@ -38,16 +43,20 @@ Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 /*
 ** constant and macro
 */
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
 // if using differential channels this value has to be greater than one
 #define MAX_CHANNEL 8
 /***TYPE 1***/
-#define ADC_SELECT ADMUX
-#define ADC_CONTROL ADCSRA
-#define MUX_MASK 31
-#define GLOBAL_INTERRUPT_ENABLE 7
-#define ATMEGA_ANALOG
-#define ANALOG_INTERRUPT ADC_vect
+#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
+	/******/
+	#define ADC_SELECT ADMUX
+	#define ADC_CONTROL ADCSRA
+	#define MUX_MASK 31
+	#define GLOBAL_INTERRUPT_ENABLE 7
+	#define ATMEGA_ANALOG
+	#define ANALOG_INTERRUPT ADC_vect
+#else
+ 	#error "Not Atmega 128"
+#endif
 /*
 ** variable
 */
@@ -83,6 +92,7 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 	ADC_SELECTOR=0;
 	adc_n_sample=0;
 	//PROTOTIPOS
+	//int ANALOG_read(int channel);
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
 	ANALOG analog;
 	//import parametros
@@ -206,9 +216,6 @@ Purpose:  Read Analog Input
 		ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
 	}		
 }
-#else
- 	#error "Not Atmega 128"
-#endif
 /*************************************************************************
 ANALOG API END
 *************************************************************************/
@@ -219,13 +226,17 @@ ANALOG API END
 ** constant and macro
 */
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
-#define ATMEGA_INTERRUPT
-#define External_Interrupt_Control_Register_A EICRA
-#define External_Interrupt_Control_Register_B EICRB
-#define External_Interrupt_Mask_Register EIMSK
-#define External_Interrupt_Flag_Register EIFR
-#define MCU_Control_Status_Register MCUCSR
-#define MCU_Control_Status_Register_Mask 0X1F
+	/******/
+	#define ATMEGA_INTERRUPT
+	#define External_Interrupt_Control_Register_A EICRA
+	#define External_Interrupt_Control_Register_B EICRB
+	#define External_Interrupt_Mask_Register EIMSK
+	#define External_Interrupt_Flag_Register EIFR
+	#define MCU_Control_Status_Register MCUCSR
+	#define MCU_Control_Status_Register_Mask 0X1F
+#else
+ 	#error "Not Atmega 128"
+#endif
 /*
 ** variable
 */
@@ -478,9 +489,6 @@ INTERRUPT INTERRUPTenable(void)
 /*
 ** interrupt
 */
-#else
- 	#error "Not Atmega 128"
-#endif
 /*************************************************************************
 INTERRUPT API END
 *************************************************************************/
@@ -491,18 +499,21 @@ INTERRUPT API END
 ** constant and macro
 */
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) 
-#define ATMEGA_SPI
-#define SPI_CONTROL_REGISTER SPCR
-#define SPI_STATUS_REGISTER SPSR
-#define SPI_DATA_REGISTER SPDR
-#define SPI_PORT PORTB
-#define SPI_DDR DDRB
-#define SPI_PIN PINB
-#define SPI_PIN_MASK 15
-#define DD_SS 0
-#define DD_SCK 1
-#define DD_MOSI 2
-#define DD_MISO 3
+	#define ATMEGA_SPI
+	#define SPI_CONTROL_REGISTER SPCR
+	#define SPI_STATUS_REGISTER SPSR
+	#define SPI_DATA_REGISTER SPDR
+	#define SPI_PORT PORTB
+	#define SPI_DDR DDRB
+	#define SPI_PIN PINB
+	#define SPI_PIN_MASK 15
+	#define DD_SS 0
+	#define DD_SCK 1
+	#define DD_MOSI 2
+	#define DD_MISO 3
+#else
+	#error "Not Atmega 128"
+#endif
 /*
 ** variable
 */
@@ -649,9 +660,6 @@ uint8_t spi_fast_shift (uint8_t data)
 /*
 ** interrupt
 */
-#else
-	#error "Not Atmega 128"
-#endif
 /*************************************************************************
 SPI API END
 *************************************************************************/
@@ -662,56 +670,59 @@ SPI API END
 ** constant and macro
 */
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
-/***0***/
-#define ATMEGA_TIMER_COUNTER
-#define TIMER_COUNTER0_CONTROL_REGISTER TCCR0
-#define TIMER_COUNTER0_REGISTER TCNT0
-#define TIMER_COUNTER0_COMPARE_REGISTER OCR0
-#define TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT TIMER0_COMP_vect
-#define TIMER_COUNTER0_OVERFLOW_INTERRUPT TIMER0_OVF_vect
-/***1***/
-#define TIMER_COUNTER1A_CONTROL_REGISTER TCCR1A
-#define TIMER_COUNTER1B_CONTROL_REGISTER TCCR1B
-#define TIMER_COUNTER1C_CONTROL_REGISTER TCCR1C
-#define TIMER_COUNTER1_REGISTER TCNT1 // H and L register
-#define TIMER_COUNTER1A_COMPARE_REGISTER OCR1A
-#define TIMER_COUNTER1B_COMPARE_REGISTER OCR1B
-#define TIMER_COUNTER1C_COMPARE_REGISTER OCR1C
-#define TIMER_COUNTER1_INPUT_CAPTURE_REGISTER ICR1
-#define TIMER_COUNTER1A_COMPARE_MATCH_INTERRUPT TIMER1_COMPA_vect
-#define TIMER_COUNTER1B_COMPARE_MATCH_INTERRUPT TIMER1_COMPB_vect
-#define TIMER_COUNTER1C_COMPARE_MATCH_INTERRUPT TIMER1_COMPC_vect
-#define TIMER_COUNTER1_CAPTURE_EVENT_INTERRUPT TIMER1_CAPT_vect
-#define TIMER_COUNTER1_OVERFLOW_INTERRUPT TIMER1_OVF_vect
-/***2***/
-#define TIMER_COUNTER2_CONTROL_REGISTER TCCR2
-#define TIMER_COUNTER2_REGISTER TCNT2
-#define TIMER_COUNTER2_COMPARE_REGISTER OCR2
-#define TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT TIMER2_COMP_vect
-#define TIMER_COUNTER2_OVERFLOW_INTERRUPT TIMER2_OVF_vect
-/***3***/
-#define TIMER_COUNTER3A_CONTROL_REGISTER TCCR3A
-#define TIMER_COUNTER3B_CONTROL_REGISTER TCCR3B
-#define TIMER_COUNTER3C_CONTROL_REGISTER TCCR3C
-#define TIMER_COUNTER3_REGISTER TCNT3 // H and L register
-#define TIMER_COUNTER3A_COMPARE_REGISTER OCR3A
-#define TIMER_COUNTER3B_COMPARE_REGISTER OCR3B
-#define TIMER_COUNTER3C_COMPARE_REGISTER OCR3C
-#define TIMER_COUNTER3_INPUT_CAPTURE_REGISTER ICR3
-#define TIMER_COUNTER3A_COMPARE_MATCH_INTERRUPT TIMER3_COMPA_vect
-#define TIMER_COUNTER3B_COMPARE_MATCH_INTERRUPT TIMER3_COMPB_vect
-#define TIMER_COUNTER3C_COMPARE_MATCH_INTERRUPT TIMER3_COMPC_vect
-#define TIMER_COUNTER3_CAPTURE_EVENT_INTERRUPT TIMER3_CAPT_vect
-#define TIMER_COUNTER3_OVERFLOW_INTERRUPT TIMER3_OVF_vect
-/***COMMON***/
-#define TIMER_COUNTER_STATUS_REGISTER ASSR
-#define TIMER_COUNTER_INTERRUPT_MASK_REGISTER TIMSK
-#define EXTENDED_TIMER_COUNTER_INTERRUPT_MASK_REGISTER ETIMSK
-#define TIMER_COUNTER_INTERRUPT_FLAG_REGISTER TIFR
-#define EXTENDED_TIMER_COUNTER_INTERRUPT_FLAG_REGISTER ETIFR
-#define TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER SFIOR
-#define ASYNCHRONOUS_STATUS_REGISTER ASSR
-#define SPECIAL_FUNCTION_IO_REGISTER SFIOR
+	/***0***/
+	#define ATMEGA_TIMER_COUNTER
+	#define TIMER_COUNTER0_CONTROL_REGISTER TCCR0
+	#define TIMER_COUNTER0_REGISTER TCNT0
+	#define TIMER_COUNTER0_COMPARE_REGISTER OCR0
+	#define TIMER_COUNTER0_COMPARE_MATCH_INTERRUPT TIMER0_COMP_vect
+	#define TIMER_COUNTER0_OVERFLOW_INTERRUPT TIMER0_OVF_vect
+	/***1***/
+	#define TIMER_COUNTER1A_CONTROL_REGISTER TCCR1A
+	#define TIMER_COUNTER1B_CONTROL_REGISTER TCCR1B
+	#define TIMER_COUNTER1C_CONTROL_REGISTER TCCR1C
+	#define TIMER_COUNTER1_REGISTER TCNT1 // H and L register
+	#define TIMER_COUNTER1A_COMPARE_REGISTER OCR1A
+	#define TIMER_COUNTER1B_COMPARE_REGISTER OCR1B
+	#define TIMER_COUNTER1C_COMPARE_REGISTER OCR1C
+	#define TIMER_COUNTER1_INPUT_CAPTURE_REGISTER ICR1
+	#define TIMER_COUNTER1A_COMPARE_MATCH_INTERRUPT TIMER1_COMPA_vect
+	#define TIMER_COUNTER1B_COMPARE_MATCH_INTERRUPT TIMER1_COMPB_vect
+	#define TIMER_COUNTER1C_COMPARE_MATCH_INTERRUPT TIMER1_COMPC_vect
+	#define TIMER_COUNTER1_CAPTURE_EVENT_INTERRUPT TIMER1_CAPT_vect
+	#define TIMER_COUNTER1_OVERFLOW_INTERRUPT TIMER1_OVF_vect
+	/***2***/
+	#define TIMER_COUNTER2_CONTROL_REGISTER TCCR2
+	#define TIMER_COUNTER2_REGISTER TCNT2
+	#define TIMER_COUNTER2_COMPARE_REGISTER OCR2
+	#define TIMER_COUNTER2_COMPARE_MATCH_INTERRUPT TIMER2_COMP_vect
+	#define TIMER_COUNTER2_OVERFLOW_INTERRUPT TIMER2_OVF_vect
+	/***3***/
+	#define TIMER_COUNTER3A_CONTROL_REGISTER TCCR3A
+	#define TIMER_COUNTER3B_CONTROL_REGISTER TCCR3B
+	#define TIMER_COUNTER3C_CONTROL_REGISTER TCCR3C
+	#define TIMER_COUNTER3_REGISTER TCNT3 // H and L register
+	#define TIMER_COUNTER3A_COMPARE_REGISTER OCR3A
+	#define TIMER_COUNTER3B_COMPARE_REGISTER OCR3B
+	#define TIMER_COUNTER3C_COMPARE_REGISTER OCR3C
+	#define TIMER_COUNTER3_INPUT_CAPTURE_REGISTER ICR3
+	#define TIMER_COUNTER3A_COMPARE_MATCH_INTERRUPT TIMER3_COMPA_vect
+	#define TIMER_COUNTER3B_COMPARE_MATCH_INTERRUPT TIMER3_COMPB_vect
+	#define TIMER_COUNTER3C_COMPARE_MATCH_INTERRUPT TIMER3_COMPC_vect
+	#define TIMER_COUNTER3_CAPTURE_EVENT_INTERRUPT TIMER3_CAPT_vect
+	#define TIMER_COUNTER3_OVERFLOW_INTERRUPT TIMER3_OVF_vect
+	/***COMMON***/
+	#define TIMER_COUNTER_STATUS_REGISTER ASSR
+	#define TIMER_COUNTER_INTERRUPT_MASK_REGISTER TIMSK
+	#define EXTENDED_TIMER_COUNTER_INTERRUPT_MASK_REGISTER ETIMSK
+	#define TIMER_COUNTER_INTERRUPT_FLAG_REGISTER TIFR
+	#define EXTENDED_TIMER_COUNTER_INTERRUPT_FLAG_REGISTER ETIFR
+	#define TIMER_COUNTER_SPECIAL_FUNCTION_REGISTER SFIOR
+	#define ASYNCHRONOUS_STATUS_REGISTER ASSR
+	#define SPECIAL_FUNCTION_IO_REGISTER SFIOR
+#else
+	#error "Not Atmega 128"
+#endif
 /*
 ** variable
 */
@@ -1569,9 +1580,6 @@ TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char int
 /*
 ** interrupt
 */
-#else
-	#error "Not Atmega 128"
-#endif
 /*************************************************************************
 TIMER API END
 *************************************************************************/
@@ -1583,10 +1591,7 @@ TIMER API END
 /*
 ** constant and macro
 */
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
-#ifndef GLOBAL_INTERRUPT_ENABLE
-	#define GLOBAL_INTERRUPT_ENABLE 7
-#endif
+/*******************************************************************************/
 /*
 ** Status Codes for MASTER Transmitter Mode
 */
@@ -1752,6 +1757,9 @@ TIMER API END
 #define TWI_BUS_ERROR 0X00 // Bus error due to an illegal START or STOP condition
 // Only the internal hardware is affected, no STOP condi-tion is sent on the bus. In all cases, the bus is released and TWSTO is cleared.
 /*******************************************************************************/
+#ifndef GLOBAL_INTERRUPT_ENABLE
+	#define GLOBAL_INTERRUPT_ENABLE 7
+#endif
 // I2C register renaming
 #define TWI_BIT_RATE_REGISTER TWBR
 #define TWI_CONTROL_REGISTER TWCR
@@ -1760,13 +1768,17 @@ TIMER API END
 #define TWI_DATA_REGISTER TWDR
 #define TWI_ADDRESS_REGISTER TWAR
 #define TWI_ADDRESS_REGISTER_MASK 0B11111110
-#define i2c_read(ack)  (ack) ? i2c_readAck() : i2c_readNak(); 
-#define ATMEGA_I2C
-#define I2C_PORT PORTD
-#define I2C_DDR DDRD
-#define I2C_PIN PIND
-#define I2C_PIN_MASK 3
-#define TWI_PRESCALER_MASK 0B00000011
+#define i2c_read(ack)  (ack) ? i2c_readAck() : i2c_readNak();
+#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) 
+	#define ATMEGA_I2C
+	#define I2C_PORT PORTD
+	#define I2C_DDR DDRD
+	#define I2C_PIN PIND
+	#define I2C_PIN_MASK 3
+	#define TWI_PRESCALER_MASK 0B00000011
+#else
+	#error "Not Atmega 128"
+#endif
 /***/
 #define TWI_START_CONDITION 0
 #define TWI_DATA_NO_ACK 1
@@ -1995,9 +2007,6 @@ SIGNAL(SIG_2WIRE_SERIAL)
 	}
 }
 */
-#else
-	#error "Not Atmega 128"
-#endif
 /************************************************************************
 I2C API END
 ************************************************************************/
@@ -2007,7 +2016,6 @@ I2C API END
 /*
 ** constant and macro
 */
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
 /* size of RX/TX buffers */
 #define UART_RX_BUFFER_MASK ( UART_RX_BUFFER_SIZE - 1)
 #define UART_TX_BUFFER_MASK ( UART_TX_BUFFER_SIZE - 1)
@@ -2017,21 +2025,25 @@ I2C API END
 #if ( UART_TX_BUFFER_SIZE & UART_TX_BUFFER_MASK )
 	#error "TX buffer size is not a power of 2"
 #endif
-/* ATmega with two USART */
-#define ATMEGA_USART0
-#define ATMEGA_USART1
-#define UART0_RECEIVE_INTERRUPT   USART0_RX_vect
-#define UART1_RECEIVE_INTERRUPT   USART1_RX_vect
-#define UART0_TRANSMIT_INTERRUPT  USART0_UDRE_vect
-#define UART1_TRANSMIT_INTERRUPT  USART1_UDRE_vect
-#define UART0_STATUS   UCSR0A
-#define UART0_CONTROL  UCSR0B
-#define UART0_DATA     UDR0
-#define UART0_UDRIE    UDRIE0
-#define UART1_STATUS   UCSR1A
-#define UART1_CONTROL  UCSR1B
-#define UART1_DATA     UDR1
-#define UART1_UDRIE    UDRIE1
+#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) 
+	/* ATmega with two USART */
+	 #define ATMEGA_USART0
+	 #define ATMEGA_USART1
+	 #define UART0_RECEIVE_INTERRUPT   USART0_RX_vect
+	 #define UART1_RECEIVE_INTERRUPT   USART1_RX_vect
+	 #define UART0_TRANSMIT_INTERRUPT  USART0_UDRE_vect
+	 #define UART1_TRANSMIT_INTERRUPT  USART1_UDRE_vect
+	 #define UART0_STATUS   UCSR0A
+	 #define UART0_CONTROL  UCSR0B
+	 #define UART0_DATA     UDR0
+	 #define UART0_UDRIE    UDRIE0
+	 #define UART1_STATUS   UCSR1A
+	 #define UART1_CONTROL  UCSR1B
+	 #define UART1_DATA     UDR1
+	 #define UART1_UDRIE    UDRIE1
+#else
+ #error "Not Atmega 128"
+#endif
 /*
 ** variable
 */
@@ -2454,7 +2466,7 @@ UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopb
 				case 2:
 					UCSR1C |= (1<<USBS1);
 					uart.Stopbits=2;
-					break;	
+					break;
 				default:
 					UCSR1C &= ~(1<<USBS1);
 					uart.Stopbits=1;
@@ -2645,9 +2657,6 @@ Purpose:  called when the UART1 is ready to transmit the next byte
 		UART1_DATA = UART1_TxBuf[UART1_TxTail];  /* start transmission */
 	}	
 }
-#else
-    #error "Not Atmega 128"
-#endif
 /*************************************************************************
 UART API END
 *************************************************************************/

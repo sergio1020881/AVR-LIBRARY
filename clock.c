@@ -1,6 +1,8 @@
 /*************************************************************************
 CLOCK API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Author: 
+	Sergio Santos 
+	<sergio.salazar.santos@gmail.com>
 *************************************************************************/
 /***preamble inic***/
 /*
@@ -144,7 +146,7 @@ uint8_t CLOCK_alarm(uint8_t hour, uint8_t minute, uint8_t second)
 		alarmtime.minute=minute;
 		alarmtime.second=second;
 		CLOCK_alarm_flag=4;
-	}	
+	}
 	return CLOCK_alarm_flag;
 }
 uint8_t CLOCK_second_count(uint16_t second)

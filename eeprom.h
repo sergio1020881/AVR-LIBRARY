@@ -1,26 +1,31 @@
 /*************************************************************************
-EEPROM API START
+Title: eeprom wrapper
+Author: Sergio Manuel Santos
+ * <sergio.salazar.santos@gmail.com>
+File: $Id: eeprom.h,v 0.2 01/10/2020 Exp $
+Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
+Hardware: ATmega 
+License: GNU General Public License
+Comment:
+   Very Stable
 *************************************************************************/
-/***preamble inic***/
-#ifndef _EEPROM_H_
-	#define _EEPROM_H_
+#ifndef EEPROM_H
+	#define EEPROM_H
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
 /*
-** Library
+** library
 */
-#include <inttypes.h>
 #include <avr/eeprom.h>
-/***preamble inic***/
 /*
 ** constant and macro
 */
 /*
 ** variable
 */
-struct EEPROM{
+struct prm{
 	/***vtable***/
 	uint8_t (*read_byte) ( const uint8_t * addr );
 	void (*write_byte) ( uint8_t *addr , uint8_t value );
@@ -38,14 +43,10 @@ struct EEPROM{
 	void (*write_block) ( const void * pointer_ram , void * pointer_eeprom , size_t n);
 	void (*update_block) ( const void * pointer_ram , void * pointer_eeprom , size_t n);
 };
-typedef struct EEPROM EEPROM;
+typedef struct prm EEPROM;
 /*
 ** procedure and function header
 */
-EEPROM EEPROMenable(void);
-/***preamble inic***/
+EEPROM EEPROMenable();
 #endif
-/***preamble inic***/
-/*************************************************************************
-EEPROM API END
-*************************************************************************/
+/***EOF***/

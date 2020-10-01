@@ -1,28 +1,27 @@
 /************************************************************************
-FUNCTION API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Title: FUNCTION
+Author: Sergio Santos
+   <sergio.salazar.santos@gmail.com>
+File: $Id: function.h,v 0.1 29/09/2020 Exp $
+License: GNU General Public License 
+Comment:
+	Very Stable
 ************************************************************************/
-/***preamble inic***/
 #ifndef _FUNCTION_H_
 	#define _FUNCTION_H_
-/**@{*/
-#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
-	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
-#endif
 /*
 ** Library
 */
 #include <inttypes.h>
-/***preamble inic***/
 /*
 ** constant and macro
 */
 /*
 ** variable
 */
-struct FUNC{
+struct fnctn{
 	/***PROTOTYPES VTABLE***/
-	unsigned int (*power)(uint8_t base, uint8_t n);
+	unsigned int (*power)(uint8_t bs, uint8_t n);
 	int (*stringlength)(const char string[]);
 	void (*reverse)(char s[]);
 	unsigned int (*mayia)(unsigned int xi, unsigned int xf, uint8_t nbits);
@@ -38,9 +37,9 @@ struct FUNC{
 	void (*copy)(char to[], char from[]);
 	void (*squeeze)(char s[], int c);
 	void (*shellsort)(int v[], int n);
-	void (*i16toa)(int16_t n, char s[]);
-	void (*ui16toa)(uint16_t n, char s[]);
-	void (*i32toa)(int32_t n, char s[]);
+	char* (*i16toa)(int16_t n);
+	char* (*ui16toa)(uint16_t n);
+	char* (*i32toa)(int32_t n);
 	int (*trim)(char s[]);
 	int (*pmax)(int a1, int a2);
 	int (*gcd)(int u, int v);
@@ -69,14 +68,10 @@ struct FUNC{
 	int (*readint)(int nmin, int nmax);
 	*/
 };
-typedef struct FUNC FUNC;
+typedef struct fnctn FUNC;
 /*
 ** procedure and function header
 */
 FUNC FUNCenable(void);
-/***preamble inic***/
 #endif
-/***preamble inic***/
-/************************************************************************
-FUNCTION API END
-************************************************************************/
+/***EOF***/

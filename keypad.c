@@ -1,6 +1,10 @@
 /*************************************************************************
 KEYPAD API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Author: Sergio Santos 
+	<sergio.salazar.santos@gmail.com>
+Date: 29092020
+Comment:
+   Stable
 *************************************************************************/
 /***preamble inic***/
 /*
@@ -202,7 +206,7 @@ void KEYPAD_flush(void)
 	data.character=' ';
 	KEYPADSTRINGINDEX=0;
 	for(i=0;i<KEYPADSTRINGSIZE+1;i++)
-		data.string[i]='\0';
+        data.string[i]='\0';
 }
 /***lh***/
 uint8_t KEYPADlh(uint8_t xi, uint8_t xf)

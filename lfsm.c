@@ -1,20 +1,23 @@
 /*************************************************************************
-LFSM API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-page = 1 => Global Logic
-page > 1 => Local Logic
+Title: LFSM
+Author: Sergio Santos 
+   <sergio.salazar.santos@gmail.com>
+File: $Id: lfsm.c, v 0.1 01/10/2020 Exp $
+Hardware: Atmega
+License: GNU General Public License
+Comment:
+	page=1 is dedicated for global logic, if page>1 is for local logic.
+	purpose is for machine programming, and encoders. General purpose algorithm.
 *************************************************************************/
-/***preamble inic***/
 /*
 ** library
 */
 #include "lfsm.h"
-/***preamble inic***/
 /*
 ** constant and macro
 */
-#define EMPTY 0 //0
 #define ZERO 0 //0
+#define EMPTY 0 //0
 #define NPAGES 255 //1 to 254 possible pages
 #define BYTEL 0
 #define BYTEH 255
@@ -22,7 +25,7 @@ page > 1 => Local Logic
 ** variable
 */
 struct lfsmdata data, tmp1, tmp2;
-const uint8_t tmask = 0XFF;
+const uint8_t tmask = 255;
 /*
 ** procedure and function header
 */
@@ -42,18 +45,18 @@ uint8_t LFSMoutputcalc(uint8_t feedback, uint8_t hl, uint8_t lh, uint8_t mask);
 /*
 ** Object Initialize
 */
-LFSM LFSMenable(EEPROM* eeprom, const uint8_t sizeeeprom)
+LFSM LFSMenable(EEPROM* eeprom, const uint16_t sizeeeprom)
 {
 	/***Local Variable***/
 	const uint8_t sizeblock=sizeof(struct lfsmdata);
 	/***Create Object***/
 	LFSM r;
 	//Initialize variables
-	r.eeprom=eeprom;
+	r.eprom=eeprom;
 	r.sizeeeprom=sizeeeprom;
 	r.sizeblock=sizeblock;
 	r.page=ZERO;
-	r.output=255;//Output
+	r.output=0;//Output
 	//Function V table
 	r.read=LFSMread;
 	r.learn=LFSMlearn;
@@ -74,7 +77,7 @@ LFSM LFSMenable(EEPROM* eeprom, const uint8_t sizeeeprom)
 /***read***/
 uint8_t LFSMread(struct lfsm *r, uint8_t input)
 {
-	uint8_t i1;
+	uint16_t i1;
 	uint8_t status=ZERO;
 	uint8_t sizeblock=r->sizeblock;
 	struct lfsmdata* pdata=&data;
@@ -87,9 +90,9 @@ uint8_t LFSMread(struct lfsm *r, uint8_t input)
 	if(HL || LH){ //To not waste time
 		status=1; //New entry
 		for(i1=ZERO;i1<r->sizeeeprom;i1++){
-			r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+			r->eprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
 			switch(pdata->page){
-				case 0:
+				case ZERO:
 					//Do nothing, continue search in status=1.
 					break;
 				case 1: //Global logic
@@ -168,7 +171,7 @@ uint8_t LFSMread(struct lfsm *r, uint8_t input)
 /***learn***/
 uint8_t LFSMlearn(struct lfsm *r, const uint8_t input, const uint8_t next, const uint8_t mask, const uint8_t page)
 {
-	uint8_t i1;
+	uint16_t i1;
 	uint8_t status=ZERO;
 	uint8_t sizeblock=r->sizeblock;
 	struct lfsmdata* pdata=&data;
@@ -179,7 +182,7 @@ uint8_t LFSMlearn(struct lfsm *r, const uint8_t input, const uint8_t next, const
 	if(page>ZERO){ //Enable
 		if(HL || LH){ //There is a change ?
 			for(i1=ZERO;i1<r->sizeeeprom;i1++){
-				r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+				r->eprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
 				if(pdata->page){ //Find if it exists already
 					if( (pdata->page==1 && pdata->inhl==HL && pdata->inlh==LH)
 					|| (pdata->page==page && (pdata->feedback & mask)==(r->output & mask) && pdata->inhl==HL && pdata->inlh==LH) ){
@@ -207,9 +210,9 @@ uint8_t LFSMlearn(struct lfsm *r, const uint8_t input, const uint8_t next, const
 				ptmp1->outlh=LFSMlh(BYTEL,next) & mask;
 			}
 			for(i1=ZERO;i1<r->sizeeeprom;i1++){
-				r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+				r->eprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
 				if(pdata->page==EMPTY){
-					r->eeprom->update_block(ptmp1, (void*) (i1*sizeblock), sizeblock);
+					r->eprom->update_block(ptmp1, (void*) (i1*sizeblock), sizeblock);
 					status=2; //Created
 					break;
 				}
@@ -227,12 +230,12 @@ uint8_t LFSMlearn(struct lfsm *r, const uint8_t input, const uint8_t next, const
 /***quant***/
 uint8_t LFSMquant(struct lfsm *r)
 {
-	uint8_t i1;
+	uint16_t i1;
 	uint8_t sizeblock=r->sizeblock;
 	struct lfsmdata* pdata=&data;
-	uint8_t programmed;
+	uint16_t programmed;
 	for(i1=ZERO,programmed=ZERO;i1<r->sizeeeprom;i1++){
-		r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+		r->eprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
 		if(pdata->page!=EMPTY){ //Count memory used
 			programmed++;
 		}
@@ -242,7 +245,7 @@ uint8_t LFSMquant(struct lfsm *r)
 /***remove***/
 uint8_t LFSMremove(struct lfsm *r, uint8_t input)
 {
-	uint8_t k,k1,k2,i1;
+	uint16_t k,k1,k2,i1;
 	k=k1=k2=ZERO;
 	uint8_t status=ZERO;
 	uint8_t sizeblock=r->sizeblock;
@@ -258,7 +261,7 @@ uint8_t LFSMremove(struct lfsm *r, uint8_t input)
 	if(HL || LH){ //To not waste time
 		status=1; //New entry
 		for(i1=ZERO;i1<r->sizeeeprom;i1++){
-			r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+			r->eprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
 			switch(pdata->page){
 				case 0:
 					//Do nothing, continue search in status=1.
@@ -305,19 +308,19 @@ uint8_t LFSMremove(struct lfsm *r, uint8_t input)
 		case 1: //New entry
 			break;
 		case 2: //Global logic exist
-			r->eeprom->update_block(ptmp1, (void*) (k*sizeblock), sizeblock);
+			r->eprom->update_block(ptmp1, (void*) (k*sizeblock), sizeblock);
 			break;
 		case 3: //Local logic exist in present page
-			r->eeprom->update_block(ptmp1, (void*) (k*sizeblock), sizeblock);
+			r->eprom->update_block(ptmp1, (void*) (k*sizeblock), sizeblock);
 			break;
 		case 4: //Local logic exist in page above versus local logic exist in page bellow
 			//choose closest page above otherwise closest bellow.
 			if(n1>ZERO && n1<NPAGES){
-				r->eeprom->update_block(ptmp1, (void*) (k1*sizeblock), sizeblock);
+				r->eprom->update_block(ptmp1, (void*) (k1*sizeblock), sizeblock);
 				status=41;
 			}
 			else if(n2>ZERO && n2<NPAGES){
-				r->eeprom->update_block(ptmp1, (void*) (k2*sizeblock), sizeblock);
+				r->eprom->update_block(ptmp1, (void*) (k2*sizeblock), sizeblock);
 				status=42;
 			}
 			break;
@@ -329,15 +332,15 @@ uint8_t LFSMremove(struct lfsm *r, uint8_t input)
 /***deleteall***/
 uint8_t LFSMdeleteall(struct lfsm *r)
 {
-	uint8_t i1;
+	uint16_t i1;
 	uint8_t status=ZERO;
 	uint8_t sizeblock=r->sizeblock;
 	struct lfsmdata* pdata=&data;
 	for(i1=ZERO;i1<r->sizeeeprom;i1++){
-		r->eeprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
+		r->eprom->read_block(pdata, (const void*) (i1*sizeblock), sizeblock);
 		if(pdata->page){
 			pdata->page=EMPTY;
-			r->eeprom->update_block(pdata, (void*) (i1*sizeblock), sizeblock);
+			r->eprom->update_block(pdata, (void*) (i1*sizeblock), sizeblock);
 			status=1; //All deleted
 		}
 	}
@@ -412,6 +415,4 @@ the case, better do code step by step with intermediary testes so it is easier t
 Near perfection just minor fixes and small add ons, maybe will stop as is for testing various situations to determine
 the necessary and desired changes.
 ***/
-/*************************************************************************
-LFSM API END
-*************************************************************************/
+/***EOF***/

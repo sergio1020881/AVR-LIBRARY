@@ -1,21 +1,25 @@
 /*************************************************************************
-LCD API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-*************************************************************************/
-/***preamble inic***/
+Title: LCD API
+Author: Sergio Santos 
+   <sergio.salazar.santos@gmail.com>
+File: $Id: lcd.c, v 27/09/2020 Exp $
+License: GNU General Public License        
+Comment:
+   Tested Atemga128 16Mhz and Atmega328 8Mhz
+   reviewed 29/09/2020                    
+************************************************************************/
 #ifndef F_CPU
+/***Mandatory to use util/delay.h***/
 	#define F_CPU 16000000UL
 #endif
 /*
-** library
+** Library
 */
 #include <avr/io.h>
-//#include <avr/pgmspace.h>
 #include <util/delay.h>
-//#include <stdarg.h>
 #include <inttypes.h>
+/***/
 #include "lcd.h"
-/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -27,6 +31,7 @@ Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 #define DATA 1
 //ticks depends on CPU frequency this case 16Mhz
 #define LCD_N_TICKS 1
+#define LCD_BF_TICKS 20
 /*
 ** variable
 */
@@ -51,7 +56,7 @@ void LCD0_string(const char* s); // RAW
 void LCD0_string_size(const char* s, uint8_t size); // RAW
 void LCD0_hspace(uint8_t n);
 void LCD0_clear(void);
-void LCD0_gotoxy(unsigned int x, unsigned int y);
+void LCD0_gotoxy(unsigned int y, unsigned int x);
 void LCD0_strobe(unsigned int num);
 void LCD0_reboot(void);
 void LCD1_inic(void);
@@ -64,7 +69,7 @@ void LCD1_string(const char* s);
 void LCD1_string_size(const char* s, uint8_t size); // RAW
 void LCD1_hspace(uint8_t n);
 void LCD1_clear(void);
-void LCD1_gotoxy(unsigned int x, unsigned int y);
+void LCD1_gotoxy(unsigned int y, unsigned int x);
 void LCD1_strobe(unsigned int num);
 void LCD1_reboot(void);
 unsigned int LCD_ticks(unsigned int num);
@@ -113,14 +118,10 @@ void LCD0_inic(void)
 	/***INICIALIZACAO LCD**datasheet*/
 	_delay_ms(40);
 	LCD0_write(0x33,INST); //function set
-	//_delay_ms(40);
-	//lcd->write(lcd,0x33,INST); //function set
+	_delay_us(39);
+	LCD0_write(0x33,INST); //function set
 	_delay_us(39);
 	LCD0_write(0x2B,INST); //function set
-	_delay_us(39);
-	LCD0_write(0x2B,INST); //function set
-	//_delay_us(39);
-	//lcd->write(0x2B,INST); //function set
 	_delay_us(37);
 	LCD0_write(0x0C,INST);// display on/off control
 	_delay_us(37);
@@ -129,10 +130,10 @@ void LCD0_inic(void)
 	LCD0_write(0x06,INST);// entry mode set (crazy settings)
 	_delay_us(37);
 	/***INICIALIZATION END***/
-	LCD0_write(0x1F,INST);// cursor or display shift
-	LCD0_BF();
-	LCD0_write(0x03,INST);// return home
-	LCD0_BF();
+	//LCD0_write(0x1F,INST);// cursor or display shift
+	//_delay_us(39);
+	//LCD0_write(0x03,INST);// return home
+	//_delay_ms(1.53);
 }
 void LCD0_write(char c, unsigned short D_I)
 {
@@ -183,7 +184,7 @@ void LCD0_BF(void)
 	char inst=0x80;
 	for(i=0;0x80&inst;i++){
 		inst=LCD0_read(INST);
-		LCD_ticks(LCD_N_TICKS);
+		LCD_ticks(LCD_BF_TICKS);
 		if(i>10)// if something goes wrong
 			break;
 	}
@@ -237,7 +238,7 @@ void LCD0_hspace(uint8_t n)
 void LCD0_clear(void)
 {
 	LCD0_write(0x01,INST);
-	LCD0_BF();
+    _delay_ms(1.53);
 }
 void LCD0_gotoxy(unsigned int y, unsigned int x)
 {
@@ -323,14 +324,10 @@ void LCD1_inic(void)
 	/***INICIALIZACAO LCD**datasheet*/
 	_delay_ms(40);
 	LCD1_write(0x33,INST); //function set
-	//_delay_ms(40);
-	//lcd->write(lcd,0x33,INST); //function set
+	_delay_us(39);
+	LCD1_write(0x33,INST); //function set
 	_delay_us(39);
 	LCD1_write(0x2B,INST); //function set
-	_delay_us(39);
-	LCD1_write(0x2B,INST); //function set
-	//_delay_us(39);
-	//lcd->write(0x2B,INST); //function set
 	_delay_us(37);
 	LCD1_write(0x0C,INST);// display on/off control
 	_delay_us(37);
@@ -339,10 +336,10 @@ void LCD1_inic(void)
 	LCD1_write(0x06,INST);// entry mode set (crazy settings)
 	_delay_us(37);
 	/***INICIALIZATION END***/
-	LCD1_write(0x1F,INST);// cursor or display shift
-	LCD1_BF();
-	LCD1_write(0x03,INST);// return home
-	LCD1_BF();
+	//LCD1_write(0x1F,INST);// cursor or display shift
+	//_delay_us(39);
+	//LCD1_write(0x03,INST);// return home
+	//_delay_ms(1.53);
 }
 void LCD1_write(char c, unsigned short D_I)
 {
@@ -393,7 +390,7 @@ void LCD1_BF(void)
 	char inst=0x80;
 	for(i=0;0x80&inst;i++){
 		inst=LCD1_read(INST);
-		LCD_ticks(LCD_N_TICKS);
+		LCD_ticks(LCD_BF_TICKS);
 		if(i>10)// if something goes wrong
 			break;
 	}
@@ -447,7 +444,7 @@ void LCD1_hspace(uint8_t n)
 void LCD1_clear(void)
 {
 	LCD1_write(0x01,INST);
-	LCD1_BF();
+	_delay_ms(1.53);
 }
 void LCD1_gotoxy(unsigned int y, unsigned int x)
 {
@@ -494,12 +491,13 @@ unsigned int LCD_ticks(unsigned int num)
 {
 	unsigned int count;
 	for(count=0;count<num;count++)
-	;
+		;
 	return count;
 }
 /*
 ** interrupt
 */
-/*************************************************************************
+/***EOF***/
+/***COMMENTS
 LCD API END
-*************************************************************************/
+***/

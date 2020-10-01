@@ -1,20 +1,17 @@
 /************************************************************************
-LFSM API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Title: LFSM
+Author: Sergio Santos
+   <sergio.salazar.santos@gmail.com>
+File: $Id: lfsm.h,v 0.1 01/10/2020 Exp $
+Hardware: Atmel
+License: GNU General Public License
+Comment:
+	very stable
 ************************************************************************/
-/***preamble inic***/
 #ifndef _LFSM_H_
 	#define _LFSM_H_
-/**@{*/
-#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
-	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
-#endif
-/*
-** Library
-*/
-#include <inttypes.h>
-#include "eeprom.h"
-/***preamble inic***/
+/******/
+#include "../EEPROM/eeprom.h"
 /*
 ** constant and macro
 */
@@ -33,8 +30,8 @@ struct lfsmdata{
 /******/
 struct lfsm{
 	//Local Variables
-	EEPROM* eeprom;
-	uint8_t sizeeeprom;
+	EEPROM* eprom;
+	uint16_t sizeeeprom;
 	uint8_t sizeblock;
 	uint8_t page;
 	uint8_t input;
@@ -56,10 +53,6 @@ typedef struct lfsm LFSM;
 /*
 ** procedure and function header
 */
-LFSM LFSMenable(EEPROM* eeprom, const uint8_t sizeeeprom);
-/***preamble inic***/
+LFSM LFSMenable(EEPROM* eeprom, const uint16_t sizeeeprom);
 #endif
-/***preamble inic***/
-/************************************************************************
-LFSM API END
-************************************************************************/
+/***EOF***/

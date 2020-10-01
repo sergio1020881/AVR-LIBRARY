@@ -1,6 +1,8 @@
 /************************************************************************
 CLOCK API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Author: 
+	Sergio Santos 
+	<sergio.salazar.santos@gmail.com>
 ************************************************************************/
 /***preamble inic***/
 #ifndef _CLOCK_H_
@@ -26,7 +28,7 @@ struct TIME{
 	int8_t minute;
 	int8_t second;
 };
-struct CLOCK{
+struct clck{
 	void (*set)(uint8_t hour, uint8_t minute, uint8_t second);
 	void (*increment)(void);
 	void (*decrement)(void);
@@ -38,7 +40,7 @@ struct CLOCK{
 	void (*alarm_stop)(void);
 	char* (*show)(void);
 };
-typedef struct CLOCK CLOCK;
+typedef struct clck CLOCK;
 /*
 ** procedure and function header
 */

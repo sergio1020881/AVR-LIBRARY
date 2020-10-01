@@ -1,8 +1,13 @@
 /*************************************************************************
-FUNCTION API START
-Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+Title: FUNCTION
+Author: Sergio Santos
+   <sergio.salazar.santos@gmail.com>
+File: $Id: function.c,v 0.1 29/09/2020 Exp $ 
+License: GNU General Public License
+Comment:
+    Always try to make general purpose bullet proof functions !!
+    Very Stable
 *************************************************************************/
-/***preamble inic***/
 /*
 ** library
 */
@@ -16,8 +21,8 @@ Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 #include<string.h>
 #include<errno.h>
 */
+/***/
 #include"function.h"
-/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -27,11 +32,11 @@ Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 /*
 ** variable
 */
-char FUNCstr[16];
+char FUNCstr[20];
 /*
 ** procedure and function header
 */
-unsigned int Power(uint8_t base, uint8_t n);
+unsigned int Pwr(uint8_t bs, uint8_t n);
 int StringLength (const char string[]);
 void Reverse(char s[]);
 /******/
@@ -48,9 +53,9 @@ void FUNCswap(long *px, long *py);
 void FUNCcopy(char to[], char from[]);
 void FUNCsqueeze(char s[], int c);
 void FUNCshellsort(int v[], int n);
-void FUNCi16toa(int16_t n, char s[]);
-void FUNCui16toa(uint16_t n, char s[]);
-void FUNCi32toa(int32_t n, char s[]);
+char* FUNCi16toa(int16_t n);
+char* FUNCui16toa(uint16_t n);
+char* FUNCi32toa(int32_t n);
 int FUNCtrim(char s[]);
 int FUNCpmax(int a1, int a2);
 int FUNCgcd (int u, int v);
@@ -77,7 +82,7 @@ char* FUNCputstr(char* str);
 int FUNCgetnum(char* x);
 unsigned int FUNCgetnumv2(char* x);
 int FUNCreadint(int nmin, int nmax);
-*/
+***/
 // uint8_t TRANupdate(struct TRAN *tr, uint8_t idata);
 /*
 ** procedure and function
@@ -90,7 +95,7 @@ FUNC FUNCenable( void )
 	// struct object
 	FUNC func;
 	// function pointers
-	func.power=Power;
+	func.power=Pwr;
 	func.stringlength=StringLength;
 	func.reverse=Reverse;
 	func.mayia=FUNCmayia;
@@ -146,7 +151,7 @@ unsigned int FUNCmayia(unsigned int xi, unsigned int xf, uint8_t nbits)
 	unsigned int mask;
 	unsigned int diff;
 	unsigned int trans;
-	mask=Power(2,nbits)-1;
+	mask=Pwr(2,nbits)-1;
 	xi&=mask;
 	xf&=mask;
 	diff=xf^xi;
@@ -253,7 +258,7 @@ void FUNCshellsort(int v[], int n)
 			}
 }
 // i32toa: convert n to characters in s
-void FUNCi32toa(int32_t n, char s[])
+char* FUNCi32toa(int32_t n)
 {
 	uint8_t i;
 	int32_t sign;
@@ -261,15 +266,16 @@ void FUNCi32toa(int32_t n, char s[])
 	n = -n; // make n positive
 	i = 0;
 	do { // generate digits in reverse order
-		s[i++] = n % 10 + '0'; // get next digit
+		FUNCstr[i++] = n % 10 + '0'; // get next digit
 	}while ((n /= 10) > 0); // delete it
 	if (sign < 0)
-	s[i++] = '-';
-	s[i] = '\0';
-	Reverse(s);
+	FUNCstr[i++] = '-';
+	FUNCstr[i] = '\0';
+	Reverse(FUNCstr);
+	return FUNCstr;
 }
 // i16toa: convert n to characters in s
-void FUNCi16toa(int16_t n, char s[])
+char* FUNCi16toa(int16_t n)
 {
 	uint8_t i;
 	int16_t sign;
@@ -277,23 +283,25 @@ void FUNCi16toa(int16_t n, char s[])
 		n = -n; // make n positive
 	i = 0;
 	do { // generate digits in reverse order
-		s[i++] = n % 10 + '0'; // get next digit
+		FUNCstr[i++] = n % 10 + '0'; // get next digit
 	}while ((n /= 10) > 0); // delete it
 	if (sign < 0)
-		s[i++] = '-';
-	s[i] = '\0';
-	Reverse(s);
+		FUNCstr[i++] = '-';
+	FUNCstr[i] = '\0';
+	Reverse(FUNCstr);
+	return FUNCstr;
 }
 // ui16toa: convert n to characters in s
-void FUNCui16toa(uint16_t n, char s[])
+char* FUNCui16toa(uint16_t n)
 {
 	uint8_t i;
 	i = 0;
 	do { // generate digits in reverse order
-		s[i++] = n % 10 + '0'; // get next digit
+		FUNCstr[i++] = n % 10 + '0'; // get next digit
 	}while ((n /= 10) > 0); // delete it
-	s[i] = '\0';
-	Reverse(s);
+	FUNCstr[i] = '\0';
+	Reverse(FUNCstr);
+	return FUNCstr;
 }
 // trim: remove trailing blanks, tabs, newlines
 int FUNCtrim(char s[])
@@ -443,12 +451,12 @@ long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max)
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 // power: raise base to n-th power; n >= 0
-unsigned int Power(uint8_t base, uint8_t n)
+unsigned int Pwr(uint8_t bs, uint8_t n)
 {
     unsigned int i, p;
     p = 1;
     for (i = 1; i <= n; ++i)
-        p = p * base;
+        p = p * bs;
     return p;
 }
 // Function to count the number of characters in a string
@@ -687,10 +695,11 @@ int FUNCreadint(int nmin, int nmax)
 	}
 		return num;
 }
-*/
+***/
 /*
 ** interrupt
 */
-/*************************************************************************
-FUNCTION API START
-*************************************************************************/
+/***EOF***/
+/***COMMENTS
+
+***/
