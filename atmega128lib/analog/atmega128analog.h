@@ -1,19 +1,23 @@
 /************************************************************************
-Title:    Interrupt ANALOG INPUT
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: atmega324analog.h,v 0.2 2018/08/18 13:00:00 Sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
-License:  GNU General Public License
-Comment:
-	Very Stable
+ATMEGA128 ANALOG API START
+Author: Sergio Santos 
+	<sergio.salazar.santos@gmail.com>
+	28092020
 ************************************************************************/
-#ifndef ATMEGA324ANALOG_H
-	#define ATMEGA324ANALOG_H
+/***preamble inic***/
+#ifndef _ATMEGA128ANALOG_H_
+	#define _ATMEGA128ANALOG_H_
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
+/*
+** Library
+*/
+#include <inttypes.h>
+/************************************************************************
+ANALOG API START
+************************************************************************/
 /*
 ** constant and macro
 */
@@ -21,17 +25,21 @@ Comment:
 /*
 ** variable
 */
-struct ANALOG{
+struct nlg{
 	/***Parameters***/
 	uint8_t VREFF;
 	uint8_t DIVISION_FACTOR;
 	//prototype pointers
 	int (*read)(int selection);
 };
-typedef struct ANALOG ANALOG;
+typedef struct nlg ANALOG;
 /*
 ** procedure and function header
 */
 ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... );
+/*************************************************************************
+ANALOG API END
+*************************************************************************/
 #endif
 /***EOF***/
+

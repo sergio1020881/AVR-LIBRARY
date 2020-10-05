@@ -3,19 +3,9 @@ Title:    ATLFSM.h
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: atlfsm.h,v 0.1 2016/08/21 14:00:00 Sergio Exp $
 Software: GCC
-Hardware: 
-License:  GNU General Public License 
-Usage:    
-LICENSE:
-    Copyright (C) 2015
-    This program is free software; you can redistribute it and/or modify
-    it under the consent of the code developer, in case of commercial use
-    need license.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
+Hardware:
+License:  GNU General Public License
+Comment:
 	working on it
 ************************************************************************/
 #ifndef _PCLFSM_H_

@@ -3,22 +3,9 @@ Title:    ATLFSM.c
 Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: atlfsm.c, v 0.1 2016/08/21 14:00:00 Sergio Exp $
 Software: GCC
-Hardware:  
-License:  GNU General Public License        
-DESCRIPTION:
-	ATMEGA324A
-USAGE: 
-NOTES:
-LICENSE:
-    Copyright (C) 2015
-    This program is free software; you can redistribute it and/or modify
-    it under the consent of the code developer, in case of commercial use
-    need license.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
+Hardware:
+License:  GNU General Public License
+CommentT:
 	working on it.
 	working pretty good, trial more.
 	page=1 is dedicated for global logic,if page>1 is sequencial program.

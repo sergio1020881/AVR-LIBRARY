@@ -1,33 +1,43 @@
-/*************************************************************************
-Title:    TIMER
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: atmega128timer.h,v 0.1 2017/06/13 16:00:00 sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher 
-License:  GNU General Public License
-Comment:
-	Very Stable
-*************************************************************************/
-#ifndef ATMEGA128TIMER_H_
-  #define ATMEGA128TIMER_H_
+/************************************************************************
+ATMEGA128 TIMER API START
+Author: Sergio Santos 
+	<sergio.salazar.santos@gmail.com>
+	28092020
+************************************************************************/
+/***preamble inic***/
+#ifndef _ATMEGA128TIMER_H_
+	#define _ATMEGA128TIMER_H_
+/**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
+/*
+** Library
+*/
+#include <inttypes.h>
+/*************************************************************************
+TIMER API START
+*************************************************************************/
 /*
 ** constant and macro
 */
 /*
 ** variable
 */
-struct TIMER_COUNTER0{
+struct tmr_cntr0{
 	// prototype pointers
 	void (*compoutmode)(unsigned char compoutmode);
+	void (*compoutmodeA)(unsigned char compoutmode);
+	void (*compoutmodeB)(unsigned char compoutmode);
 	void (*compare)(unsigned char compare);
+	void (*compareA)(unsigned char compare);
+	void (*compareB)(unsigned char compare);
 	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
-typedef struct TIMER_COUNTER0 TIMER_COUNTER0;
+typedef struct tmr_cntr0 TIMER_COUNTER0;
 /**/
-struct TIMER_COUNTER1{
+struct tmr_cntr1{
 	// prototype pointers
 	void (*compoutmodeA)(unsigned char compoutmode);
 	void (*compoutmodeB)(unsigned char compoutmode);
@@ -38,18 +48,22 @@ struct TIMER_COUNTER1{
 	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
-typedef struct TIMER_COUNTER1 TIMER_COUNTER1;
+typedef struct tmr_cntr1 TIMER_COUNTER1;
 /**/
-struct TIMER_COUNTER2{
+struct tmr_cntr2{
 	// prototype pointers
 	void (*compoutmode)(unsigned char compoutmode);
+	void (*compoutmodeA)(unsigned char compoutmode);
+	void (*compoutmodeB)(unsigned char compoutmode);
 	void (*compare)(unsigned char compare);
+	void (*compareA)(unsigned char compare);
+	void (*compareB)(unsigned char compare);
 	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
-typedef struct TIMER_COUNTER2 TIMER_COUNTER2;
+typedef struct tmr_cntr2 TIMER_COUNTER2;
 /**/
-struct TIMER_COUNTER3{
+struct tmr_cntr3{
 	// prototype pointers
 	void (*compoutmodeA)(unsigned char compoutmode);
 	void (*compoutmodeB)(unsigned char compoutmode);
@@ -60,7 +74,7 @@ struct TIMER_COUNTER3{
 	void (*start)(unsigned int prescaler);
 	void (*stop)(void);
 };
-typedef struct TIMER_COUNTER3 TIMER_COUNTER3;
+typedef struct tmr_cntr3 TIMER_COUNTER3;
 /*
 ** procedure and function header
 */
@@ -68,5 +82,10 @@ TIMER_COUNTER0 TIMER_COUNTER0enable(unsigned char wavegenmode, unsigned char int
 TIMER_COUNTER1 TIMER_COUNTER1enable(unsigned char wavegenmode, unsigned char interrupt);
 TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char interrupt);
 TIMER_COUNTER3 TIMER_COUNTER3enable(unsigned char wavegenmode, unsigned char interrupt);
+/***EOF***/
+/*************************************************************************
+TIMER API END
+*************************************************************************/
 #endif
 /***EOF***/
+

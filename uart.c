@@ -4,31 +4,8 @@ Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 File:     $Id: uart.c,v 1.6.2.1 2014/04/21 13:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: any AVR with built-in UART,
-License:  GNU General Public License       
-DESCRIPTION:
-    An interrupt is generated when the UART has finished transmitting or
-    receiving a byte. The interrupt handling routines use circular buffers
-    for buffering received and transmitted data.
-    The UART_RX_BUFFER_SIZE and UART_TX_BUFFER_SIZE variables define
-    the buffer size in bytes. Note that these variables must be a 
-    power of 2.
-	Atmega 128 at 16Mhz.
-USAGE:
-    Refere to the header file uart.h for a description of the routines.
-    See also example test_uart.c.
-NOTES:
-    Based on Atmel Application Note AVR306
-LICENSE:
-    Copyright (C) 2014 Peter Fleury
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
+License:  GNU General Public License
+Comment:
 	stable
 *************************************************************************/
 /*

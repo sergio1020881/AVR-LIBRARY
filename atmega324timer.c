@@ -6,23 +6,7 @@ Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware:
 	Atmega 324 at 8Mhz
 License:  GNU General Public License
-DESCRIPTION:
-	Refer to datasheet
-USAGE:
-	function oriented
-NOTES:
-    Based on Atmega
-LICENSE:
-    Copyright (C) 2018
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    any later version.
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-COMMENT:
+Comment:
 	TESTED
 	Very Stable
 *************************************************************************/
