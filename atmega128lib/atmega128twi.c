@@ -438,6 +438,7 @@ void twi_stop(void)
 /*
 ** interrupt
 */
+ISR(TWI_vect){ }
 //! I2C (TWI) interrupt service routine
 /*
 SIGNAL(SIG_2WIRE_SERIAL)

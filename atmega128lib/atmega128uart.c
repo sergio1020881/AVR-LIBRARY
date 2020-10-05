@@ -643,7 +643,7 @@ Purpose:  called when the UART1 has received a character
     bit9 = 0x01 & (bit9>>1);
     /* */
     UART1_LastRxError = (usr & (_BV(FE1)|_BV(DOR1)));
-	/* calculate buffer index */ 
+	/* calculate buffer index */
     tmphead = ( UART1_RxHead + 1) & UART_RX_BUFFER_MASK;
     if ( tmphead == UART1_RxTail ) {	
         /* error: receive buffer overflow, caracter is lost*/
@@ -675,8 +675,18 @@ Purpose:  called when the UART1 is ready to transmit the next byte
         UART1_TxTail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
         /* get one byte from buffer and write it to UART */
 		UART1_DATA = UART1_TxBuf[UART1_TxTail];  /* start transmission */
-	}	
+	}
 }
+/*
+** Interrupt
+*/
+// disable if being used and define it in main
+//ISR(USART0_RX_vect){ }
+//ISR(USART0_UDRE_vect){ }
+//ISR(USART0_TX_vect){ }
+//ISR(USART1_RX_vect){ }
+//ISR(USART1_UDRE_vect){ }
+//ISR(USART1_TX_vect){ }
 /*************************************************************************
 UART API END
 *************************************************************************/

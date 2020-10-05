@@ -209,6 +209,10 @@ Purpose:  Read Analog Input
 		ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
 	}		
 }
+/*
+** Interrupt
+*/
+//ISR(ADC_vect){ }
 /*************************************************************************
 ANALOG API END
 *************************************************************************/
