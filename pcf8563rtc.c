@@ -140,9 +140,9 @@ struct time PCF8563RTC_GetTime(void)
 	I2C_Stop();								// Stop I2C communication after selecting Sec Register
 	I2C_Start();							// Start I2C communication
 	I2C_Write(PCF8563ReadMode_U8);			// connect to PCF8563(Read mode) by sending its ID
-	result.VL_seconds = I2C_Read(1);		// read second and return Positive ACK
-	result.minutes = I2C_Read(1);			// read minute and return Positive ACK
-	result.hours = I2C_Read(0);				// read hour and return Negative/No ACK
+	result.VL_seconds = I2C_Read(1) & ~0x80;		// read second and return Positive ACK
+	result.minutes = I2C_Read(1) & ~0x80;			// read minute and return Positive ACK
+	result.hours = I2C_Read(0) & ~0xC0;				// read hour and return Negative/No ACK
 	//dump = I2C_Read(0);					// dump last to ensure prior ok
 	I2C_Stop();								// Stop I2C communication after reading the Time
 	return result;
@@ -166,9 +166,9 @@ struct date PCF8563RTC_GetDate(void)
 	I2C_Stop();								// Stop I2C communication after selecting DAY Register
 	I2C_Start();							// Start I2C communication
 	I2C_Write(PCF8563ReadMode_U8);			// connect to PCF8563 (Read mode) by sending its ID
-	result.days = I2C_Read(1);				// read Day and return Positive ACK
-	result.weekdays = I2C_Read(1);			// read Month and return Positive ACK
-	result.century_months = I2C_Read(1);
+	result.days = I2C_Read(1) & ~0xC0;				// read Day and return Positive ACK
+	result.weekdays = I2C_Read(1) & ~0xF8;			// read Month and return Positive ACK
+	result.century_months = I2C_Read(1) & ~0xE0;
 	result.years = I2C_Read(0);				// read Year and return Negative/No ACK
 	//dump = I2C_Read(0);
 	I2C_Stop();								// Stop I2C communication after reading the Date

@@ -28,6 +28,7 @@ GNU GENERAL PUBLIC LICENSE:
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Errors and omissions should be reported to codelibraries@exploreembedded.com
+changes made 10102020 Sergio Santos <sergio.salazar.santos@gmail.com>
  **************************************************************************************************/
 /***************************************************************************************************
                              Revision History

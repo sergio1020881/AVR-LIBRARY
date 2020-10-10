@@ -28,6 +28,7 @@ GNU GENERAL PUBLIC LICENSE:
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Errors and omissions should be reported to codelibraries@exploreembedded.com
+changes made 10102020 Sergio Santos <sergio.salazar.santos@gmail.com>
 ***************************************************************************************************/
 /***************************************************************************************************
                              Revision History
@@ -67,9 +68,11 @@ Errors and omissions should be reported to codelibraries@exploreembedded.com
 ****************************************************************************************************/
 void I2C_Init(uint8_t prescaler)
 {
+  /***Standard Config begin***/
   //TWI_STATUS_REGISTER=0x00; //set presca1er bits to zero
   //TWI_BIT_RATE_REGISTER=0x46; //SCL frequency is 50K for 16Mhz
   //TWI_CONTROL_REGISTER=0x04; //enab1e TWI module
+  /***Standard Config end***/
   switch(prescaler){
 	case 1:
 		TWI_STATUS_REGISTER &= ~TWI_PRESCALER_MASK;
