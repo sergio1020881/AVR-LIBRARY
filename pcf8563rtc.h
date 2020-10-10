@@ -41,11 +41,12 @@ Errors and omissions should be reported to codelibraries@exploreembedded.com
 ***************************************************************************************************
   Below values are fixed and should not be changed. Refer Ds1307 DataSheet for more info  ********/
 
-#define PCF8563ReadMode_U8   0xA3u  // PCF8563 ID
-#define PCF8563WriteMode_U8  0xA2u  // PCF8563 ID
-#define PCF8563SecondRegAddress_U8   0x02u   // Address to access PC8563 SEC register
-#define PCF8563DateRegAddress_U8     0x05u   // Address to access PC8563 DATE register
-#define PCF8563ControlRegAddress_U8  0x0Du   // Address to access PC8563 CONTROL register
+#define PCF8563ReadMode_U8   0xA3  // PCF8563 ID
+#define PCF8563WriteMode_U8  0xA2  // PCF8563 ID
+#define PCF8563SecondRegAddress_U8   0x02   // Address to access PC8563 SEC register
+#define PCF8563DateRegAddress_U8     0x05   // Address to access PC8563 DATE register
+#define PCF8563ControlRegAddress_U8  0x00   // Address to access PC8563 CONTROL register
+#define PCF8563CLKOUT_control_U8     0x0D	// External oscillating pin
 //
 #define C_Ds1307ReadMode_U8   0xD1u  // DS1307 ID
 #define C_Ds1307WriteMode_U8  0xD0u  // DS1307 ID
@@ -76,10 +77,12 @@ struct alarm{
 ***************************************************************************************************/
 void PCF8563RTC_Init(uint8_t prescaler);
 void PCF8563RTC_SetTime(uint8_t var_hour_u8, uint8_t var_min_u8, uint8_t var_sec_u8);
-void PCF8563RTC_SetDate(uint8_t var_day_u8, uint8_t var_month_u8, uint8_t var_year_u8);
+void PCF8563RTC_SetClkOut(uint8_t onoff, uint8_t freq);
+void PCF8563RTC_SetDate(uint8_t var_day_u8, uint8_t var_weekday_u8, uint8_t var_month_u8, uint8_t var_year_u8);
 struct time PCF8563RTC_GetTime(void);
 struct date PCF8563RTC_GetDate(void);
 uint8_t PCF8563RTC_bcd2dec(uint8_t num);
+uint8_t PCF8563RTC_bintobcd(uint8_t bin);
 /**************************************************************************************************/
 #endif
 /*EOF*/

@@ -80,6 +80,27 @@ void PCF8563RTC_SetTime(uint8_t var_hour_u8, uint8_t var_min_u8, uint8_t var_sec
 	I2C_Stop();           	                // Stop I2C communication after Setting the Time
 }
 /***************************************************************************************************
+        void RTC_SetTime(uint8_t var_hour_u8, uint8_t var_min_u8, uint8_t var_sec_u8)
+****************************************************************************************************
+ * I/P Arguments: uint8_t,uint8_t,uint8_t-->hh,mm,ss to Initialize the time into DS1307.
+ * Return value	: none
+ * description  :This function is used to update the Time(hh,mm,ss) of PCF8563 RTC.
+                 The new time is updated into the non volatile memory of PCF8563.
+	Note: The I/P arguments should of BCD, 
+	      like 0x12,0x39,0x26 for 12hr,39min and 26sec.			 
+***************************************************************************************************/
+void PCF8563RTC_SetClkOut(uint8_t onoff, uint8_t freq)
+{
+	uint8_t word=0;
+	if(onoff)
+		word=0x80 | (freq & 0x03);
+	I2C_Start();                            // Start I2C communication
+	I2C_Write(PCF8563WriteMode_U8);			// connect to PCF8563 by sending its ID on I2c Bus
+	I2C_Write(PCF8563CLKOUT_control_U8);	// Select the CLKOUT RAM address
+	I2C_Write(word);						// Write Clock from RAM address 0DH						
+	I2C_Stop();           	                // Stop I2C communication after Setting the Time
+}
+/***************************************************************************************************
           void RTC_SetDate(uint8_t var_day_u8, uint8_t var_month_u8, uint8_t var_year_u8)
 ****************************************************************************************************
  * I/P Arguments: uint8_t,uint8_t,uint8_t-->day,month,year to Initialize the Date into DS1307.
@@ -89,12 +110,13 @@ void PCF8563RTC_SetTime(uint8_t var_hour_u8, uint8_t var_min_u8, uint8_t var_sec
 		Note: The I/P arguments should of BCD,
 	      like 0x15,0x08,0x47 for 15th day,8th month and 47th year.				 
 ***************************************************************************************************/
-void PCF8563RTC_SetDate(uint8_t var_day_u8, uint8_t var_month_u8, uint8_t var_year_u8)
+void PCF8563RTC_SetDate(uint8_t var_day_u8, uint8_t var_weekday_u8, uint8_t var_month_u8, uint8_t var_year_u8)
 {
 	I2C_Start();                          // Start I2C communication
 	I2C_Write(PCF8563WriteMode_U8);	  // connect to PCF8563 by sending its ID on I2c Bus
 	I2C_Write(PCF8563DateRegAddress_U8); // Request DAY RAM address at 04H
 	I2C_Write(var_day_u8);			      // Write date on RAM address 04H
+	I2C_Write(var_weekday_u8);
 	I2C_Write(var_month_u8);			  // Write month on RAM address 05H
 	I2C_Write(var_year_u8);			      // Write year on RAM address 06h
 	I2C_Stop();				              // Stop I2C communication after Setting the Date
@@ -162,5 +184,16 @@ struct date PCF8563RTC_GetDate(void)
 uint8_t PCF8563RTC_bcd2dec(uint8_t num)
 {
 	return ((num/16 * 10) + (num % 16));
+}
+/***************************************************************************************************
+      uint8_t PCF8563RTC_bintobcd(uint8_t bin)
+****************************************************************************************************
+ * I/P Arguments: uint8_t
+ * Return value	: uint8_t
+ * description  : bcd to dec
+***************************************************************************************************/
+uint8_t  PCF8563RTC_bintobcd(uint8_t bin)
+{
+	return (((bin) / 10) << 4) + ((bin) % 10);
 }
 /*EOF*/
