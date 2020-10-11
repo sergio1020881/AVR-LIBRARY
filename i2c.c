@@ -47,6 +47,9 @@ changes made 10102020 Sergio Santos <sergio.salazar.santos@gmail.com>
 /***Define***/
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
 	#define ATMEGA_I2C
+	#define I2C_DDR DDRD
+	#define I2C_PORT PORTD
+	#define I2C_IO_MASK 0x03
 	#define I2C_SCL_CLOCK 100000UL
 	#define TWI_BIT_RATE_REGISTER TWBR
 	#define TWI_CONTROL_REGISTER TWCR
@@ -71,11 +74,8 @@ uint16_t ticks;
 ****************************************************************************************************/
 void I2C_Init(uint8_t prescaler)
 {
-  /***Standard Config begin***/
-  //TWI_STATUS_REGISTER=0x00; //set presca1er bits to zero
-  //TWI_BIT_RATE_REGISTER=0x46; //SCL frequency is 50K for 16Mhz
-  //TWI_CONTROL_REGISTER=0x04; //enab1e TWI module
-  /***Standard Config end***/
+  I2C_DDR|=I2C_IO_MASK;
+  I2C_PORT|=I2C_IO_MASK;
   switch(prescaler){
 	case 1:
 		TWI_STATUS_REGISTER &= ~TWI_PRESCALER_MASK;
@@ -95,6 +95,11 @@ void I2C_Init(uint8_t prescaler)
 	break;
   }
   TWI_BIT_RATE_REGISTER = ((F_CPU/I2C_SCL_CLOCK)-16)/(2*prescaler);
+  /***Standard Config begin***/
+  //TWI_STATUS_REGISTER=0x00; //set presca1er bits to zero
+  //TWI_BIT_RATE_REGISTER=0x46; //SCL frequency is 50K for 16Mhz
+  //TWI_CONTROL_REGISTER=0x04; //enab1e TWI module
+  /***Standard Config end***/
 }
 /***************************************************************************************************
                          void I2C_Start()
