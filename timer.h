@@ -1,10 +1,10 @@
 /*************************************************************************
-Title:    TIMER
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: timer.h,v 0.1 2016/07/01 14:30:00 sergio Exp $
+Title: TIMER
+Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File: $Id: timer.h,v 0.1 2015/04/11 14:30:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher 
-License:  GNU General Public License
-Comment:
+License: GNU General Public License
+COMMENT:
 	Very Stable
 *************************************************************************/
 #ifndef TIMER_H_

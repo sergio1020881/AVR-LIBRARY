@@ -20,7 +20,6 @@ Comment:
 #include <avr/pgmspace.h>
 #include <stdarg.h>
 #include "atmega128uart.h"
-/***preamble inic***/
 /*
 ** constant and macro
 */

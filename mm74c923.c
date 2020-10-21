@@ -1,16 +1,25 @@
 /*************************************************************************
-MM74C923 API START
+Title: MM74C923
 Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File: $Id: mm74c923.c,v 0.2 2015/4/11 21:00:00 sergio Exp $
+Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
+Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
+License: GNU General Public License
+COMMENT:
+	stable
 *************************************************************************/
-/***preamble inic***/
+#ifndef F_CPU
+	#define F_CPU 16000000UL
+#endif
 /*
 ** Library
 */
 #include <avr/io.h>
+#include <util/delay.h>
 #include <inttypes.h>
+/***/
 #include "mm74c923.h"
 #include "function.h"
-/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -21,7 +30,7 @@ Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
 /*
 ** variable
 */
-FUNC MM74C923func;
+FUNC func;
 volatile uint8_t *mm74c923_DDR;
 volatile uint8_t *mm74c923_PIN;
 volatile uint8_t *mm74c923_PORT;
@@ -55,7 +64,7 @@ MM74C923 MM74C923enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile u
 	tSREG=SREG;
 	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	//ALLOCACAO MEMORIA Para Estrutura
-	MM74C923func=FUNCenable();
+	func=FUNCenable();
 	MM74C923 mm74c923;
 	//import parametros
 	mm74c923_DDR=ddr;
@@ -85,7 +94,7 @@ char MM74C923_getch(void)
 {
 	uint8_t c,lh;
 	//uint8_t hl;
-	lh=MM74C923func.lh(mm74c923_mem,mm74c923_tmp); // low to high bit mask
+	lh=func.lh(mm74c923_mem,mm74c923_tmp); // low to high bit mask
 	//hl=func.hl(mm74c923_mem,mm74c923_tmp); // high to low bit mask
 	if(lh&(1<<MM74C923_DATA_AVAILABLE)){
 		*mm74c923_PORT&=~(1<<MM74C923_OUTPUT_ENABLE);
@@ -133,6 +142,4 @@ void MM74C923_data_clear(void){
 /*
 ** interrupt
 */
-/*************************************************************************
-MM74C923 API END
-*************************************************************************/
+/***EOF***/

@@ -29,7 +29,7 @@ struct rotenc{
 	uint8_t PinChnB;
 	uint8_t pchn;
 	uint8_t chn;
-	uint8_t num;
+	uint16_t num;
 	/***PROTOTYPES VTABLE***/
 	struct rotenc (*rte)(struct rotenc *self, uint8_t data);
 };

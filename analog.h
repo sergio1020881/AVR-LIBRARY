@@ -1,11 +1,12 @@
 /************************************************************************
-Title:    Interrupt ANALOG INPUT
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: analog.h,v 0.2 2015/04/11 00:00:00 sergio Exp $
+Title: Interrupt ANALOG INPUT
+Author: Sergio Manuel Santos
+	<sergio.salazar.santos@gmail.com>
+File: $Id: analog.h,v 0.2 2015/04/11 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
-License:  GNU General Public License
-Comment:
+License: GNU General Public License
+COMMENT:
 	Very Stable
 ************************************************************************/
 #ifndef ANALOG_H
@@ -22,10 +23,8 @@ Comment:
 ** variable
 */
 struct ANALOG{
-	/***Parameters***/
 	uint8_t VREFF;
 	uint8_t DIVISION_FACTOR;
-	//prototype pointers
 	int (*read)(int selection);
 };
 typedef struct ANALOG ANALOG;

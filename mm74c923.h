@@ -1,19 +1,15 @@
 /************************************************************************
-MM74C923 API START
+Title: MM74C923
 Author: Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
+File: $Id: mm74c923.h,v 0.1 2015/04/11 14:00:00 sergio Exp $
+Software: AVR-GCC 4.1, AVR Libc 1.4
+Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
+License: GNU General Public License
+COMMENT:
+	  stable
 ************************************************************************/
-/***preamble inic***/
 #ifndef _MM74C923_H_
-	#define _MM74C923_H_
-/**@{*/
-#if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
-	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
-#endif
-/*
-** Library
-*/
-#include <inttypes.h>
-/***preamble inic***/
+	#define _MM74C9232_H_
 /*
 ** constant and macro
 */
@@ -40,9 +36,5 @@ typedef struct mm74c923 MM74C923;
 ** procedure and function header
 */
 MM74C923 MM74C923enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
-/***preamble inic***/
 #endif
-/***preamble inic***/
-/************************************************************************
-MM74C923 API END
-************************************************************************/
+/***EOF***/

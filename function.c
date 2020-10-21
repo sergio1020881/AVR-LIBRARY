@@ -29,10 +29,11 @@ Comment:
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
+#define FUNCSTRSIZE 20
 /*
 ** variable
 */
-char FUNCstr[20];
+char FUNCstr[FUNCSTRSIZE+1];
 /*
 ** procedure and function header
 */
@@ -74,6 +75,7 @@ unsigned char FUNCbin2bcd(unsigned val);
 long FUNCgcd1(long a, long b);
 uint8_t FUNCpincheck(uint8_t port, uint8_t pin);
 char* FUNCprint_binary(uint8_t number);
+uint8_t  bintobcd(uint8_t bin);
 /***pc use***
 char* FUNCfltos(FILE* stream);
 char* FUNCftos(FILE* stream);
@@ -527,6 +529,10 @@ uint8_t leap_year_check(uint16_t year){
   	else
     	i=0;
 	return i;
+}
+uint8_t  bintobcd(uint8_t bin)
+{
+	return (((bin) / 10) << 4) + ((bin) % 10);
 }
 /*
 int gcd( int a, int b ) {

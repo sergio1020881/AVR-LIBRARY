@@ -20,7 +20,6 @@ Comment:
 #include <avr/pgmspace.h>
 #include <stdarg.h>
 #include "atmega128analog.h"
-/***preamble inic***/
 /*
 ** constant and macro
 */
@@ -191,7 +190,6 @@ Function: ANALOG interrupt
 Purpose:  Read Analog Input
 **************************************************************************/
 {
-	/******/
 	adc_tmp=ADCL;
 	adc_tmp|=(ADCH<<8);
 	if(adc_n_sample < (1<<ADC_NUMBER_SAMPLE)){

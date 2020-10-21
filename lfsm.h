@@ -11,7 +11,7 @@ Comment:
 #ifndef _LFSM_H_
 	#define _LFSM_H_
 /******/
-#include "../EEPROM/eeprom.h"
+#include "eeprom.h"
 /*
 ** constant and macro
 */
@@ -20,12 +20,12 @@ Comment:
 */
 struct lfsmdata{
 	uint8_t page;
-	uint8_t feedback;
+	uint16_t feedback;
 	uint8_t inhl;
 	uint8_t inlh;
-	uint8_t mask;
-	uint8_t outhl;
-	uint8_t outlh;
+	uint16_t mask;
+	uint16_t outhl;
+	uint16_t outlh;
 };
 /******/
 struct lfsm{
@@ -35,17 +35,17 @@ struct lfsm{
 	uint8_t sizeblock;
 	uint8_t page;
 	uint8_t input;
-	uint8_t output;
+	uint16_t output;
 	uint8_t status;
 	//Function Pointers
 	uint8_t (*read)(struct lfsm *r, uint8_t input);
-	uint8_t (*learn)(struct lfsm *r, const uint8_t input, const uint8_t next, const uint8_t mask, const uint8_t page);
-	uint8_t (*quant)(struct lfsm *r);
+	uint8_t (*learn)(struct lfsm *r, const uint8_t input, const uint16_t next, const uint16_t mask, const uint8_t page);
+	uint16_t (*quant)(struct lfsm *r);
 	uint8_t (*remove)(struct lfsm *r, uint8_t input);
 	uint8_t (*deleteall)(struct lfsm *r);
-	uint8_t (*getoutput)(struct lfsm *r);
+	uint16_t (*getoutput)(struct lfsm *r);
 	uint8_t (*getstatus)(struct lfsm *r);
-	void (*setoutput)(struct lfsm *r,uint8_t output);
+	void (*setoutput)(struct lfsm *r,uint16_t output);
 	uint8_t (*getpage)(struct lfsm *r);
 	void (*setpage)(struct lfsm *r,uint8_t page);
 };

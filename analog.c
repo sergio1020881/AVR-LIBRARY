@@ -1,11 +1,12 @@
 /*************************************************************************
-Title:    Interrupt ANALOG INPUT
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: analog.c,v 0.2 2015/04/11 00:00:00 sergio Exp $
+Title: Interrupt ANALOG INPUT
+Author: Sergio Manuel Santos
+	<sergio.salazar.santos@gmail.com>
+File: $Id: analog.c,v 0.2 2015/04/11 00:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License
-Comment:
+License: GNU General Public License
+COMMENT:
 	Very Stable
 *************************************************************************/
 /*
@@ -16,7 +17,6 @@ Comment:
 #include <avr/pgmspace.h>
 #include <stdarg.h>
 #include <inttypes.h>
-/***/
 #include "analog.h"
 /*
 ** constant and macro
@@ -25,7 +25,6 @@ Comment:
 #define MAX_CHANNEL 8
 /***TYPE 1***/
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
-	/******/
 	#define ADC_SELECT ADMUX
 	#define ADC_CONTROL ADCSRA
 	#define MUX_MASK 31
@@ -35,8 +34,7 @@ Comment:
 /***TYPE 2***/
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
-      defined(__AVR_ATmega328P__) 
-	/******/
+      defined(__AVR_ATmega328P__)
 	#define ADC_SELECT ADMUX
 	#define ADC_CONTROL ADCSRA
 	#define ADC_TRIGGER ADCSRB
@@ -267,7 +265,6 @@ Function: ANALOG interrupt
 Purpose:  Read Analog Input
 **************************************************************************/
 {
-	/******/
 	adc_tmp=ADCL;
 	adc_tmp|=(ADCH<<8);
 	if(adc_n_sample < (1<<ADC_NUMBER_SAMPLE)){
@@ -286,6 +283,3 @@ Purpose:  Read Analog Input
 	}		
 }
 /***EOF***/
-/***COMMENTS
-
-***/

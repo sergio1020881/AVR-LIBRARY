@@ -1,7 +1,6 @@
 /*************************************************************************
 CLOCK API START
-Author: 
-	Sergio Santos 
+Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
 *************************************************************************/
 /***preamble inic***/

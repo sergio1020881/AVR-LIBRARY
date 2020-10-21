@@ -26,10 +26,8 @@ ANALOG API START
 ** variable
 */
 struct nlg{
-	/***Parameters***/
 	uint8_t VREFF;
 	uint8_t DIVISION_FACTOR;
-	//prototype pointers
 	int (*read)(int selection);
 };
 typedef struct nlg ANALOG;
