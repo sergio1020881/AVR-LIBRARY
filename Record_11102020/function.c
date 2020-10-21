@@ -29,10 +29,11 @@ Comment:
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
+#define FUNCSTRSIZE 20
 /*
 ** variable
 */
-char FUNCstr[20];
+char FUNCstr[FUNCSTRSIZE+1];
 /*
 ** procedure and function header
 */

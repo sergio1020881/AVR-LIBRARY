@@ -8,23 +8,19 @@ Comment:
 *************************************************************************/
 /***preamble inic***/
 /*
-** Library
+** library
 */
 #include <avr/io.h>
 #include <inttypes.h>
-/***/
 #include "keypad.h"
-/***preamble inic***/
 /*
-** constant and macro
+** Constant and Macro
 */
-#ifndef GLOBAL_INTERRUPT_ENABLE
-	#define GLOBAL_INTERRUPT_ENABLE 7
-#endif
 #define KEYPADLINES 4
 #define KEYPADCOLUMNS 4
+#define ZERO 0
 /*
-** variable
+** Global File Variable
 */
 volatile uint8_t *keypad_DDR;
 volatile uint8_t *keypad_PIN;
@@ -42,14 +38,19 @@ char keypadvalue[KEYPADLINES][KEYPADCOLUMNS]=
 	{'7','8','9','C'},
 	{'*','0',35,'D'}
 };
+char KEYPAD_string[KEYPADSTRINGSIZE+1];
 volatile uint8_t KEYPADSTRINGINDEX;
 struct keypadata data;
+char KEYPAD_char;
+//can not assign something outside a function
 /*
-** procedure and function header
+** header
 */
 /***getkey***/
 char KEYPAD_getkey(void);
-/***string***/
+/***read***/
+struct keypadata KEYPAD_read(void);
+/***get***/
 struct keypadata KEYPAD_get(void);
 /***flush***/
 void KEYPAD_flush(void);
@@ -62,11 +63,10 @@ uint8_t KEYPADhl(uint8_t xi, uint8_t xf);
 */
 KEYPAD KEYPADenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port)
 {
-	//LOCAL VARIABLES
+	//LOCAL VARIABLE
 	uint8_t tSREG;
 	tSREG=SREG;
 	data.character=' ';
-	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	//ALLOCAÇÂO MEMORIA PARA Estrutura
 	KEYPAD keypad;
 	//import parametros
@@ -81,8 +81,9 @@ KEYPAD KEYPADenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8
 	keypad_datai.line_3=keypad_dataf.line_3=(1<<KEYPADDATA_1) | (1<<KEYPADDATA_2) | (1<<KEYPADDATA_3) | (1<<KEYPADDATA_4);
 	keypad_datai.line_4=keypad_dataf.line_4=(1<<KEYPADDATA_1) | (1<<KEYPADDATA_2) | (1<<KEYPADDATA_3) | (1<<KEYPADDATA_4);
 	KEYPADSTRINGINDEX=0;
-	//Direccionar apontadores para PROTOTIPOS
+	//Vtable
 	keypad.getkey=KEYPAD_getkey;
+	keypad.read=KEYPAD_read;
 	keypad.get=KEYPAD_get;
 	keypad.flush=KEYPAD_flush;
 	SREG=tSREG;
@@ -185,28 +186,42 @@ char KEYPAD_getkey(void)
 	}//endfor
 	return c;
 }
-/***get***/
-struct keypadata KEYPAD_get(void)
+/***read***/
+struct keypadata KEYPAD_read(void)
 {
 	char c;
-	c=KEYPAD_getkey();
+	c=KEYPAD_getkey(); //returns null all the time when no entry
 	if(c){
 		data.character=c;
 		if(KEYPADSTRINGINDEX<(KEYPADSTRINGSIZE)){
-			data.string[KEYPADSTRINGINDEX]=c;
+			KEYPAD_string[KEYPADSTRINGINDEX]=c;
 			KEYPADSTRINGINDEX++;
+			KEYPAD_string[KEYPADSTRINGINDEX]='\0';
+		}
+		if(c==KEYPADENTERKEY){
+			KEYPAD_string[KEYPADSTRINGINDEX-1]='\0';
+			KEYPADSTRINGINDEX=0;
+			data.printstring="\0";
+			data.string=KEYPAD_string; // shift output
+		}else{
+			data.printstring=KEYPAD_string;
+			data.string="\0"; // clear output
 		}
 	}
+	return data;
+}
+/***read***/
+struct keypadata KEYPAD_get(void)
+{
 	return data;
 }
 /***flush***/
 void KEYPAD_flush(void)
 {
-	uint8_t i;
-	data.character=' ';
 	KEYPADSTRINGINDEX=0;
-	for(i=0;i<KEYPADSTRINGSIZE+1;i++)
-        data.string[i]='\0';
+	data.character=' ';
+	data.printstring="\0";
+	data.string="\0";
 }
 /***lh***/
 uint8_t KEYPADlh(uint8_t xi, uint8_t xf)
@@ -235,7 +250,7 @@ feedbacks. Little defect of keypads !
 A byte has 8bit 256 possible combinations, being zero [0] the first data address and two hundred and fifty five [255] the last, 
 making the 256 possible addresses for data storage. In a string of length 256 in this case the address 255 or the 256 character 
 is always the "\0" character has an indicator of end of string.
-should try doing circular buffer just for fun, or maybe nor, who knows.
+Simply Magic.
 ************************************************************************/
 /*************************************************************************
 KEYPAD API END
