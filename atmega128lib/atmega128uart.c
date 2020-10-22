@@ -64,14 +64,13 @@ Comment:
 /*
 ** variable
 */
-static volatile unsigned char UART_TxBuf[UART_TX_BUFFER_SIZE];
-static volatile unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];
-static volatile uint8_t UART_TxHead;
-static volatile uint8_t UART_TxTail;
-static volatile uint8_t UART_RxHead;
-static volatile uint8_t UART_RxTail;
-static volatile uint8_t UART_LastRxError;
-static volatile uint8_t UART_BuzyFlag=0;
+unsigned char UART_TxBuf[UART_TX_BUFFER_SIZE];
+unsigned char UART_RxBuf[UART_RX_BUFFER_SIZE];
+uint8_t UART_TxHead;
+uint8_t UART_TxTail;
+uint8_t UART_RxHead;
+uint8_t UART_RxTail;
+uint8_t UART_LastRxError;
 unsigned char UART1_TxBuf[UART_TX_BUFFER_SIZE];
 unsigned char UART1_RxBuf[UART_RX_BUFFER_SIZE];
 uint8_t UART1_TxHead;
@@ -79,7 +78,6 @@ uint8_t UART1_TxTail;
 uint8_t UART1_RxHead;
 uint8_t UART1_RxTail;
 uint8_t UART1_LastRxError;
-uint8_t UART1_BuzyFlag=0;
 uint8_t uart_index;
 char uart_msg[UART_RX_BUFFER_SIZE];
 int uart1_index;
@@ -522,6 +520,9 @@ int8_t uart1_Rxavailable(void)
 /***void uart1_Rxflush(void)***/
 void uart1_Rxflush(void)
 {
+	uart1_msg[0]='\0';
+	uart1_msg[1]='\0';
+	uart1_msg[2]='\0';
 	UART1_RxHead = UART1_RxTail;
 }
 /***void uart1_Txflush(void)***/
