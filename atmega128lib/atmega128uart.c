@@ -19,6 +19,7 @@ Comment:
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
+#include <util/delay.h>
 #include "atmega128uart.h"
 /*
 ** constant and macro
@@ -465,10 +466,14 @@ void uart1_putc(const char data)
 	uint8_t head = UART1_TxHead;
 	UART1_TxBuf[head] = data;
 	UART1_TxHead = (UART1_TxHead + 1) & UART_TX_BUFFER_MASK;
-    if ( UART1_TxHead != UART1_TxTail ){
+    //while( UART1_TxHead == UART1_TxTail )
+	//	;
+	if ( UART1_TxHead != UART1_TxTail ){
 		UART1_TxBuf[UART1_TxHead] = '\0';
-	}else
-		UART1_TxHead=head;
+	}else{
+		//UART1_TxHead=head;
+		_delay_ms(30);
+	}
 	UART1_CONTROL |= _BV(UART1_UDRIE);
 }
 /***void uart1_puts(const char *s )***/
@@ -569,6 +574,7 @@ SIGNAL(UART1_TRANSMIT_INTERRUPT)
 {
 	uint8_t tail = UART1_TxTail;
 	UART1_DATA = UART1_TxBuf[tail];
+	UART1_TxBuf[tail]='\0';
 	UART1_TxTail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
 	if ( UART1_TxTail != UART1_TxHead )
         ;
