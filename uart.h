@@ -1,10 +1,11 @@
 /************************************************************************
-Title:    Interrupt UART library with receive/transmit circular buffers
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: uart.h,v 1.8.2.1 2014/04/21 13:00:00 sergio Exp $
+Title: Interrupt UART library with receive/transmit circular buffers
+Author: Sergio Manuel Santos
+	<sergio.salazar.santos@gmail.com>
+File: $Id: uart.h,v 1.8.2.1 2014/04/21 13:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4
 Hardware: any AVR with built-in UART, tested on ATMEGA 128 at 16 Mhz
-License:  GNU General Public License
+License: GNU General Public License
 Comment:
 	stable
 ************************************************************************/

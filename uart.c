@@ -1,12 +1,11 @@
 /*************************************************************************
-Title:    Interrupt UART library with receive/transmit circular buffers
-Author:   Sergio Manuel Santos 
+Title: Interrupt UART library with receive/transmit circular buffers
+Author:	Sergio Manuel Santos
 	<sergio.salazar.santos@gmail.com>
-          Peter Fleury
-File:     $Id: uart.c,v 1.6.2.1 2014/04/21 13:00:00 sergio Exp $
+File: $Id: uart.c,v 1.6.2.1 2014/04/21 13:00:00 sergio Exp $
 Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
 Hardware: any AVR with built-in UART,
-License:  GNU General Public License
+License: GNU General Public License
 Comment:
 	stable
 *************************************************************************/
@@ -140,7 +139,7 @@ Comment:
 /***TYPE 10***/
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
-      defined(__AVR_ATmega328P__) 
+      defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
 	/* TLS-Added 48P/88P/168P/328P */
 	/* ATmega with one USART */
 	 #define ATMEGA_USART0
@@ -242,13 +241,13 @@ static volatile unsigned char UART_RxHead;
 static volatile unsigned char UART_RxTail;
 static volatile unsigned char UART_LastRxError;
 #if defined( ATMEGA_USART1 )
-	static volatile unsigned char UART1_TxBuf[UART_TX_BUFFER_SIZE];
-	static volatile unsigned char UART1_RxBuf[UART_RX_BUFFER_SIZE];
-	static volatile unsigned char UART1_TxHead;
-	static volatile unsigned char UART1_TxTail;
-	static volatile unsigned char UART1_RxHead;
-	static volatile unsigned char UART1_RxTail;
-	static volatile unsigned char UART1_LastRxError;
+static volatile unsigned char UART1_TxBuf[UART_TX_BUFFER_SIZE];
+static volatile unsigned char UART1_RxBuf[UART_RX_BUFFER_SIZE];
+static volatile unsigned char UART1_TxHead;
+static volatile unsigned char UART1_TxTail;
+static volatile unsigned char UART1_RxHead;
+static volatile unsigned char UART1_RxTail;
+static volatile unsigned char UART1_LastRxError;
 #endif
 int uart_index;
 char uart_msg[UART_RX_BUFFER_SIZE];
@@ -537,10 +536,15 @@ Returns:  none
 **************************************************************************/
 void uart_putc(unsigned char data)
 {
-    UART_Tx_push(data);
-    /* enable UDRE interrupt */
-    UART0_CONTROL |= _BV(UART0_UDRIE);
-}/* uart_putc */
+	uint8_t head = UART_TxHead;
+	UART_TxHead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
+	if ( UART_TxHead != UART_TxTail ){
+		UART_TxBuf[head] = data;
+		UART_TxBuf[UART1_TxHead] = '\0';
+	}else
+	;
+	UART0_CONTROL |= _BV(UART0_UDRIE);
+}
 /*************************************************************************
 Function: uart_puts()
 Purpose:  transmit string to UART
@@ -672,17 +676,12 @@ Function: UART Data Register Empty interrupt
 Purpose:  called when the UART is ready to transmit the next byte
 **************************************************************************/
 {
-    unsigned char tmptail;
-    if ( UART_TxHead == UART_TxTail) {
-		/* tx buffer empty, disable UDRE interrupt */
-        UART0_CONTROL &= ~_BV(UART0_UDRIE);
-    }else{
-		/* calculate and store new buffer index */
-        tmptail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
-        UART_TxTail = tmptail;
-		/* get one byte from buffer and write it to UART */
-        UART0_DATA = UART_TxBuf[tmptail];  /* start transmission */
-    }
+	uint8_t tail = UART_TxTail;
+	UART_TxTail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
+	UART0_DATA = UART_TxBuf[tail];
+	if ( UART_TxTail == UART_TxHead ) {
+		UART0_CONTROL &= ~_BV(UART0_UDRIE);
+	}
 }
 /*
 ** these functions are only for ATmegas with two USART
@@ -834,10 +833,15 @@ Returns:  none
 **************************************************************************/
 void uart1_putc(unsigned char data)
 {
-    UART1_Tx_push(data);
-    /* enable UDRE interrupt */
-    UART1_CONTROL |= _BV(UART1_UDRIE);
-}/* uart1_putc */
+	uint8_t head = UART1_TxHead;
+	UART1_TxHead = (UART1_TxHead + 1) & UART_TX_BUFFER_MASK;
+    if ( UART1_TxHead != UART1_TxTail ){
+		UART1_TxBuf[head] = data;
+		UART1_TxBuf[UART1_TxHead] = '\0';
+	}else
+		;
+	UART1_CONTROL |= _BV(UART1_UDRIE);
+}
 /*************************************************************************
 Function: uart1_puts()
 Purpose:  transmit string to UART1
@@ -959,15 +963,12 @@ Function: UART1 Data Register Empty interrupt
 Purpose:  called when the UART1 is ready to transmit the next byte
 **************************************************************************/
 {
-    if ( UART1_TxHead == UART1_TxTail ) {
-        /* tx buffer empty, disable UDRE interrupt */
+	uint8_t tail = UART1_TxTail;
+	UART1_TxTail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
+    UART1_DATA = UART1_TxBuf[tail];
+	if ( UART1_TxTail == UART1_TxHead ) {
         UART1_CONTROL &= ~_BV(UART1_UDRIE);
-    }else{
-		/* calculate and store new buffer index */
-        UART1_TxTail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
-        /* get one byte from buffer and write it to UART */
-		UART1_DATA = UART1_TxBuf[UART1_TxTail];  /* start transmission */
-	}	
+    }
 }
 #endif
 /***EOF***/
