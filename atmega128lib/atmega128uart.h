@@ -25,7 +25,7 @@ Author: Sergio Santos
 	#define UART_RX_BUFFER_SIZE 64
 #endif
 #ifndef UART_TX_BUFFER_SIZE
-	#define UART_TX_BUFFER_SIZE 64
+	#define UART_TX_BUFFER_SIZE 4
 #endif
 // test if the size of the circular buffers fits into SRAM
 #if ( (UART_RX_BUFFER_SIZE+UART_TX_BUFFER_SIZE) >= (RAMEND-0x60 ) )

@@ -11,7 +11,13 @@ Comment:
 #include <avr/interrupt.h>
 #include <inttypes.h>
 #include "pcf8563rtc.h"
-#include "i2c.h"
+#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) 
+	#include "atmega128i2c.h"
+#elif defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__)
+	#include "atmega328i2c.h"
+#else
+	#include "i2c.h"
+#endif
 /***Define***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7

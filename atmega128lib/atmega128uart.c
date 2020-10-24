@@ -463,12 +463,12 @@ UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopb
 void uart1_putc(const char data)
 {
 	uint8_t head = UART1_TxHead;
+	UART1_TxBuf[head] = data;
 	UART1_TxHead = (UART1_TxHead + 1) & UART_TX_BUFFER_MASK;
     if ( UART1_TxHead != UART1_TxTail ){
-		UART1_TxBuf[head] = data;
 		UART1_TxBuf[UART1_TxHead] = '\0';
 	}else
-		;
+		UART1_TxHead=head;
 	UART1_CONTROL |= _BV(UART1_UDRIE);
 }
 /***void uart1_puts(const char *s )***/
@@ -568,10 +568,11 @@ SIGNAL(UART1_RECEIVE_INTERRUPT)
 SIGNAL(UART1_TRANSMIT_INTERRUPT)
 {
 	uint8_t tail = UART1_TxTail;
+	UART1_DATA = UART1_TxBuf[tail];
 	UART1_TxTail = (UART1_TxTail + 1) & UART_TX_BUFFER_MASK;
-    UART1_DATA = UART1_TxBuf[tail];
-	if ( UART1_TxTail == UART1_TxHead ) {
-        UART1_CONTROL &= ~_BV(UART1_UDRIE);
-    }
+	if ( UART1_TxTail != UART1_TxHead )
+        ;
+    else
+		UART1_CONTROL &= ~_BV(UART1_UDRIE);
 }
 /***EOF***/

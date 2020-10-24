@@ -540,7 +540,7 @@ void uart_putc(unsigned char data)
 	UART_TxHead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
 	if ( UART_TxHead != UART_TxTail ){
 		UART_TxBuf[head] = data;
-		UART_TxBuf[UART1_TxHead] = '\0';
+		UART_TxBuf[UART_TxHead] = '\0';
 	}else
 	;
 	UART0_CONTROL |= _BV(UART0_UDRIE);
