@@ -1,42 +1,28 @@
 /*************************************************************************
-ATMEGA128 INTERRUPT API START
-API: INTERRUPT
+	ATMEGA128INTERRUPT
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
-Date:
-   28092020
+Hardware: ATmega128
+Date: 25102020
 Comment:
    Stable
 *************************************************************************/
-/***preamble inic***/
+/***Preamble Inic***/
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
-/*
-** library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
 #include "atmega128interrupt.h"
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
     #define GLOBAL_INTERRUPT_ENABLE 7
 #endif
-/*
-** variables
-*/
-/*************************************************************************
-INTERRUPT API START
-*************************************************************************/
-/*
-** constant and macro
-*/
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)	
-	/******/
+	/***/
 	#define ATMEGA_INTERRUPT
 	#define External_Interrupt_Control_Register_A EICRA
 	#define External_Interrupt_Control_Register_B EICRB
@@ -47,22 +33,16 @@ INTERRUPT API START
 #else
  	#error "Not Atmega 128"
 #endif
-/*
-** variable
-*/
-/*
-** procedure and function header
-*/
+/***Gloabal File Variables***/
+/***Header***/
 void INTERRUPT_set(uint8_t channel, uint8_t sense);
 void INTERRUPT_off(uint8_t channel);
 uint8_t INTERRUPT_reset_status(void);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 INTERRUPT INTERRUPTenable(void)
-/*
-* setup blank
-*/
+/***
+Setup blank
+***/
 {
 	INTERRUPT interrupt;
 	External_Interrupt_Mask_Register=0X00;
@@ -295,9 +275,7 @@ void INTERRUPT_off(uint8_t channel)
 			break;
 	}
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 // cross out the ones being used and redefine in main
 ISR(INT0_vect){ }
 ISR(INT1_vect){ }
@@ -307,6 +285,4 @@ ISR(INT4_vect){ }
 ISR(INT5_vect){ }
 ISR(INT6_vect){ }
 ISR(INT7_vect){ }
-/*************************************************************************
-INTERRUPT API END
-*************************************************************************/
+/***EOF***/

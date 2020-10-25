@@ -1,8 +1,9 @@
 /***************************************************************************************************
-I2C API START
+	ATMEGA128I2C
 Author: Sergio Santos
 	<sergio.salazar.santos@gmail.com>
-Date: 20102020
+Hardware: ATmega128
+Date: 25102020
 Comment:
 	Stable
  **************************************************************************************************/
@@ -10,7 +11,7 @@ Comment:
 	#define _ATMEGA128I2C_H
 /***Library***/
 #include <inttypes.h>
-/***Function Prototypes***/
+/***Global Variable***/
 struct twi{
 	void (*Start)();
 	void (*Stop)(void);
@@ -19,6 +20,7 @@ struct twi{
 	uint8_t (*Status)(void);
 };
 typedef struct twi I2C;
+/***Header***/
 I2C I2Cenable(uint8_t prescaler);
 /******/
 #endif

@@ -1,41 +1,26 @@
 /*************************************************************************
-ATMEGA128 SPI API START
-API: SPI
+	ATMEGA128SPI
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
-Date:
-   28092020
+Hardware: ATmega128
+Date: 25102020
 Comment:
    Stable
 *************************************************************************/
-/***preamble inic***/
+/***Preamble Inic***/
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
-/*
-** library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
 #include "atmega128spi.h"
-/***preamble inic***/
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
     #define GLOBAL_INTERRUPT_ENABLE 7
 #endif
-/*
-** variables
-*/
-/*************************************************************************
-SPI API START
-*************************************************************************/
-/*
-** constant and macro
-*/
 #if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__) 
 	#define ATMEGA_SPI
 	#define SPI_CONTROL_REGISTER SPCR
@@ -52,19 +37,13 @@ SPI API START
 #else
 	#error "Not Atmega 128"
 #endif
-/*
-** variable
-*/
-/*
-** procedure and function header
-*/
+/***Global File Variables***/
+/***Header***/
 void spi_default(void);
 void spi_transfer_sync (uint8_t * dataout, uint8_t * datain, uint8_t len);
 void spi_transmit_sync (uint8_t * dataout, uint8_t len);
 uint8_t spi_fast_shift (uint8_t data);
-/*
-** procedure and function
-*/
+/***Procedure & function***/
 SPI SPIenable(uint8_t master_slave_select, uint8_t data_order,  uint8_t data_modes, uint8_t prescaler)
 {
 	SPI spi;
@@ -195,10 +174,6 @@ uint8_t spi_fast_shift (uint8_t data)
 		; // polling, serial transfer is complete interrupt.
     return SPI_DATA_REGISTER;
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 ISR(SPI_STC_vect){ }
-/*************************************************************************
-SPI API END
-*************************************************************************/
+/***EOF***/

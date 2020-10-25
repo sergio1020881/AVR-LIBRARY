@@ -1,16 +1,15 @@
 /*************************************************************************
-ATMEGA128 API START
-	API:
-		1-ANALOG
-		2-INTERRUPT
-		3-SPI
-		4-TIMER
-		5-TWI (still in progress)
-		6-UART
+	ATMEGA128API
+Hardware: Atmega 128
+	1-ANALOG
+	2-INTERRUPT
+	3-SPI
+	4-TIMER
+	5-TWI (still in progress)
+	6-UART
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
-Date:
-   28092020
+Date: 28092020
 Comment:
    Stable
 *************************************************************************/
@@ -2660,6 +2659,5 @@ Purpose:  called when the UART1 is ready to transmit the next byte
 /*************************************************************************
 UART API END
 *************************************************************************/
-/*************************************************************************
-ATMEGA128 API END
-*************************************************************************/
+/***EOF***/
+

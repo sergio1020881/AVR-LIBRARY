@@ -1,23 +1,22 @@
 /************************************************************************
-ATMEGA128 UART API START
+	ATMEGA128UART
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
-	28092020
+Hardware: ATmega128
+Date: 25102020
+Comment:
+	Stable
 ************************************************************************/
-/***preamble inic***/
+/***Preamble Inic***/
 #ifndef _ATMEGA128UART_H_
 	#define _ATMEGA128UART_H_
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
-/*
-** Library
-*/
+/***Library***/
 #include <inttypes.h>
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #define UART_BAUD_SELECT(baudRate,xtalCpu) ((xtalCpu)/((baudRate)*16l)-1)
 #define UART_BAUD_SELECT_DOUBLE_SPEED(baudRate,xtalCpu) (((xtalCpu)/((baudRate)*8l)-1)|0x8000)
 // Size of the circular buffer, must be power of 2
@@ -39,9 +38,7 @@ Author: Sergio Santos
 #define NONE 0
 #define EVEN 2
 #define ODD 3
-/*
-** variable
-*/
+/***Global Variable***/
 struct rt{
 	/***Parameters***/
 	uint8_t ubrr;
@@ -73,9 +70,7 @@ struct rt1{
 	void (*Txflush)(void);
 };
 typedef struct rt1 UART1;
-/*
-** procedure and function header
-*/
+/***Header***/
 UART UARTenable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
 UART1 UART1enable(unsigned int baudrate, unsigned int FDbits, unsigned int Stopbits, unsigned int Parity );
 #endif

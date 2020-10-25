@@ -1,8 +1,10 @@
 /************************************************************************
-ATMEGA128 API START
+	ATMEGA128API
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
-	28092020
+Date: 28092020
+Comment:
+	Stable
 ************************************************************************/
 /***preamble inic***/
 #ifndef _ATMEGA128API_H_
@@ -374,11 +376,5 @@ extern void uart1_puts_p(const char *s );
 //extern int uart1_available(void);
 /** @brief   Flush bytes waiting in receive buffer */
 //extern void uart1_flush(void);
-/***EOF***/
-/************************************************************************
-UART API END
-************************************************************************/
 #endif
-/************************************************************************
-ATMEGA128 API END
-************************************************************************/
+/***EOF***/
