@@ -1,22 +1,18 @@
 /************************************************************************
-Title: LCD API
+	LCD
 Author: Sergio Santos 
    <sergio.salazar.santos@gmail.com>
-File: $Id: lcd.h,v 27/09/2020 Exp $
 License: GNU General Public License
+Hardware: all
+Date: 25102020
 Comment:
 	tested Atemga128 16Mhz and Atmega328 8Mhz
-	reviewed 29/09/2020
 ************************************************************************/
 #ifndef _LCD_H_
 	#define _LCD_H_
-/*
-** Library
-*/
+/***Library***/
 #include <inttypes.h>
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 //ASIGN PORT PINS TO LCD (can be setup in any way)
 #define RS 0
 #define RW 1
@@ -26,9 +22,7 @@ Comment:
 #define DB5 5
 #define DB6 6
 #define DB7 7
-/*
-** variable
-*/
+/***Global Variable***/
 struct dspl{
 	/******/
 	void (*write)(char c, unsigned short D_I);
@@ -45,13 +39,8 @@ struct dspl{
 };
 typedef struct dspl LCD0;
 typedef struct dspl LCD1;
-/*
-** procedure and function header
-*/
+/***Header***/
 LCD0 LCD0enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
 LCD1 LCD1enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port);
 #endif
-/***COMMENT
-LCD API HEADER END
-***/
 /***EOF***/

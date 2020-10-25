@@ -1,24 +1,19 @@
 /************************************************************************
-Title: FUNCTION
+	FUNCTION
 Author: Sergio Santos
-   <sergio.salazar.santos@gmail.com>
-File: $Id: function.h,v 0.1 29/09/2020 Exp $
-License: GNU General Public License 
+	<sergio.salazar.santos@gmail.com>
+License: GNU General Public License
+Hardware: all
+Date: 25102020
 Comment:
 	Very Stable
 ************************************************************************/
 #ifndef _FUNCTION_H_
 	#define _FUNCTION_H_
-/*
-** Library
-*/
+/***Library***/
 #include <inttypes.h>
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
+/***Constant & Macro***/
+/***Global Variable***/
 struct fnctn{
 	/***PROTOTYPES VTABLE***/
 	unsigned int (*power)(uint8_t bs, uint8_t n);
@@ -69,9 +64,7 @@ struct fnctn{
 	*/
 };
 typedef struct fnctn FUNC;
-/*
-** procedure and function header
-*/
+/***Header***/
 FUNC FUNCenable(void);
 #endif
 /***EOF***/

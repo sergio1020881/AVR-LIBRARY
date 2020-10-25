@@ -1,16 +1,15 @@
 /*************************************************************************
-Title: FUNCTION
+	FUNCTION
 Author: Sergio Santos
-   <sergio.salazar.santos@gmail.com>
-File: $Id: function.c,v 0.1 29/09/2020 Exp $ 
+	<sergio.salazar.santos@gmail.com> 
 License: GNU General Public License
+Hardware: all
+Date: 25102020
 Comment:
     Always try to make general purpose bullet proof functions !!
     Very Stable
 *************************************************************************/
-/*
-** library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
@@ -20,23 +19,16 @@ Comment:
 #include<stdlib.h>
 #include<string.h>
 #include<errno.h>
-*/
-/***/
+***/
 #include"function.h"
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
 #define FUNCSTRSIZE 20
-/*
-** variable
-*/
+/***Global File Variable***/
 char FUNCstr[FUNCSTRSIZE+1];
-/*
-** procedure and function header
-*/
+/***Header***/
 unsigned int Pwr(uint8_t bs, uint8_t n);
 int StringLength (const char string[]);
 void Reverse(char s[]);
@@ -86,9 +78,7 @@ unsigned int FUNCgetnumv2(char* x);
 int FUNCreadint(int nmin, int nmax);
 ***/
 // uint8_t TRANupdate(struct TRAN *tr, uint8_t idata);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 FUNC FUNCenable( void )
 {
 	uint8_t tSREG;
@@ -446,9 +436,9 @@ char* FUNCresizestr(char *string, int size)
 	return FUNCstr;
 }
 long FUNCtrimmer(long x, long in_min, long in_max, long out_min, long out_max)
-/*
-	same as arduino map function.
-*/
+/***
+same as arduino map function.
+***/
 {
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
@@ -534,7 +524,7 @@ uint8_t  bintobcd(uint8_t bin)
 {
 	return (((bin) / 10) << 4) + ((bin) % 10);
 }
-/*
+/***
 int gcd( int a, int b ) {
     int result ;
     // Compute Greatest Common Divisor using Euclid's Algorithm
@@ -702,10 +692,5 @@ int FUNCreadint(int nmin, int nmax)
 		return num;
 }
 ***/
-/*
-** interrupt
-*/
+/***Interrupt***/
 /***EOF***/
-/***COMMENTS
-
-***/

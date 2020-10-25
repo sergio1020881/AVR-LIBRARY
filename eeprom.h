@@ -1,11 +1,10 @@
 /*************************************************************************
-Title: eeprom wrapper
+	eeprom wrapper
 Author: Sergio Manuel Santos
- * <sergio.salazar.santos@gmail.com>
-File: $Id: eeprom.h,v 0.2 01/10/2020 Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: ATmega 
+	<sergio.salazar.santos@gmail.com>
 License: GNU General Public License
+Hardware: ATmega
+Date: 25102020
 Comment:
    Very Stable
 *************************************************************************/
@@ -15,16 +14,10 @@ Comment:
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
-/*
-** library
-*/
+/***Library***/
 #include <avr/eeprom.h>
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
+/***Constant & Macro***/
+/***Global Variable***/
 struct prm{
 	/***vtable***/
 	uint8_t (*read_byte) ( const uint8_t * addr );
@@ -44,9 +37,7 @@ struct prm{
 	void (*update_block) ( const void * pointer_ram , void * pointer_eeprom , size_t n);
 };
 typedef struct prm EEPROM;
-/*
-** procedure and function header
-*/
+/***Header***/
 EEPROM EEPROMenable();
 #endif
 /***EOF***/

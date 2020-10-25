@@ -1,27 +1,24 @@
 /************************************************************************
-CLOCK API START
+	CLOCK
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
+Date:
+Hardware: all
+Comment:
+	Stable
 ************************************************************************/
-/***preamble inic***/
+/***Preamble Inic***/
 #ifndef _CLOCK_H_
 	#define _CLOCK_H_
 /**@{*/
 #if (__GNUC__ * 100 + __GNUC_MINOR__) < 304
 	#error "This library requires AVR-GCC 3.4 or later, update to newer AVR-GCC compiler !"
 #endif
-/*
-** Library
-*/
+/***Library***/
 #include <inttypes.h>
-/***preamble inic***/
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #define HORA 24
-/*
-** variable
-*/
+/***Global Variable***/
 struct TIME{
 	int8_t hour;
 	int8_t minute;
@@ -40,13 +37,7 @@ struct clck{
 	char* (*show)(void);
 };
 typedef struct clck CLOCK;
-/*
-** procedure and function header
-*/
+/***Header***/
 CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second);
-/***preamble inic***/
 #endif
-/***preamble inic***/
-/************************************************************************
-CLOCK API END
-************************************************************************/
+/***EOF***/

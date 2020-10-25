@@ -1,31 +1,22 @@
 /************************************************************************
-ROTENC API START
+	ROTENC
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
-Date: 05102020
+Hardware: Rottary encoder Potentiometer
+Date: 25102020
 Comment:
 	Stable
 ************************************************************************/
-/*
-** library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <stdarg.h>
 #include"rotenc.h"
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
-/*
-** procedure and function header
-*/
+/***Constant & Macro***/
+/***Global File Variable***/
+/***Header***/
 ROTENC RotEnc_rte(ROTENC *self, uint8_t data);
-/*
-** INITIALIZE OBJECT STRUCT
-*/
+/***INITIALIZE OBJECT STRUCT***/
 ROTENC ROTENCenable( uint8_t ChnApin, uint8_t ChnBpin )
 {
 	// struct object
@@ -56,7 +47,5 @@ ROTENC RotEnc_rte(ROTENC *self, uint8_t data)
 	self->pchn=self->chn;
 	return *self;
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 /***EOF***/

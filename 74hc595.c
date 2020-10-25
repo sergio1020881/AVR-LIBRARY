@@ -1,46 +1,37 @@
 /*************************************************************************
-Title: 74HC595 API
-Author: Sergio Santos 
+	74HC595
+Author: Sergio Santos
 	<sergio.salazar.santos@gmail.com>
-File: $Id: 74hc595.c Exp $
-License: GNU General Public License        
+License: GNU General Public License     
+Hardware: 74HC595
+Date: 25102020
 Comment:
 	Tested Atemga88 8Mhz and Atmega328 8Mhz
-	reviewed 09/10/2020                    
 ************************************************************************/
 #ifndef F_CPU
 /***Mandatory to use util/delay.h***/
 	#define F_CPU 8000000UL
 #endif
-/*
-** Library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <inttypes.h>
-/***/
 #include "74hc595.h"
-/*
-** constant and macro
-*/
-#define GLOBAL_INTERRUPT_ENABLE 7
+/***Constant & Macro***/
+#ifndef GLOBAL_INTERRUPT_ENABLE
+	#define GLOBAL_INTERRUPT_ENABLE 7
+#endif
 #define ZERO 0
-/*
-** variable
-*/
+/***Global File Variable***/
 volatile uint8_t *hc595_DDR;
 volatile uint8_t *hc595_PORT;
-uint8_t HC595_datapin; 
+uint8_t HC595_datapin;
 uint8_t HC595_clkpin; 
 uint8_t HC595_outpin;
-/*
-** procedure and function header
-*/
+/***Header***/
 void HC595_shift_bit(uint8_t bool);
 void HC595_shift_byte(uint8_t byte);
 void HC595_shift_out(void);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 HC595 HC595enable(volatile uint8_t *ddr, volatile uint8_t *port, uint8_t datapin, uint8_t clkpin, uint8_t outpin)
 {
 	//LOCAL VARIABLES
@@ -52,8 +43,8 @@ HC595 HC595enable(volatile uint8_t *ddr, volatile uint8_t *port, uint8_t datapin
 	//import parametros
 	hc595_DDR=ddr;
 	hc595_PORT=port;
-	HC595_datapin=datapin; 
-	HC595_clkpin=clkpin; 
+	HC595_datapin=datapin;
+	HC595_clkpin=clkpin;
 	HC595_outpin=outpin;
 	//inic variables
     *hc595_DDR |= (1<<datapin) | (1<<clkpin) | (1<<outpin);
@@ -87,10 +78,5 @@ void HC595_shift_out(void)
 	*hc595_PORT |= (1<<HC595_outpin); //Output enable
 	*hc595_PORT &= ~(1<<HC595_outpin); //Output disable
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 /***EOF***/
-/***COMMENTS
-HC595 API END
-***/

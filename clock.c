@@ -1,31 +1,26 @@
 /*************************************************************************
-CLOCK API START
+	CLOCK
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
+Date:
+Hardware: all
+Comment:
+	Stable
 *************************************************************************/
-/***preamble inic***/
-/*
-** Library
-*/
+/***Preamble Inic***/
+/***Library***/
 #include <avr/io.h>
 #include <inttypes.h>
 #include "clock.h"
-/***preamble inic***/
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
+/***Constant & Macro***/
+/***Global File Variable***/
 struct TIME time;
 struct TIME laptime;
 struct TIME alarmtime;
 char CLOCK_timp[9];
 uint8_t CLOCK_alarm_flag;
 uint8_t CLOCK_compare_active;
-/*
-** procedure and function header
-*/
+/***Header***/
 void CLOCK_set(uint8_t hour, uint8_t minute, uint8_t second);
 void CLOCK_increment(void);
 void CLOCK_decrement(void);
@@ -36,9 +31,7 @@ void CLOCK_second_count_stop(void);
 void CLOCK_alarm_reset(void);
 void CLOCK_alarm_stop(void);
 char* CLOCK_show(void);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 CLOCK CLOCKenable(uint8_t hour, uint8_t minute, uint8_t second)
 {
 	CLOCK clock;
@@ -206,9 +199,5 @@ char* CLOCK_show(void)
 	CLOCK_timp[0]=tmp % 10 + '0';
 	return CLOCK_timp;
 }
-/*
-** interrupt
-*/
-/*************************************************************************
-CLOCK API END
-*************************************************************************/
+/***Interrupt***/
+/***EOF***/

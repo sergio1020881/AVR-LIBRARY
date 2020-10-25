@@ -1,28 +1,23 @@
 /*************************************************************************
-Title: LCD API
+	LCD
 Author: Sergio Santos 
-   <sergio.salazar.santos@gmail.com>
-File: $Id: lcd.c, v 27/09/2020 Exp $
-License: GNU General Public License        
+	<sergio.salazar.santos@gmail.com>
+License: GNU General Public License
+Hardware: all
+Date: 25102020
 Comment:
-   Tested Atemga128 16Mhz and Atmega328 8Mhz
-   reviewed 29/09/2020                    
+   Tested Atemga128 16Mhz and Atmega328 8Mhz                    
 ************************************************************************/
 #ifndef F_CPU
 /***Mandatory to use util/delay.h***/
 	#define F_CPU 16000000UL
 #endif
-/*
-** Library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <util/delay.h>
 #include <inttypes.h>
-/***/
 #include "lcd.h"
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
@@ -32,9 +27,7 @@ Comment:
 //ticks depends on CPU frequency this case 16Mhz
 #define LCD_N_TICKS 1
 #define LCD_BF_TICKS 20
-/*
-** variable
-*/
+/***Global File Variable***/
 volatile uint8_t *lcd0_DDR;
 volatile uint8_t *lcd0_PIN;
 volatile uint8_t *lcd0_PORT;
@@ -43,9 +36,7 @@ volatile uint8_t *lcd1_DDR;
 volatile uint8_t *lcd1_PIN;
 volatile uint8_t *lcd1_PORT;
 uint8_t lcd1_detect;
-/*
-** procedure and function header
-*/
+/***Header***/
 void LCD0_inic(void);
 void LCD0_write(char c, unsigned short D_I);
 char LCD0_read(unsigned short D_I);
@@ -73,9 +64,7 @@ void LCD1_gotoxy(unsigned int y, unsigned int x);
 void LCD1_strobe(unsigned int num);
 void LCD1_reboot(void);
 unsigned int LCD_ticks(unsigned int num);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 LCD0 LCD0enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port)
 {
 	//LOCAL VARIABLES
@@ -494,10 +483,5 @@ unsigned int LCD_ticks(unsigned int num)
 		;
 	return count;
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 /***EOF***/
-/***COMMENTS
-LCD API END
-***/

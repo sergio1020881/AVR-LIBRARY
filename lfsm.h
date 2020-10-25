@@ -1,23 +1,19 @@
 /************************************************************************
-Title: LFSM
+	LFSM
 Author: Sergio Santos
-   <sergio.salazar.santos@gmail.com>
-File: $Id: lfsm.h,v 0.1 01/10/2020 Exp $
-Hardware: Atmel
+	<sergio.salazar.santos@gmail.com>
 License: GNU General Public License
+Hardware: Atmel
+Date: 25102020
 Comment:
 	very stable
 ************************************************************************/
 #ifndef _LFSM_H_
 	#define _LFSM_H_
-/******/
+/***/
 #include "eeprom.h"
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
+/***Constant & Macro***/
+/***Global Variable***/
 struct lfsmdata{
 	uint8_t page;
 	uint16_t feedback;
@@ -27,7 +23,7 @@ struct lfsmdata{
 	uint16_t outhl;
 	uint16_t outlh;
 };
-/******/
+/***/
 struct lfsm{
 	//Local Variables
 	EEPROM* eprom;
@@ -50,9 +46,7 @@ struct lfsm{
 	void (*setpage)(struct lfsm *r,uint8_t page);
 };
 typedef struct lfsm LFSM;
-/*
-** procedure and function header
-*/
+/***Header***/
 LFSM LFSMenable(EEPROM* eeprom, const uint16_t sizeeeprom);
 #endif
 /***EOF***/

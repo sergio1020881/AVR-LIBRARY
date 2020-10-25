@@ -1,27 +1,22 @@
 /*************************************************************************
-KEYPAD API START
+	KEYPAD
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
+Hardware: all
 Date: 29092020
 Comment:
    Stable
 *************************************************************************/
-/***preamble inic***/
-/*
-** library
-*/
+/***Preamble Inic***/
+/***Library***/
 #include <avr/io.h>
 #include <inttypes.h>
 #include "keypad.h"
-/*
-** Constant and Macro
-*/
+/***Constant & Macro***/
 #define KEYPADLINES 4
 #define KEYPADCOLUMNS 4
 #define ZERO 0
-/*
-** Global File Variable
-*/
+/***Global File Variable***/
 volatile uint8_t *keypad_DDR;
 volatile uint8_t *keypad_PIN;
 volatile uint8_t *keypad_PORT;
@@ -43,9 +38,7 @@ volatile uint8_t KEYPADSTRINGINDEX;
 struct keypadata data;
 char KEYPAD_char;
 //can not assign something outside a function
-/*
-** header
-*/
+/***Header***/
 /***getkey***/
 char KEYPAD_getkey(void);
 /***read***/
@@ -58,9 +51,7 @@ void KEYPAD_flush(void);
 uint8_t KEYPADlh(uint8_t xi, uint8_t xf);
 /***hl***/
 uint8_t KEYPADhl(uint8_t xi, uint8_t xf);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 KEYPAD KEYPADenable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port)
 {
 	//LOCAL VARIABLE
@@ -182,8 +173,8 @@ char KEYPAD_getkey(void)
 				break;
 			default:
 				break;
-		}//endswitch
-	}//endfor
+		}
+	}
 	return c;
 }
 /***read***/
@@ -241,9 +232,7 @@ uint8_t KEYPADhl(uint8_t xi, uint8_t xf)
 	i&=xi;
 	return i;
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 /************************************************************************
 The matrix buttons should have a diode em series so each button would only let current flow in one direction not allowing
 feedbacks. Little defect of keypads !
@@ -252,6 +241,4 @@ making the 256 possible addresses for data storage. In a string of length 256 in
 is always the "\0" character has an indicator of end of string.
 Simply Magic.
 ************************************************************************/
-/*************************************************************************
-KEYPAD API END
-*************************************************************************/
+/***EOF***/

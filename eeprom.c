@@ -1,30 +1,19 @@
 /*************************************************************************
-Title: eeprom wrapper
+	eeprom wrapper
 Author: Sergio Santos
- * <sergio.salazar.santos@gmail.com>
-File: $Id: eeprom.c,v 0.2 01/10/2020 Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: ATmega
+	<sergio.salazar.santos@gmail.com>
 License: GNU General Public License
+Hardware: ATmega
+Date: 25102020
 Comment:
    Very Stable
 *************************************************************************/
-/*
-** library
-*/
+/***Library***/
 #include "eeprom.h"
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
-/*
-** procedure and function header
-*/
-/*
-** procedure and function
-*/
+/***Constant & Macro***/
+/***Global File Variable***/
+/***Header***/
+/***Procedure & Function***/
 EEPROM EEPROMenable(void){
 	EEPROM eprom;
 	eprom.read_byte=eeprom_read_byte;
@@ -44,7 +33,5 @@ EEPROM EEPROMenable(void){
 	eprom.update_block=eeprom_update_block;
 	return eprom;
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 /***EOF***/

@@ -1,8 +1,7 @@
 /***************************************************************************************************
-	I2C
+I2C API START
 Author: Sergio Santos
 	<sergio.salazar.santos@gmail.com>
-Hardware: Listed Bellow.
 Date: 20102020
 Comment:
 	Stable
@@ -16,25 +15,25 @@ Comment:
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include <inttypes.h>
-#include "i2c.h"
-/***Constant & Macros***/
-#if defined(__AVR_ATmega64__) || defined(__AVR_ATmega128__)
-	#define ATMEGA_I2C
-	#define I2C_DDR DDRD
-	#define I2C_PORT PORTD
-	#define I2C_IO_MASK 0x03
+#include "atmega328i2c.h"
+/***Define***/
+#if defined(__AVR_ATmega328__)
+	#define MEGA_I2C
+	#define I2C_DDR DDRC
+	#define I2C_PORT PORTC
+	#define I2C_IO_MASK 0x30
 	#define I2C_SCL_CLOCK 100000UL
-	#define TWI_BIT_RATE_REGISTER TWBR
 	#define TWI_CONTROL_REGISTER TWCR
+	#define TWI_BIT_RATE_REGISTER TWBR
 	#define TWI_STATUS_REGISTER TWSR
-	#define TWI_STATUS_MASK 0B11111000
+	#define TWI_STATUS_MASK 0xF8
+	#define TWI_PRESCALER_MASK 0x03
 	#define TWI_DATA_REGISTER TWDR
 	#define TWI_ADDRESS_REGISTER TWAR
-	#define TWI_ADDRESS_REGISTER_MASK 0B11111110
-	#define TWI_PRESCALER_MASK 0B00000011
+	#define TWI_ADDRESS_REGISTER_MASK 0xFE
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #else
-	#error "Not Atmega 128"
+	#error "Not Atmega 328"
 #endif
 #define Nticks 1023 //anti polling freeze.
 /***Global File Variable***/

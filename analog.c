@@ -16,6 +16,9 @@ Comment:
 #include <inttypes.h>
 #include "analog.h"
 /***Constant & Macro***/
+#ifndef GLOBAL_INTERRUPT_ENABLE
+	#define GLOBAL_INTERRUPT_ENABLE 7
+#endif
 // if using differential channels this value has to be greater than one
 #define MAX_CHANNEL 8
 /***TYPE 1***/
@@ -29,7 +32,7 @@ Comment:
 /***TYPE 2***/
 #elif defined(__AVR_ATmega48__) ||defined(__AVR_ATmega88__) || defined(__AVR_ATmega168__) || \
       defined(__AVR_ATmega48P__) ||defined(__AVR_ATmega88P__) || defined(__AVR_ATmega168P__) || \
-      defined(__AVR_ATmega328P__)
+      defined(__AVR_ATmega328P__) ||defined(__AVR_ATmega328__)
 	#define ADC_SELECT ADMUX
 	#define ADC_CONTROL ADCSRA
 	#define ADC_TRIGGER ADCSRB
