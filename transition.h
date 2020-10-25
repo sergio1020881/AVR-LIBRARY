@@ -1,21 +1,17 @@
 /************************************************************************
-Title:    TRANSITION
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: transition.h,v 0.1 2016/06/26 15:00:00 sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz
+	TRANSITION
+Author: Sergio Manuel Santos
+	<sergio.salazar.santos@gmail.com>
 License:  GNU General Public License
+Hardware: all
+Date: 25102020
 Comment:
 	Very Stable
 ************************************************************************/
 #ifndef _TRANSITION_H_
 	#define _TRANSITION_H_
-/*
-** constant and macro
-*/
-/*
-** variable
-*/
+/***Constant & Macro***/
+/***Global Variable***/
 struct TRAN{
 	/***Variables***/
 	uint8_t data;
@@ -26,9 +22,7 @@ struct TRAN{
 	uint8_t (*oneshot)(struct TRAN *tran, uint8_t idata);
 };
 typedef struct TRAN TRAN;
-/*
-** procedure and function header
-*/
+/***Header***/
 TRAN TRANenable(void);
 #endif
 /***EOF***/

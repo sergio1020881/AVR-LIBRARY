@@ -1,19 +1,17 @@
 /*************************************************************************
-Title:    TRANSITION
-Author:   Sergio Manuel Santos <sergio.salazar.santos@gmail.com>
-File:     $Id: transition.c,v 0.1 2016/06/26 15:00:00 sergio Exp $
-Software: AVR-GCC 4.1, AVR Libc 1.4.6 or higher
-Hardware: AVR with built-in ADC, tested on ATmega128 at 16 Mhz, 
-License:  GNU General Public License
+	TRANSITION
+Author: Sergio Manuel Santos
+	<sergio.salazar.santos@gmail.com> 
+License: GNU General Public License
+Hardware: all
+Date: 25102020
 Comment:
 	Very Stable
 *************************************************************************/
 #ifndef F_CPU
 	#define F_CPU 16000000UL
 #endif
-/*
-** library
-*/
+/***Library***/
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <util/delay.h>
@@ -24,28 +22,19 @@ Comment:
 #include<stdlib.h>
 #include<string.h>
 #include<errno.h>
-*/
-/***/
+***/
 #include"transition.h"
-/*
-** constant and macro
-*/
+/***Constant & Macro***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
- #define GLOBAL_INTERRUPT_ENABLE 7
+	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
-/*
-** variable
-*/
-/*
-** procedure and function header
-*/
+/***Global File Variable***/
+/***Header***/
 uint8_t TRANlh(uint8_t xi, uint8_t xf);
 uint8_t TRANhl(uint8_t xi, uint8_t xf);
 uint8_t TRANupdate(struct TRAN *tran, uint8_t idata);
 uint8_t TRANoneshot(struct TRAN *tran, uint8_t idata);
-/*
-** procedure and function
-*/
+/***Procedure & Function***/
 TRAN TRANenable( void )
 {
 	uint8_t tSREG;
@@ -107,10 +96,6 @@ uint8_t TRANoneshot(struct TRAN *tran, uint8_t idata)
 	tran->data=idata;
 	return r;
 }
-/*
-** interrupt
-*/
+/***Interrupt***/
 /***EOF***/
-/***COMMENTS
 
-***/

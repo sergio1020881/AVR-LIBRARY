@@ -497,7 +497,6 @@ ISR(External_Interrupt0)
 #else
 	#error "IREMOTE only supports Atemaga 8535, 8515 and 324A Sorry!!"
 #endif
-/***EOF***/
 /***COMMENTS
 interrupt to be defined in MAIN file
 Note if you configure to use interrupts and do not define them, program will block,
@@ -506,3 +505,4 @@ The mind puts the pieces (thoughts) together and when it glimpses into the whole
 spark happens in the mind, to manifest it is then intuitive and extremely easy, 
 rebuilding the image in reality.
 ***/
+/***EOF***/

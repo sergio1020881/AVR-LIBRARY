@@ -1,7 +1,8 @@
 /***************************************************************************************************
-I2C API START
+	I2C
 Author: Sergio Santos
 	<sergio.salazar.santos@gmail.com>
+Hardware: Listed in i2c.c file
 Date: 20102020
 Comment:
 	Stable
@@ -10,7 +11,8 @@ Comment:
 	#define _I2C_H
 /***Library***/
 #include <inttypes.h>
-/***Function Prototypes***/
+/***Constnat & Macros***/
+/***Global Variable***/
 struct twi{
 	void (*Start)();
 	void (*Stop)(void);
@@ -19,7 +21,7 @@ struct twi{
 	uint8_t (*Status)(void);
 };
 typedef struct twi I2C;
+/***Header***/
 I2C I2Cenable(uint8_t prescaler);
-/******/
 #endif
 /***EOF***/

@@ -35,4 +35,5 @@ typedef struct iremote IR;
 ** procedure and function header
 */
 IR IRenable(void);
-#endif /* IREMOTE_H_ */
+#endif
+/***EOF***/
