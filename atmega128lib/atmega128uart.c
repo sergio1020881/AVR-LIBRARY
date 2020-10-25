@@ -238,12 +238,16 @@ uint8_t uart_getc(void)
 void uart_putc(const char data)
 {
 	uint8_t head = UART_TxHead;
+	UART_TxBuf[head] = data;
 	UART_TxHead = (UART_TxHead + 1) & UART_TX_BUFFER_MASK;
+	//while( UART_TxHead == UART_TxTail )
+	//	;
 	if ( UART_TxHead != UART_TxTail ){
-		UART_TxBuf[head] = data;
-		UART_TxBuf[UART1_TxHead] = '\0';
-	}else
-	;
+		UART_TxBuf[UART_TxHead] = '\0';
+	}else{
+		//UART_TxHead=head;
+		_delay_ms(30);
+	}
 	UART0_CONTROL |= _BV(UART0_UDRIE);
 }
 /***void uart_puts(const char *s )***/
@@ -334,11 +338,13 @@ ISR(UART0_RECEIVE_INTERRUPT)
 ISR(UART0_TRANSMIT_INTERRUPT)
 {
 	uint8_t tail = UART_TxTail;
-	UART_TxTail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
 	UART0_DATA = UART_TxBuf[tail];
-	if ( UART_TxTail == UART_TxHead ) {
+	UART_TxBuf[tail]='\0';
+	UART_TxTail = (UART_TxTail + 1) & UART_TX_BUFFER_MASK;
+	if ( UART_TxTail != UART_TxHead )
+		;
+	else
 		UART0_CONTROL &= ~_BV(UART0_UDRIE);
-	}
 }
 /*
 ** these functions are only for ATmegas with two USART

@@ -24,9 +24,8 @@ Comment:
 /*
 ** constant and macro
 */
-#ifndef GLOBAL_INTERRUPT_ENABLE
-    #define GLOBAL_INTERRUPT_ENABLE 7
-#endif
+#define STATUS_REGISTER SREG
+#define GLOBAL_INTERRUPT_ENABLE 7
 /*
 ** variables
 */
@@ -947,7 +946,7 @@ TIMER_COUNTER2 TIMER_COUNTER2enable(unsigned char wavegenmode, unsigned char int
 /*
 ** interrupt
 */
-// So that main will not freeze when not defined, but rather exclude.
+// So that main will not freeze when not defined, therefore exclude here! before use.
 //ISR(TIMER0_COMP_vect){ }
 ISR(TIMER0_OVF_vect){ }
 ISR(TIMER1_CAPT_vect){ }

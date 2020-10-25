@@ -23,9 +23,8 @@ Comment:
 /*
 ** constant and macro
 */
-#ifndef GLOBAL_INTERRUPT_ENABLE
-    #define GLOBAL_INTERRUPT_ENABLE 7
-#endif
+#define STATUS_REGISTER SREG
+#define GLOBAL_INTERRUPT_ENABLE 7
 /*
 ** variables
 */
@@ -77,8 +76,8 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 	va_list list;
 	int i;
 	//inic variables
-	tSREG=SREG;
-	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
+	tSREG=STATUS_REGISTER;
+	STATUS_REGISTER&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	/***GLOBAL VARIABLES INICIALIZE***/
 	ADC_N_CHANNEL=n_channel;
 	ADC_SELECTOR=0;
@@ -161,14 +160,13 @@ ANALOG ANALOGenable( uint8_t Vreff, uint8_t Divfactor, int n_channel, ... )
 				break;
 		}		
 		
-	SREG=tSREG;
-	SREG|=(1<<GLOBAL_INTERRUPT_ENABLE);
+	STATUS_REGISTER=tSREG;
+	STATUS_REGISTER|=(1<<GLOBAL_INTERRUPT_ENABLE);
 	/******/
 	return analog;
 }
 int ANALOG_read(int selection)
 /*
-* 
 * Returns selected Channel ADC_VALUE
 */
 {
@@ -190,6 +188,9 @@ Function: ANALOG interrupt
 Purpose:  Read Analog Input
 **************************************************************************/
 {
+	uint8_t Sreg;
+	Sreg=STATUS_REGISTER;
+	STATUS_REGISTER&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	adc_tmp=ADCL;
 	adc_tmp|=(ADCH<<8);
 	if(adc_n_sample < (1<<ADC_NUMBER_SAMPLE)){
@@ -205,7 +206,8 @@ Purpose:  Read Analog Input
 			ADC_SELECTOR=0;
 		ADC_SELECT &= ~MUX_MASK;
 		ADC_SELECT |= (ADC_CHANNEL_GAIN[ADC_SELECTOR] & MUX_MASK);
-	}		
+	}
+	STATUS_REGISTER=Sreg;
 }
 /*
 ** Interrupt
