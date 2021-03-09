@@ -387,6 +387,7 @@ clk T 0 S /1024 (From prescaler); default - clk T 0 S /1024 (From prescaler).
 				TIMER_COUNTER0_CONTROL_REGISTER|=(7<<CS00);
 				break;
 		}
+		STATUS_REGISTER|=1<<GLOBAL_INTERRUPT_ENABLE;
 		timer0_state=1;
 	}	
 }
@@ -404,16 +405,19 @@ default-Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
 				// Toggle OC0 on compare match
+				DDRB=0x10;
 			TIMER_COUNTER0_CONTROL_REGISTER|=(1<<COM00);
 			break;
 		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
 				// Clear OC0 on compare match
+				DDRB=0x10;
 			TIMER_COUNTER0_CONTROL_REGISTER|=(1<<COM01);
 			break;
 		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
 				// Set OC0 on compare match
+				DDRB=0x10;
 			TIMER_COUNTER0_CONTROL_REGISTER|=(1<<COM00) | (1<<COM01);
 			break;
 		default:
@@ -472,6 +476,7 @@ External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024
 				TIMER_COUNTER1B_CONTROL_REGISTER|=(5<<CS10);
 				break;
 		}
+		STATUS_REGISTER|=1<<GLOBAL_INTERRUPT_ENABLE;
 		timer1_state=1;
 	}	
 }
@@ -482,17 +487,20 @@ void TIMER_COUNTER1_compoutmodeA(unsigned char compoutmode)
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC1A on compare match
+			DDRB|=0x20;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1A0);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC1A on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC1A on compare match
+			DDRB|=0x20;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1A1);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC1A on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC1A on compare match
+			DDRB|=0x20;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1A0) | (1<<COM1A1);
 			break;
 		default:
@@ -506,17 +514,20 @@ void TIMER_COUNTER1_compoutmodeB(unsigned char compoutmode)
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC1B on compare match
+			DDRB|=0x40;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1B0);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC1B on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC1B on compare match
+			DDRB|=0x40;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1B1);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC1B on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC1B on compare match
+			DDRB|=0x40;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1B0) | (1<<COM1B1);
 			break;
 		default:
@@ -530,17 +541,20 @@ void TIMER_COUNTER1_compoutmodeC(unsigned char compoutmode)
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC1C on compare match
+			DDRB|=0x80;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1C0);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC1C on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC1C on compare match
+			DDRB|=0x80;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1C1);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC1C on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC1C on compare match
+			DDRB|=0x80;
 			TIMER_COUNTER1A_CONTROL_REGISTER|=(1<<COM1C0) | (1<<COM1C1);
 			break;
 		default:
@@ -607,6 +621,7 @@ External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024
 				TIMER_COUNTER2_CONTROL_REGISTER|=(5<<CS20);
 				break;
 		}
+		STATUS_REGISTER|=1<<GLOBAL_INTERRUPT_ENABLE;
 		timer2_state=1;
 	}	
 }
@@ -623,17 +638,20 @@ default-Normal port operation, OC0 disconnected.
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC2 on compare match
+			DDRB|=0x80;
 			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<COM20);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC2 on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC2 on compare match
+			DDRB|=0x80;
 			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<COM21);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC2 on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC2 on compare match
+			DDRB|=0x80;
 			TIMER_COUNTER2_CONTROL_REGISTER|=(1<<COM20) | (1<<COM21);
 			break;
 		default:
@@ -786,7 +804,7 @@ for more information read datasheet.
 void TIMER_COUNTER3_start(unsigned int prescaler)
 /***
 PARAMETER SETTING
-Frequency oscilator devision factor or prescaler.
+Frequency oscillator devision factor or prescaler.
 prescaler: clk T0S /(No prescaling); clk T0S /8 (From prescaler); clk T0S /64 (From prescaler);
 clk T0S /256 (From prescaler); clk T0S /1024 (From prescaler); External clock source on Tn pin. Clock on falling edge;
 External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024 (From prescaler).
@@ -821,6 +839,7 @@ External clock source on Tn pin. Clock on rising edge; default - clk T 0 S /1024
 				TIMER_COUNTER3B_CONTROL_REGISTER|=(5<<CS30);
 				break;
 		}
+		STATUS_REGISTER|=1<<GLOBAL_INTERRUPT_ENABLE;
 		timer3_state=1;
 	}	
 }
@@ -831,17 +850,20 @@ void TIMER_COUNTER3_compoutmodeA(unsigned char compoutmode)
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC3A on compare match
+			DDRE|=0x08;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3A0);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC3A on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC3A on compare match
+			DDRE|=0x08;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3A1);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC3A on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC3A on compare match
+			DDRE|=0x08;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3A0) | (1<<COM3A1);
 			break;
 		default:
@@ -855,17 +877,20 @@ void TIMER_COUNTER3_compoutmodeB(unsigned char compoutmode)
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC3B on compare match
+			DDRE|=0x10;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3B0);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC3B on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC3B on compare match
+			DDRE|=0x10;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3B1);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC3B on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC3B on compare match
+			DDRE|=0x10;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3B0) | (1<<COM3B1);
 			break;
 		default:
@@ -879,17 +904,20 @@ void TIMER_COUNTER3_compoutmodeC(unsigned char compoutmode)
 		case 0: // Normal port operation, OC0 disconnected.
 			break;
 		case 1: // Reserved
-				// Toggle OC0 on compare match
+				// Toggle OC3C on compare match
+			DDRE|=0x20;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3C0);
 			break;
-		case 2: // Clear OC0 on compare match when up-counting. Set OC0 on compare
+		case 2: // Clear OC3C on compare match when up-counting. Set OC0 on compare
 				// match when downcounting.
-				// Clear OC0 on compare match
+				// Clear OC3C on compare match
+			DDRE|=0x20;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3C1);
 			break;
-		case 3: // Set OC0 on compare match when up-counting. Clear OC0 on compare
+		case 3: // Set OC3C on compare match when up-counting. Clear OC0 on compare
 				// match when downcounting.
-				// Set OC0 on compare match
+				// Set OC3C on compare match
+			DDRE|=0x20;
 			TIMER_COUNTER3A_CONTROL_REGISTER|=(1<<COM3C0) | (1<<COM3C1);
 			break;
 		default:
