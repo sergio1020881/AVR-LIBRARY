@@ -18,11 +18,12 @@ Comment:
 #include "hx711.h"
 /***Constant & Macro***/
 #ifndef GLOBAL_INTERRUPT_ENABLE
+	#define STATUS_REGISTER SREG
 	#define GLOBAL_INTERRUPT_ENABLE 7
 #endif
 #define ZERO 0
 #define ONE 1
-#define HX711_ticks 110 // 16Mhz between 100 and 200, make a macro for this value dependent on CPU clock.
+#define HX711_ticks 105 // 16Mhz between 100 and 200, make a macro for this value dependent on CPU clock. 55 -> 50% duty cycle
 #define HX711_ADC_bits 24
 #define HX711_VECT_SIZE 4
 /***Global File Variable***/
@@ -38,9 +39,15 @@ void HX711_reset_readflag(HX711* self);
 uint8_t HX711_check_readflag(HX711* self);
 uint8_t HX711_read_bit(void);
 void HX711_set_amplify(HX711* self, uint8_t amplify);
-int32_t HX711_readraw(HX711* self);
-float HX711_average(HX711* self, int32_t raw_reading,  uint8_t n);
-uint8_t HX711_hl(uint8_t xi, uint8_t xf);
+int32_t HX711_read_raw(HX711* self);
+float HX711_raw_average(HX711* self, uint8_t n);
+struct HX711_calibration* HX711_ptrcal(HX711* self);
+int32_t HX711_get_offset_32(HX711* self);
+int32_t HX711_get_offset_64(HX711* self);
+int32_t HX711_get_offset_128(HX711* self);
+int8_t HX711_get_divfactor_32(HX711* self);
+int8_t HX711_get_divfactor_64(HX711* self);
+int8_t HX711_get_divfactor_128(HX711* self);
 /***Procedure & Function***/
 HX711 HX711enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port, uint8_t datapin, uint8_t clkpin)
 {
@@ -70,21 +77,34 @@ HX711 HX711enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t
 	hx711.buffer[3]=ZERO;
 	hx711.bufferindex=HX711_VECT_SIZE-ONE;
 	hx711.raw_reading=ZERO;
+	hx711.sum=ZERO;
+	hx711.av_n=ZERO;
+	hx711.raw_mean=ZERO;
 	// offset para mesa usada.
 	hx711.cal.offset_32=37122; // to subtract B
-	hx711.cal.offset_64=74320; // to subtract A 64
-	hx711.cal.offset_128=147500; // to subtract A 128
+	//hx711.cal.offset_64=73690; // to subtract A 64
+	hx711.cal.offset_64=73900; // to subtract A 64
+	//hx711.cal.offset_128=146650; // to subtract A 128
+	hx711.cal.offset_128=146650; // to subtract A 128
 	//div factor
 	hx711.cal.divfactor_32=23; // to divide
 	hx711.cal.divfactor_64=46; // to divide
 	hx711.cal.divfactor_128=92; // to divide
+	hx711.cal.status=0;
 	//Direccionar apontadores para PROTOTIPOS
 	hx711.set_readflag=HX711_set_readflag;
 	hx711.check_readflag=HX711_check_readflag;
 	hx711.read_bit=HX711_read_bit;
 	hx711.set_amplify=HX711_set_amplify;
-	hx711.readraw=HX711_readraw;
-	hx711.average=HX711_average;
+	hx711.read_raw=HX711_read_raw;
+	hx711.raw_average=HX711_raw_average;
+	hx711.ptrcal=HX711_ptrcal;
+	hx711.get_offset_32=HX711_get_offset_32;
+	hx711.get_offset_64=HX711_get_offset_64;
+	hx711.get_offset_128=HX711_get_offset_128;
+	hx711.get_divfactor_32=HX711_get_divfactor_32;
+	hx711.get_divfactor_64=HX711_get_divfactor_64;
+	hx711.get_divfactor_128=HX711_get_divfactor_128;
 	SREG=tSREG;
 	// returns a copy
 	return hx711;
@@ -137,7 +157,7 @@ void HX711_set_amplify(HX711* self, uint8_t amplify)
 /***
 Function to be used in the interrupt routine with appropriate cycle period.
 ***/
-int32_t HX711_readraw(HX711* self)
+int32_t HX711_read_raw(HX711* self)
 {
 	uint8_t aindex, bindex;
 	int32_t value;
@@ -147,7 +167,6 @@ int32_t HX711_readraw(HX711* self)
 	/***Detect query for reading***/
 	if((!(*hx711_PIN & ONE << hx711_datapin)) && !self->readflag){
 		HX711_set_readflag(self);
-		PORTC&=~(1<<0); // indicator remove when finished
 	}
 	/***Interrupt 24 times sequence***/
 	if(self->readflag){
@@ -181,32 +200,53 @@ int32_t HX711_readraw(HX711* self)
 	}
 	return self->raw_reading;
 }
-float HX711_average(HX711* self, int32_t raw_reading ,uint8_t n)
+float HX711_raw_average(HX711* self, uint8_t n)
 {
 	if(self->trigger){
 		if(self->av_n < n){
-			self->sum+=raw_reading;
+			self->sum+=self->raw_reading;
 			self->av_n++;
 			}else{
 			self->av_n=0;
-			self->mean=self->sum/n;
+			self->raw_mean=self->sum/n;
 			self->sum=0;
-			self->sum+=raw_reading;
+			self->sum+=self->raw_reading;
 			self->av_n++;
 		}
 		self->trigger=ZERO;
 	}
-	return self->mean;
+	return self->raw_mean;
 }
-uint8_t HX711_hl(uint8_t xi, uint8_t xf)
+struct HX711_calibration* HX711_ptrcal(HX711* self)
 {
-	uint8_t i;
-	i=xf^xi;
-	i&=xi;
-	return i;
+	return &(self->cal);
+}
+int32_t HX711_get_offset_32(HX711* self)
+{
+	return self->cal.offset_32;
+}
+int32_t HX711_get_offset_64(HX711* self)
+{
+	return self->cal.offset_64;
+}
+int32_t HX711_get_offset_128(HX711* self)
+{
+	return self->cal.offset_128;
+}
+int8_t HX711_get_divfactor_32(HX711* self)
+{
+	return self->cal.divfactor_32;
+}
+int8_t HX711_get_divfactor_64(HX711* self)
+{
+	return self->cal.divfactor_64;
+}
+int8_t HX711_get_divfactor_128(HX711* self)
+{
+	return self->cal.divfactor_128;
 }
 /***Interrupt***/
-/****comment:
+/***comment***
 Have to use vector to store 32 bit size word, then do a cast (int32_t*) to retrieve the value.
 *************/
 /***EOF***/

@@ -2,6 +2,7 @@
 	ATMEGA128TIMER
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
+License: GNU General Public License
 Hardware: ATmega128
 Date: 25102020
 Comment:
@@ -950,7 +951,7 @@ stops timer by setting prescaler to zero
 //ISR(TIMER0_COMP_vect){ }
 ISR(TIMER0_OVF_vect){ }
 ISR(TIMER1_CAPT_vect){ }
-ISR(TIMER1_COMPA_vect){ }
+//ISR(TIMER1_COMPA_vect){ }
 ISR(TIMER1_COMPB_vect){ }
 ISR(TIMER1_COMPC_vect){ }
 ISR(TIMER1_OVF_vect){ }
@@ -960,4 +961,6 @@ ISR(TIMER3_COMPA_vect){ }
 ISR(TIMER3_COMPB_vect){ }
 ISR(TIMER3_COMPC_vect){ }
 ISR(TIMER3_OVF_vect){ }
+/***Comment***
+*************/
 /***EOF***/

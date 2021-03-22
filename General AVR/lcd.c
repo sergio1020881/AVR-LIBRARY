@@ -25,8 +25,8 @@ Comment:
 #define INST 0
 #define DATA 1
 //ticks depends on CPU frequency this case 16Mhz
-#define LCD_N_TICKS 1
-#define LCD_BF_TICKS 20
+#define LCD_N_TICKS 3
+#define LCD_BF_TICKS 10
 /***Global File Variable***/
 volatile uint8_t *lcd0_DDR;
 volatile uint8_t *lcd0_PIN;
@@ -260,6 +260,9 @@ void LCD0_strobe(unsigned int num)
 }
 void LCD0_reboot(void)
 {
+	uint8_t tSREG;
+	tSREG=SREG;
+	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	//low high detect pin NC
 	uint8_t i;
 	uint8_t tmp;
@@ -269,6 +272,7 @@ void LCD0_reboot(void)
 	if(i)
 		LCD0_inic();
 	lcd0_detect=tmp;
+	SREG=tSREG;
 }
 /*******************************************************************/
 LCD1 LCD1enable(volatile uint8_t *ddr, volatile uint8_t *pin, volatile uint8_t *port)
@@ -466,6 +470,10 @@ void LCD1_strobe(unsigned int num)
 }
 void LCD1_reboot(void)
 {
+	//LOCAL VARIABLES
+	uint8_t tSREG;
+	tSREG=SREG;
+	SREG&=~(1<<GLOBAL_INTERRUPT_ENABLE);
 	//low high detect pin NC
 	uint8_t i;
 	uint8_t tmp;
@@ -475,6 +483,7 @@ void LCD1_reboot(void)
 	if(i)
 		LCD1_inic();
 	lcd1_detect=tmp;
+	SREG=tSREG;
 }
 unsigned int LCD_ticks(unsigned int num)
 {
@@ -484,4 +493,6 @@ unsigned int LCD_ticks(unsigned int num)
 	return count;
 }
 /***Interrupt***/
+/***Comment***
+*************/
 /***EOF***/
