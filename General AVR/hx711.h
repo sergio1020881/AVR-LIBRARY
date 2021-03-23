@@ -21,14 +21,8 @@ struct HX711_calibration{
 	int32_t offset_64; // ZERO set point B 64
 	int32_t offset_128; // ZERO set point B 128
 	uint8_t divfactor_32; // interval A
-	uint8_t divfactor_32_1; // interval A 1
-	uint8_t divfactor_32_2; // interval A 2
 	uint8_t divfactor_64; // interval B
-	uint8_t divfactor_64_1; // interval B 1
-	uint8_t divfactor_64_2; // interval B 2
 	uint8_t divfactor_128; // interval B
-	uint8_t divfactor_128_1; // interval B 1
-	uint8_t divfactor_128_2; // interval B 2
 	uint8_t status;
 };
 //device
@@ -44,7 +38,7 @@ struct hx711{
 	int32_t sum;
 	uint8_t av_n;
 	float raw_mean;
-	struct HX711_calibration cal;
+	struct HX711_calibration cal_data;
 	/******/
 	void (*set_readflag)(struct hx711* self);
 	uint8_t (*check_readflag)(struct hx711* self);
@@ -52,13 +46,13 @@ struct hx711{
 	void (*set_amplify)(struct hx711* self, uint8_t amplify);
 	int32_t (*read_raw)(struct hx711* self);
 	float (*raw_average)(struct hx711* self, uint8_t n);
-	struct HX711_calibration* (*ptrcal)(struct hx711* self);
+	struct HX711_calibration* (*get_cal)(struct hx711* self);
 	int32_t (*get_offset_32)(struct hx711* self);
 	int32_t (*get_offset_64)(struct hx711* self);
 	int32_t (*get_offset_128)(struct hx711* self);
-	int8_t (*get_divfactor_32)(struct hx711* self);
-	int8_t (*get_divfactor_64)(struct hx711* self);
-	int8_t (*get_divfactor_128)(struct hx711* self);
+	uint8_t (*get_divfactor_32)(struct hx711* self);
+	uint8_t (*get_divfactor_64)(struct hx711* self);
+	uint8_t (*get_divfactor_128)(struct hx711* self);
 };
 typedef struct hx711 HX711;
 /***Header***/
