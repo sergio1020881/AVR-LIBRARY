@@ -2,6 +2,7 @@
 	ATMEGA128INTERRUPT
 Author: Sergio Santos 
 	<sergio.salazar.santos@gmail.com>
+License: GNU General Public License
 Hardware: ATmega128
 Date: 25102020
 Comment:
@@ -21,6 +22,7 @@ Comment:
 struct ntrrpt{
 	void (*set)(uint8_t channel, uint8_t sense);
 	void (*off)(uint8_t channel);
+	void (*on)(uint8_t channel);
 	uint8_t (*reset_status)(void);
 };
 typedef struct ntrrpt INTERRUPT;
